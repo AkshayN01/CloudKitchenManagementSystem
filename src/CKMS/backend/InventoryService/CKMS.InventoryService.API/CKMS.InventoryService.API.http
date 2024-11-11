@@ -1,0 +1,6 @@
+@CKMS.InventoryService.API_HostAddress = http://localhost:5184
+
+GET {{CKMS.InventoryService.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

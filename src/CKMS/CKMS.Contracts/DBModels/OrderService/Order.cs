@@ -23,6 +23,8 @@ namespace CKMS.Contracts.DBModels.OrderService
         public int PaymentStatus { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public Payment? Payment { get; set; }
     }
 
     public class OrderItem
@@ -30,12 +32,13 @@ namespace CKMS.Contracts.DBModels.OrderService
         [Key]
         public Guid OrderItemId { get; set; }
         [Required]
-        public Guid OrderId { get; set; }
+        public Guid OrderId { get; set; } //Foreign Key
         [Required]
         public long MenuItemId { get; set; }
         [Required]
         public int Quantity { get; set; }
         public float UnitPrice { get; set; }
+        public Order Order { get; set; } = null!; //Required
     }
 
     public enum OrderStatus
