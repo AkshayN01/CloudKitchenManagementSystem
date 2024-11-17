@@ -20,7 +20,9 @@ namespace CKMS.Contracts.DBModels.AdminUserService
         public int RoleId { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; } = DateTime.UtcNow;
-
+        public DateTime LastLogin {  get; set; }
+        public int IsEmailVerified { get; set; }
+        public String? VerificationToken { get; set; }
         [Required]
         public Guid KitchenId { get; set; } //Required Foreign Key
         public Kitchen Kitchen { get; set; } = null!; //Required
