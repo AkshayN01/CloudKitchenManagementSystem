@@ -5,11 +5,6 @@ using CKMS.Contracts.DTOs.AdminUser.Request;
 using CKMS.Contracts.DTOs.AdminUser.Response;
 using CKMS.Interfaces.Repository;
 using CKMS.Library.Generic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CKMS.AdminUserService.Blanket
 {

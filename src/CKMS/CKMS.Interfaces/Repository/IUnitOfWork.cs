@@ -20,4 +20,11 @@ namespace CKMS.Interfaces.Repository
         IAdminUserRepository AdminUserRepository { get; }
         IKitchenRepository KitchenRepository { get; }
     }
+    public interface IInventoryUnitOfWork : IUnitOfWork
+    {
+        IInventoryRepository InventoryRepository { get; }
+        IMenuItemRepository MenuItemRepository { get; }
+        IRecipeItemRepository RecipeItemRepository { get; }
+        IRecipeRepository RecipeRepository { get; }
+    }
 }

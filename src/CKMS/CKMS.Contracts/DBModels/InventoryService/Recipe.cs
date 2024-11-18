@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CKMS.Contracts.DBModels.InventoryService
 {
     public class Recipe
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int64 Id { get; set; }
         [Required]
         public Int64 MenuItemId { get; set; } //Foreign Key
@@ -19,6 +21,7 @@ namespace CKMS.Contracts.DBModels.InventoryService
     public class RecipeItem
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int64 Id { get; set; }
         [Required]
         public Int64 RecipeId { get; set; } //foreign key
