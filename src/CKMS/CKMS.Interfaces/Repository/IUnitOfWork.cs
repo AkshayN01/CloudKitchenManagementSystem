@@ -14,6 +14,9 @@ namespace CKMS.Interfaces.Repository
     public interface IOrderUnitOfWork : IUnitOfWork
     {
         IOrderRepository OrderRepository { get; }
+        IDicountRepository IDicountRepository { get; }
+        IPersonalDiscountRespository PersonalDiscountRespository { get; }
+        IDiscountUsageRepository IDiscountUsageRepository { get; }
     }
     public interface IAdminUserUnitOfWork : IUnitOfWork
     {

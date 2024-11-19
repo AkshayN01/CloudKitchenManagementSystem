@@ -11,4 +11,10 @@ namespace CKMS.Interfaces.Repository
     {
         Task<IEnumerable<Order>> GetOrdersByCustomerIdAsync(Guid customerId);
     }
+    public interface IDicountRepository : IGenericRepository<Discount> { }
+    public interface IPersonalDiscountRespository : IGenericRepository<PersonalDiscounts> 
+    {
+        Task<PersonalDiscounts?> GetDiscountByUserIdAndDicountId(Guid userId, Guid dicountId);
+    }
+    public interface IDiscountUsageRepository : IGenericRepository<DiscountUsage> { }
 }
