@@ -22,4 +22,13 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
         public float RestockThreshold { get; set; }
         public float MaxStockLevel { get; set; }
     }
+    public class InventoryMovementDTO
+    {
+        public Int64 Id { get; set; }
+        public Int64 InventoryId { get; set; } 
+        public Guid KitchenId { get; set; }
+        public int MovementType { get; set; }
+        public float Quantity { get; set; }
+        public DateTime MovementDate { get; set; }
+    }
 }

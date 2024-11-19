@@ -18,11 +18,31 @@ namespace CKMS.Contracts.DTOs.Inventory.Request
         public float RestockThreshold { get; set; }
         public float MaxStockLevel { get; set; }
     }
+    public class InventoryUpdatePayload
+    {
+        [Required]
+        public Int64 InventoryId { get; set; }
+        public String InventoryName { get; set; }
+        public float Quantity { get; set; }
+        public int Unit { get; set; }
+        public float RestockThreshold { get; set; }
+        public float MaxStockLevel { get; set; }
+    }
     public class InventoryMovementPayload
     {
         [Required]
         public Int64 InventoryId { get; set; } //Foreign Key
+        [Required]
         public Guid KitchenId { get; set; } = Guid.Empty!; //Required
+        public int MovementType { get; set; }
+        public float Quantity { get; set; }
+        public DateTime MovementDate { get; set; }
+    }
+    public class InventoryMovementUpdatePayload
+    {
+        [Required]
+        public Int64 InventoryMovementId { get; set; }
+        public Int64 InventoryId { get; set; }
         public int MovementType { get; set; }
         public float Quantity { get; set; }
         public DateTime MovementDate { get; set; }

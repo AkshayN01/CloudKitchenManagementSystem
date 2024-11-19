@@ -23,6 +23,7 @@ namespace CKMS.Interfaces.Repository
     public interface IInventoryUnitOfWork : IUnitOfWork
     {
         IInventoryRepository InventoryRepository { get; }
+        IInventoryMovementRepository InventoryMovementRepository { get; }
         IMenuItemRepository MenuItemRepository { get; }
         IRecipeItemRepository RecipeItemRepository { get; }
         IRecipeRepository RecipeRepository { get; }

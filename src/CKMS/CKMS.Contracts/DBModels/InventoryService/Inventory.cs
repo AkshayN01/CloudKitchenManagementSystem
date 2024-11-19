@@ -40,6 +40,7 @@ namespace CKMS.Contracts.DBModels.InventoryService
         public DateTime MovementDate { get; set; }
         public Inventory Inventory { get; set; } = null!; //Required
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
     public enum Unit
     {

@@ -14,7 +14,7 @@ namespace CKMS.Library.Interfaces
             _dbSet = context.Set<TEntity>();
         }
 
-        public async Task<TEntity?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+        public async Task<TEntity?> GetByIdAsync(Int64 id) => await _dbSet.FindAsync(id);
 
         public async Task<TEntity?> GetByGuidAsync(Guid id) => await _dbSet.FindAsync(id);
 
