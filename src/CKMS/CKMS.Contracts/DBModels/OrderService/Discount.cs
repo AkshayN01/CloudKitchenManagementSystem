@@ -19,6 +19,9 @@ namespace CKMS.Contracts.DBModels.OrderService
         public DateTime EndDate { get; set; }
         public int IsPersonalised { get; set; }
         public int IsActive { get; set; } = 1;
+        public int UsageCount { get; set; } = 1; //how many times same discount can be applied
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public ICollection<PersonalDiscounts> PersonalDiscounts { get; set; } = new List<PersonalDiscounts>();
         public ICollection<DiscountUsage> DiscountUsages { get; set; } = new List<DiscountUsage>();
     }
@@ -40,9 +43,11 @@ namespace CKMS.Contracts.DBModels.OrderService
         [Required]
         public Guid UserId { get; set; } = Guid.Empty!;
         [Required]
-        public Guid DiscountId { get; set; }
+        public Guid DiscountId { get; set; } = Guid.Empty!;
+        [Required]
+        public Guid OrderId { get; set; } = Guid.Empty!;
         public int IsApplied { get; set; }
-        public DateTime AppliedDate { get; set; }
+        public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Discount Discount { get; set; } = null!;
     }

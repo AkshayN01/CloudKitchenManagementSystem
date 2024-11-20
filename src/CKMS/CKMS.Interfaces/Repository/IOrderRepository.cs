@@ -16,5 +16,8 @@ namespace CKMS.Interfaces.Repository
     {
         Task<PersonalDiscounts?> GetDiscountByUserIdAndDicountId(Guid userId, Guid dicountId);
     }
-    public interface IDiscountUsageRepository : IGenericRepository<DiscountUsage> { }
+    public interface IDiscountUsageRepository : IGenericRepository<DiscountUsage> 
+    {
+        Task<IEnumerable<DiscountUsage>> GetUsageByUserIdAndDiscountId(Guid userId, Guid dicountId);
+    }
 }

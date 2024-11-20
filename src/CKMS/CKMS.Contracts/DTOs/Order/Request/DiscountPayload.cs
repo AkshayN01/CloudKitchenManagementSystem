@@ -25,4 +25,15 @@ namespace CKMS.Contracts.DTOs.Order.Request
         [Required]
         public String DiscountId { get; set; } = String.Empty!;
     }
+    public class DiscountUsagePayload
+    {
+        [Required]
+        public String UserId { get; set; } = String.Empty!;
+        [Required]
+        public String DiscountId { get; set; } = String.Empty!;
+        [Required]
+        public String OrderId { get; set; } = String.Empty!;
+        public int IsApplied { get; set; } //set to 1 after the order is placed
+        public DateTime AppliedDate { get; set; }
+    }
 }
