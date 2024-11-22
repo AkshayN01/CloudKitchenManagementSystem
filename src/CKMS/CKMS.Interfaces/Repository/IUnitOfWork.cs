@@ -18,7 +18,7 @@ namespace CKMS.Interfaces.Repository
         IDicountRepository IDicountRepository { get; }
         IPersonalDiscountRespository PersonalDiscountRespository { get; }
         IDiscountUsageRepository IDiscountUsageRepository { get; }
-        IPaymentRepository IPaymentRepository { get; }
+        IPaymentRepository PaymentRepository { get; }
     }
     public interface IAdminUserUnitOfWork : IUnitOfWork
     {

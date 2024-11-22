@@ -220,7 +220,7 @@ namespace CKMS.OrderService.Blanket
 
             return new Tuple<bool, string>(success, message);
         }
-        //API to confirm an order
+        //API to confirm an order - to be called only when payment method is Cash on delivery
         public async Task<HTTPResponse> ConfirmOrder(ConfirmOrderPayload payload)
         {
 
@@ -248,10 +248,10 @@ namespace CKMS.OrderService.Blanket
                     Amount = order.NetAmount,
                     OrderId = order.OrderId,
                     PaymentId = new Guid(),
-                    PaymentMethod = payload.PaymentMethod,
-                    PaymentStatus = (int)PaymentStatus.Pending,
+                    PaymentMethod = (int)PaymentMethod.CashOnDelivery,
+                    PaymentStatus = (int)PaymentStatus.pending,
                 };
-                await _OrderUnitOfWork.IPaymentRepository.AddAsync(payment);
+                await _OrderUnitOfWork.PaymentRepository.AddAsync(payment);
 
                 await _OrderUnitOfWork.CompleteAsync();
                 data = true;
@@ -292,12 +292,12 @@ namespace CKMS.OrderService.Blanket
                 _OrderUnitOfWork.OrderRepository.Update(Order);
 
                 //Update payment details
-                Payment? payment = await _OrderUnitOfWork.IPaymentRepository.GetPaymentByOrderIdAsync(OrderId);
+                Payment? payment = await _OrderUnitOfWork.PaymentRepository.GetPaymentByOrderIdAsync(OrderId);
                 if (payment == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "System Error: No Payment details found");
 
-                payment.PaymentStatus = (int)PaymentStatus.Canceled;
-                _OrderUnitOfWork.IPaymentRepository.Update(payment);
+                payment.PaymentStatus = (int)PaymentStatus.canceled;
+                _OrderUnitOfWork.PaymentRepository.Update(payment);
 
                 await _OrderUnitOfWork.CompleteAsync();
                 data = true;

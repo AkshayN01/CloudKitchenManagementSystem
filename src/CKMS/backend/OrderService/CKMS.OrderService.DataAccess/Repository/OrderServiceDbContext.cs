@@ -40,6 +40,9 @@ namespace CKMS.OrderService.DataAccess.Repository
             modelBuilder.Entity<Discount>()
                 .HasIndex(x => x.CouponCode)
                 .IsUnique();
+
+            modelBuilder.Entity<Payment>()
+                .HasIndex(x => x.OrderId);
         }
     }
 }
