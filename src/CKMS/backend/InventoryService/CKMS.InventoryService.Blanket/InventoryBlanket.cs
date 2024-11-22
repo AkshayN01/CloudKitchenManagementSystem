@@ -153,7 +153,7 @@ namespace CKMS.InventoryService.Blanket
                 if (inventory == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory id");
 
-                if(String.IsNullOrEmpty(payload.InventoryName))
+                if(!String.IsNullOrEmpty(payload.InventoryName))
                     inventory.InventoryName = payload.InventoryName;
 
                 inventory.Unit = payload.Unit;

@@ -30,6 +30,7 @@ namespace CKMS.Interfaces.Repository
         IInventoryRepository InventoryRepository { get; }
         IInventoryMovementRepository InventoryMovementRepository { get; }
         IMenuItemRepository MenuItemRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
         IRecipeItemRepository RecipeItemRepository { get; }
         IRecipeRepository RecipeRepository { get; }
     }

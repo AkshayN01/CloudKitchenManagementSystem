@@ -24,6 +24,12 @@ namespace CKMS.InventoryService.DataAccess.Repository
                 .WithMany(i => i.Items)
                 .HasForeignKey(i => i.RecipeId)
                 .IsRequired();
+
+            modelBuilder.Entity<MenuItem>()
+                .HasOne(m => m.Category)
+                .WithMany(m => m.Items)
+                .HasForeignKey(m => m.CategoryId)
+                .IsRequired();
         }
     }
 }

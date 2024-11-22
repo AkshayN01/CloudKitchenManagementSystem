@@ -23,5 +23,21 @@ namespace CKMS.Contracts.DBModels.InventoryService
         public int IsAvalilable { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Category Category { get; set; } = null!;
+    }
+    public class Category
+    {
+        [Key]
+        [Required]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Int64 CategoryId { get; set;}
+        [Required]
+        public Guid KitchenId { get; set;} = Guid.Empty!;
+        [Required]
+        public String Name { get; set; }
+        public String Description { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public ICollection<MenuItem> Items { get; set; }
     }
 }
