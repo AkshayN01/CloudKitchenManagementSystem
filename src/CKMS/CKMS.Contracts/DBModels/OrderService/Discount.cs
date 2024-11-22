@@ -14,6 +14,8 @@ namespace CKMS.Contracts.DBModels.OrderService
         public int DiscountType { get; set; }
         [Required]
         public Guid KitchenId { get; set; }  =  Guid.Empty!;
+        [Required]
+        public String CouponCode { get; set; } = String.Empty!;
         public float DiscountValue { get; set; } //can be a percentage or amount
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

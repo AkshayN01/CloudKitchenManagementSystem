@@ -15,11 +15,11 @@ namespace CKMS.Library.Storage
         public static ConnectionMultiplexer _ClientManager;
         public static Contracts.Configuration.Redis _ConnectionEnvironment;
 
-        public string KitchenKey => "kitchen:";
+        public string KitchenKey => "kitchen";
 
-        public string CustomerKey => "customer:";
+        public string CustomerKey => "customer";
 
-        public string orderKey => "order:";
+        public string orderKey => "order";
 
         public Redis(IOptions<Application> appSettings)
         {
@@ -77,6 +77,41 @@ namespace CKMS.Library.Storage
         }
 
         public bool Set(string key, object content, bool serialize)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> CKMS.Interfaces.Storage.IRedis.Get(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> CKMS.Interfaces.Storage.IRedis.Set(string key, object content, bool serialize)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> CKMS.Interfaces.Storage.IRedis.Has(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<bool> CKMS.Interfaces.Storage.IRedis.Remove(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<HashEntry[]> HashGetAll(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> HashExist(string key, string val)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> HashGet(string key, string field)
         {
             throw new NotImplementedException();
         }

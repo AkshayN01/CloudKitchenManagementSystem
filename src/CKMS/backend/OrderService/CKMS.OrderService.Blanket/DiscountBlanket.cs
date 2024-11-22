@@ -101,6 +101,7 @@ namespace CKMS.OrderService.Blanket
                         DiscountId = new Guid(),
                         DiscountType = payload.DiscountType,
                         DiscountValue = payload.DiscountValue,
+                        CouponCode = Utility.GenerateVerificationToken(6),
                         EndDate = payload.EndDate,
                         IsActive = 1,
                         IsPersonalised = payload.IsPersonalised,
@@ -195,14 +196,13 @@ namespace CKMS.OrderService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Payload is empty");
 
                 //check if it's a valid DiscountId
-                if (String.IsNullOrEmpty(payload.DiscountId))
-                    return APIResponse.ConstructExceptionResponse(retVal, "DiscountId is empty");
+                if (String.IsNullOrEmpty(payload.CouponCode))
+                    return APIResponse.ConstructExceptionResponse(retVal, "CouponCode is empty");
                 
-                Guid DiscountId = new Guid(payload.DiscountId);
-                Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetByGuidAsync(DiscountId);
+                Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetDiscountByCouponCodeAsync(payload.CouponCode);
 
                 if (discount == null)
-                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Dicount Id");
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid CouponCode");
 
                 //check if it's a valid user
                 if (String.IsNullOrEmpty(payload.UserId))
@@ -219,34 +219,38 @@ namespace CKMS.OrderService.Blanket
 
                 Guid OrderId = new Guid(payload.OrderId);
                 Order? order = await _OrderUnitOfWork.OrderRepository.GetByGuidAsync(OrderId);
+                if (order == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
 
                 IEnumerable<DiscountUsage> discounts = await _OrderUnitOfWork.IDiscountUsageRepository
-                    .GetUsageByUserIdAndDiscountId(userId, DiscountId);
+                    .GetUsageByUserIdAndDiscountId(userId, discount.DiscountId);
 
                 bool createNewRecord = true;
                 if(discounts != null)
                 {
                     List<DiscountUsage> discountUsages = discounts.ToList();
-                    if (discountUsages.Count != 0 || discount.UsageCount <= discountUsages.Count)
+                    if (discountUsages.Count != 0 || discount.UsageCount <= discountUsages.Where(x => x.IsApplied == 1).ToList().Count)
                         return APIResponse.ConstructExceptionResponse(retVal, "Discount coupon has already been used");
 
                     DiscountUsage? orderSpecificUsage = discountUsages.FirstOrDefault(x => x.OrderId == OrderId);
                     if (orderSpecificUsage != null && (orderSpecificUsage.IsApplied == 1 || orderSpecificUsage.IsApplied == payload.IsApplied))
                         return APIResponse.ConstructExceptionResponse(retVal, "Discount has already been applied for the order");
-                    else if(orderSpecificUsage != null)
+                    else if (orderSpecificUsage != null)
                     {
                         orderSpecificUsage.IsApplied = payload.IsApplied;
                         orderSpecificUsage.UpdatedAt = DateTime.UtcNow;
                         _OrderUnitOfWork.IDiscountUsageRepository.Update(orderSpecificUsage);
                         createNewRecord = false;
                     }
+                    else if (orderSpecificUsage == null)
+                        createNewRecord = true;
                 }
                 if (createNewRecord)
                 {
                     DiscountUsage newUsage = new DiscountUsage()
                     {
                         CreatedAt = DateTime.UtcNow,
-                        DiscountId = DiscountId,
+                        DiscountId = discount.DiscountId,
                         IsApplied = payload.IsApplied,
                         OrderId = OrderId,
                         UpdatedAt = DateTime.UtcNow,
@@ -255,6 +259,18 @@ namespace CKMS.OrderService.Blanket
                     };
                     await _OrderUnitOfWork.IDiscountUsageRepository.AddAsync(newUsage);
                 }
+
+                //update order details
+                if (discount.DiscountType == (int)DiscountType.Percentage)
+                {
+                    order.NetAmount = order.GrossAmount - ((discount.DiscountValue * order.GrossAmount) / 100);
+                }
+                else if (discount.DiscountType == (int)DiscountType.FixedAmount)
+                {
+                    order.NetAmount = order.GrossAmount - discount.DiscountValue;
+                }
+
+                _OrderUnitOfWork.OrderRepository.Update(order);
 
                 await _OrderUnitOfWork.CompleteAsync();
 
@@ -281,14 +297,13 @@ namespace CKMS.OrderService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Payload is empty");
 
                 //check if it's a valid DiscountId
-                if (String.IsNullOrEmpty(payload.DiscountId))
-                    return APIResponse.ConstructExceptionResponse(retVal, "DiscountId is empty");
+                if (String.IsNullOrEmpty(payload.CouponCode))
+                    return APIResponse.ConstructExceptionResponse(retVal, "CouponCode is empty");
 
-                Guid DiscountId = new Guid(payload.DiscountId);
-                Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetByGuidAsync(DiscountId);
+                Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetDiscountByCouponCodeAsync(payload.CouponCode);
 
                 if (discount == null)
-                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Dicount Id");
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid CouponCode");
 
                 //check if it's a valid user
                 if (String.IsNullOrEmpty(payload.UserId))
@@ -305,19 +320,24 @@ namespace CKMS.OrderService.Blanket
 
                 Guid OrderId = new Guid(payload.OrderId);
                 Order? order = await _OrderUnitOfWork.OrderRepository.GetByGuidAsync(OrderId);
+                if (order == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
 
-                IEnumerable<DiscountUsage> discounts = await _OrderUnitOfWork.IDiscountUsageRepository
-                    .GetUsageByUserIdAndDiscountId(userId, DiscountId);
+                DiscountUsage? discountUsage = await _OrderUnitOfWork.IDiscountUsageRepository
+                    .GetDiscountUsageByOrderIdAsync(OrderId);
 
-                if (discounts == null)
-                    return APIResponse.ConstructExceptionResponse(retVal, "Discount has not been applied yet");
-
-                DiscountUsage? orderSpecificUsage = discounts.FirstOrDefault(x => x.OrderId == OrderId);
-
-                if (orderSpecificUsage == null)
+                if (discountUsage == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Discount has not been applied yet for this order");
 
-                _OrderUnitOfWork.IDiscountUsageRepository.Delete(orderSpecificUsage);
+                //_OrderUnitOfWork.IDiscountUsageRepository.Delete(orderSpecificUsage);
+                discountUsage.UpdatedAt = DateTime.Now;
+                discountUsage.IsApplied = 0;
+                _OrderUnitOfWork.IDiscountUsageRepository.Update(discountUsage);
+
+                //update order details
+                order.GrossAmount = order.NetAmount;
+                _OrderUnitOfWork.OrderRepository.Update(order);
+                
                 await _OrderUnitOfWork.CompleteAsync();
 
                 data = true;

@@ -36,6 +36,10 @@ namespace CKMS.OrderService.DataAccess.Repository
                 .WithMany(p => p.DiscountUsages)
                 .HasForeignKey(p => p.DiscountId)
                 .IsRequired();
+
+            modelBuilder.Entity<Discount>()
+                .HasIndex(x => x.CouponCode)
+                .IsUnique();
         }
     }
 }

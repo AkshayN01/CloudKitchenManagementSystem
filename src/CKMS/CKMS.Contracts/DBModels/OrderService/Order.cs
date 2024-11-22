@@ -12,15 +12,12 @@ namespace CKMS.Contracts.DBModels.OrderService
         [Required]
         public DateTime OrderDate { get; set; }
         [Required]
-        public double TotalAmount { get; set; }
-        public float Discount { get; set; }
-        public string CouponCode { get; set; } = string.Empty;
+        public double NetAmount { get; set; }
+        public double GrossAmount { get; set; }
         [Required]
         public int Status { get; set; }
         [Required]
-        public string Address { get; set; } = string.Empty;
-        [Required]
-        public int PaymentStatus { get; set; }
+        public Guid Address { get; set; } = Guid.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
@@ -37,18 +34,18 @@ namespace CKMS.Contracts.DBModels.OrderService
         public long MenuItemId { get; set; }
         [Required]
         public int Quantity { get; set; }
-        public float UnitPrice { get; set; }
         public Order Order { get; set; } = null!; //Required
     }
 
     public enum OrderStatus
     {
-        Pending = 0,
-        Confirmed = 1,
-        InProgress = 2,
-        Delivered = 3,
-        Canceled = 4,
-        OutForDelivery = 5,
-        Failed = 6
+        cart = 0,
+        placed = 1,
+        accepted = 2,
+        inprogress = 3,
+        delivered = 4,
+        cancelled = 5,
+        outfordelivery = 6,
+        failed = 7
     }
 }
