@@ -15,6 +15,10 @@ namespace CKMS.AdminUserService.DataAccess.Repository
                 .WithMany(a => a.Users)
                 .HasForeignKey(a => a.KitchenId)
                 .IsRequired();
+
+            modelBuilder.Entity<AdminUser>()
+                .HasIndex(a => a.UserName)
+                .IsUnique();
         }
     }
 }

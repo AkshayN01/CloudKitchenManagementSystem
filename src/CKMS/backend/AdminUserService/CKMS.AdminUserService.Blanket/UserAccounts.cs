@@ -150,13 +150,12 @@ namespace CKMS.AdminUserService.Blanket
 
             try
             {
-                IEnumerable<AdminUser> adminUsers = await _AdminUserUnitOfWork.AdminUserRepository.GetUsersByRole(roleId);
+                IQueryable<AdminUser> adminUsers = _AdminUserUnitOfWork.AdminUserRepository.GetUsersByRole(roleId);
                 if (adminUsers != null)
                 {
-                    var adminUsersList = adminUsers.ToList();
-                    userListDTO.TotalCount = adminUsersList.Count;
+                    userListDTO.TotalCount = adminUsers.Count();
 
-                    adminUsersList = adminUsersList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    List<AdminUser> adminUsersList = adminUsers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
                     _mapper.Map(adminUsersList, userListDTO.Users);
 
@@ -184,13 +183,12 @@ namespace CKMS.AdminUserService.Blanket
             try
             {
                 Guid kitchenId = new Guid(_kitchenId);
-                IEnumerable<AdminUser> adminUsers = await _AdminUserUnitOfWork.AdminUserRepository.GetUsersByKitchen(kitchenId);
+                IQueryable<AdminUser> adminUsers = _AdminUserUnitOfWork.AdminUserRepository.GetUsersByKitchen(kitchenId);
                 if (adminUsers != null)
                 {
-                    var adminUsersList = adminUsers.ToList();
-                    userListDTO.TotalCount = adminUsersList.Count;
+                    userListDTO.TotalCount = adminUsers.Count();
 
-                    adminUsersList = adminUsersList.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    List<AdminUser> adminUsersList = adminUsers.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
                     _mapper.Map(adminUsersList, userListDTO.Users);
 
@@ -290,8 +288,12 @@ namespace CKMS.AdminUserService.Blanket
                     return APIResponse.ConstructExceptionResponse(-40, "UserId is missing");
 
                 Guid _userId = new Guid(userId);
+                AdminUser? adminUser = await _AdminUserUnitOfWork.AdminUserRepository.GetByGuidAsync(_userId);
 
-                await _AdminUserUnitOfWork.AdminUserRepository.DeleteUserByGuid(_userId);
+                if (adminUser == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, "No user found");
+
+                _AdminUserUnitOfWork.AdminUserRepository.Delete(adminUser);
 
                 await _AdminUserUnitOfWork.CompleteAsync();
 

@@ -9,10 +9,9 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IAdminUserRepository : IGenericRepository<AdminUser>
     {
-        Task<IEnumerable<AdminUser>> GetUsersByRole(int roleId);
-        Task<IEnumerable<AdminUser>> GetUsersByKitchen(Guid kitchenId);
+        IQueryable<AdminUser> GetUsersByRole(int roleId, bool tracking = false);
+        IQueryable<AdminUser> GetUsersByKitchen(Guid kitchenId, bool tracking = false);
         Task<AdminUser?> GetUserByUsername(string username);
-        Task DeleteUserByGuid(Guid id);
     }
     public interface IKitchenRepository : IGenericRepository<Kitchen>
     {

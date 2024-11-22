@@ -5,7 +5,7 @@
         Task AddAsync(TEntity entity);
         Task<TEntity?> GetByIdAsync(Int64 id);
         Task<TEntity?> GetByGuidAsync(Guid id);
-        Task<List<TEntity?>> GetAllAsync(bool tracked = false);
+        Task<List<TEntity>> GetAllAsync(bool tracked = false);
         void Update(TEntity entity);
         void Delete(TEntity entity);
         Task SaveAsync();
