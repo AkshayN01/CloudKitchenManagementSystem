@@ -34,4 +34,8 @@ namespace CKMS.Interfaces.Repository
         IRecipeItemRepository RecipeItemRepository { get; }
         IRecipeRepository RecipeRepository { get; }
     }
+    public interface ICustomerUnitOfWork : IUnitOfWork
+    {
+        ICustomerRepository CustomerRepository { get; }
+    }
 }

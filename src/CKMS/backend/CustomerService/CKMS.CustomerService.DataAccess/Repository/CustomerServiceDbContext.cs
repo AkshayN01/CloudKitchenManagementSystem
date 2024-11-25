@@ -15,6 +15,14 @@ namespace CKMS.CustomerService.DataAccess.Repository
                 .WithMany(a => a.AddressList)
                 .HasForeignKey(a => a.CustomerId)
                 .IsRequired();
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(a => a.PhoneNumber)
+                .IsUnique();
+
+            modelBuilder.Entity<Customer>()
+                .HasIndex(a => a.EmailId)
+                .IsUnique();
         }
     }
 }
