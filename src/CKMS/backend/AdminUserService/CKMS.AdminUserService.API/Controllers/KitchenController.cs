@@ -11,34 +11,14 @@ namespace CKMS.AdminUserService.API.Controllers
     public partial class AdminController
     {
         [HttpPost]
-        [Route("/api/admin/login")]
-        public async Task<IActionResult> AdminLogin([FromBody] LoginRequest loginRequest)
+        [Route("/api/admin/add-kitchen")]
+        public async Task<IActionResult> AddKitchen([FromBody] KitchenPayload payload)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
 
             try
             {
-                var httpResponse = await _userAccounts.Login(loginRequest);
-                return Ok(httpResponse);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpPost]
-        [Route("/api/admin/add-user")]
-        public async Task<IActionResult> AddUser([FromBody] AdminUserPayload payload)
-        {
-            if (!ModelState.IsValid) { return BadRequest(ModelState); };
-            var claims = User.Claims;
-            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
-
-            try
-            {
-                var httpResponse = await _userAccounts.AddUser(payload);
+                var httpResponse = await _kitchenBlanket.AddKitchen(payload);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -48,8 +28,8 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
-        [Route("/api/admin/get-user/{userId}")]
-        public async Task<IActionResult> GetUser(string userId)
+        [Route("/api/admin/get-kitchen/{kitchenId}")]
+        public async Task<IActionResult> GetKitchen(string kitchenId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -58,7 +38,7 @@ namespace CKMS.AdminUserService.API.Controllers
 
             try
             {
-                var httpResponse = await _userAccounts.GetUserAccount(userId);
+                var httpResponse = await _kitchenBlanket.GetKitchen(kitchenId);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -68,8 +48,8 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
-        [Route("/api/admin/get-users/{roleId}")]
-        public async Task<IActionResult> GetUsersByRole(int roleId, int pageNumber, int pageSize)
+        [Route("/api/admin/get-all-kitchen")]
+        public async Task<IActionResult> GetAllKitchen(int pageNumber, int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -78,27 +58,7 @@ namespace CKMS.AdminUserService.API.Controllers
 
             try
             {
-                var httpResponse = await _userAccounts.GetUserAccountsByRoleId(roleId, pageSize, pageNumber);
-                return Ok(httpResponse);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("/api/admin/get-kitchen-users/{kitchenId}")]
-        public async Task<IActionResult> GetUserByKitchen(String kitchenId, int pageNumber, int pageSize)
-        {
-            if (!ModelState.IsValid) { return BadRequest(ModelState); };
-            var claims = User.Claims;
-            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
-
-            try
-            {
-                var httpResponse = await _userAccounts.GetUserAccountsByKitchenId(kitchenId, pageSize, pageNumber);
+                var httpResponse = await _kitchenBlanket.GetAllKitchen(pageSize, pageNumber);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -108,8 +68,8 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpPut]
-        [Route("/api/admin/update-user")]
-        public async Task<IActionResult> UpdateUser([FromBody] AdminUserUpdatePayload payload)
+        [Route("/api/admin/update-kitchen")]
+        public async Task<IActionResult> UpdateKitchen([FromBody] KitchenUpdatePayload payload)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -118,7 +78,7 @@ namespace CKMS.AdminUserService.API.Controllers
 
             try
             {
-                var httpResponse = await _userAccounts.UpdateUser(payload);
+                var httpResponse = await _kitchenBlanket.UpdateKitchen(payload);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -128,8 +88,8 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpDelete]
-        [Route("/api/admin/delete-user")]
-        public async Task<IActionResult> DeleteUser([FromBody] String userId)
+        [Route("/api/admin/delete-kitchen")]
+        public async Task<IActionResult> DeleteKitchen([FromBody] String kitchenId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -138,7 +98,7 @@ namespace CKMS.AdminUserService.API.Controllers
 
             try
             {
-                var httpResponse = await _userAccounts.DeleteUser(userId);
+                var httpResponse = await _kitchenBlanket.DeleteKitchen(kitchenId);
                 return Ok(httpResponse);
             }
             catch (Exception ex)

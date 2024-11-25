@@ -14,12 +14,14 @@ namespace CKMS.AdminUserService.API.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly Application _appSettings;
         private readonly UserAccounts _userAccounts;
+        private readonly KitchenBlanket _kitchenBlanket;
         public AdminController(IAdminUserUnitOfWork unitOfWork, IMapper mapper, IOptions<Application> appSettings)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _appSettings = appSettings.Value;
             _userAccounts = new UserAccounts(unitOfWork, mapper);
+            _kitchenBlanket = new KitchenBlanket(unitOfWork, mapper);
         }
 
         [HttpPost]
