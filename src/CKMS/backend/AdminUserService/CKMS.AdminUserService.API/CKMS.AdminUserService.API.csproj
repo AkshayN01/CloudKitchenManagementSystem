@@ -18,8 +18,4 @@
     <ProjectReference Include="..\CKMS.AdminUserService.Blanket\CKMS.AdminUserService.Blanket.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>
