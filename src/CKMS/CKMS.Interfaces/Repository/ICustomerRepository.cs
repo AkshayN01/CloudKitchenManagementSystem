@@ -11,4 +11,8 @@ namespace CKMS.Interfaces.Repository
     {
         Task<Customer?> GetCustomerByUsername(string username); 
     }
+    public interface IAddressRepository: IGenericRepository<Address> 
+    {
+        Task<List<Address>> GetAddressByCustomerId(Guid customerId);
+    }
 }

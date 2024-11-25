@@ -37,5 +37,6 @@ namespace CKMS.Interfaces.Repository
     public interface ICustomerUnitOfWork : IUnitOfWork
     {
         ICustomerRepository CustomerRepository { get; }
+        IAddressRepository AddressRepository { get; }
     }
 }
