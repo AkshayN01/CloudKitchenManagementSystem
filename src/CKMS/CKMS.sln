@@ -5,19 +5,19 @@ VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.Contracts", "CKMS.Contracts\CKMS.Contracts.csproj", "{165342A2-709D-4DBE-B82D-659D5A6C32E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.Interfaces", "CKMS.Interfaces\CKMS.Interfaces.csproj", "{27535F2D-CF22-4E4F-9C54-08C9F119FC2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.Interfaces", "CKMS.Interfaces\CKMS.Interfaces.csproj", "{27535F2D-CF22-4E4F-9C54-08C9F119FC2F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{7D121E3C-D993-41E5-9078-8C540A08BC77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.OrderService.DataAccess", "backend\OrderService\CKMS.OrderService.DataAccess\CKMS.OrderService.DataAccess.csproj", "{5311E291-2E78-4816-A8CB-E0BC2699423E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.OrderService.DataAccess", "backend\OrderService\CKMS.OrderService.DataAccess\CKMS.OrderService.DataAccess.csproj", "{5311E291-2E78-4816-A8CB-E0BC2699423E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OrderService", "OrderService", "{DF5BCAFE-6A9F-4F7C-9D9A-712DF418E274}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdminUserService", "AdminUserService", "{C275F81F-575E-4DCE-B086-313D3179D7E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.Library", "CKMS.Library\CKMS.Library.csproj", "{7EAA8DBC-E596-4094-9B57-A00A124A404E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.Library", "CKMS.Library\CKMS.Library.csproj", "{7EAA8DBC-E596-4094-9B57-A00A124A404E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AdminUserService.DataAccess", "backend\AdminUserService\CKMS.AdminUserService.DataAccess\CKMS.AdminUserService.DataAccess.csproj", "{6C16BD93-ABF7-4A6D-8E30-067DE7955124}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AdminUserService.DataAccess", "backend\AdminUserService\CKMS.AdminUserService.DataAccess\CKMS.AdminUserService.DataAccess.csproj", "{6C16BD93-ABF7-4A6D-8E30-067DE7955124}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CustomerService", "CustomerService", "{8F6D860A-6D71-4E8F-B89E-BE85D926FDF7}"
 EndProject
@@ -25,31 +25,39 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InventoryService", "Invento
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotficationService", "NotficationService", "{6D8AEA25-CA44-49D5-994A-B53316A82648}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.CustomerService.DataAccess", "backend\CustomerService\CKMS.CustomerService.DataAccess\CKMS.CustomerService.DataAccess.csproj", "{FB091F64-AAFE-47A3-8C69-57ED006D3E8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.CustomerService.DataAccess", "backend\CustomerService\CKMS.CustomerService.DataAccess\CKMS.CustomerService.DataAccess.csproj", "{FB091F64-AAFE-47A3-8C69-57ED006D3E8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.InventoryService.DataAccess", "backend\InventoryService\CKMS.InventoryService.DataAccess\CKMS.InventoryService.DataAccess.csproj", "{43CF08D3-42A0-4DB2-901C-D256962552BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.InventoryService.DataAccess", "backend\InventoryService\CKMS.InventoryService.DataAccess\CKMS.InventoryService.DataAccess.csproj", "{43CF08D3-42A0-4DB2-901C-D256962552BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.NotificationService.DataAccess", "backend\NotificationService\CKMS.NotificationService.DataAccess\CKMS.NotificationService.DataAccess.csproj", "{C1AD0198-DFB6-4159-A855-C403E03BC659}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.NotificationService.DataAccess", "backend\NotificationService\CKMS.NotificationService.DataAccess\CKMS.NotificationService.DataAccess.csproj", "{C1AD0198-DFB6-4159-A855-C403E03BC659}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AdminUserService.Blanket", "backend\AdminUserService\CKMS.AdminUserService.Blanket\CKMS.AdminUserService.Blanket.csproj", "{17DF8DE5-D4D4-4286-9241-350EB7BA51B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AdminUserService.Blanket", "backend\AdminUserService\CKMS.AdminUserService.Blanket\CKMS.AdminUserService.Blanket.csproj", "{17DF8DE5-D4D4-4286-9241-350EB7BA51B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AdminUserService.API", "backend\AdminUserService\CKMS.AdminUserService.API\CKMS.AdminUserService.API.csproj", "{021CF30A-6382-4AAA-BBCB-208419A1C0A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AdminUserService.API", "backend\AdminUserService\CKMS.AdminUserService.API\CKMS.AdminUserService.API.csproj", "{021CF30A-6382-4AAA-BBCB-208419A1C0A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.CustomerService.API", "backend\CustomerService\CKMS.CustomerService.API\CKMS.CustomerService.API.csproj", "{65AF3B7F-E226-41DD-8F87-07E9836CC927}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.CustomerService.API", "backend\CustomerService\CKMS.CustomerService.API\CKMS.CustomerService.API.csproj", "{65AF3B7F-E226-41DD-8F87-07E9836CC927}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.InventoryService.API", "backend\InventoryService\CKMS.InventoryService.API\CKMS.InventoryService.API.csproj", "{5EE18C46-1C2A-4CDA-8060-85594F5027ED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.InventoryService.API", "backend\InventoryService\CKMS.InventoryService.API\CKMS.InventoryService.API.csproj", "{5EE18C46-1C2A-4CDA-8060-85594F5027ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.NotificationService.API", "backend\NotificationService\CKMS.NotificationService.API\CKMS.NotificationService.API.csproj", "{7B90BA5F-9EC2-40FC-AD35-169DBB7A7745}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.NotificationService.API", "backend\NotificationService\CKMS.NotificationService.API\CKMS.NotificationService.API.csproj", "{7B90BA5F-9EC2-40FC-AD35-169DBB7A7745}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.OrderService.API", "backend\OrderService\CKMS.OrderService.API\CKMS.OrderService.API.csproj", "{9A071256-6CC8-4601-A3B7-141CF7D3E5DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.OrderService.API", "backend\OrderService\CKMS.OrderService.API\CKMS.OrderService.API.csproj", "{9A071256-6CC8-4601-A3B7-141CF7D3E5DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.CustomerService.Blanket", "backend\CustomerService\CKMS.CustomerService.Blanket\CKMS.CustomerService.Blanket.csproj", "{72160F2A-9E22-41C2-AC49-778FF64296C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.CustomerService.Blanket", "backend\CustomerService\CKMS.CustomerService.Blanket\CKMS.CustomerService.Blanket.csproj", "{72160F2A-9E22-41C2-AC49-778FF64296C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.InventoryService.Blanket", "backend\InventoryService\CKMS.InventoryService.Blanket\CKMS.InventoryService.Blanket.csproj", "{0475D4B2-CE96-4172-ADF3-8FACDCC014BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.InventoryService.Blanket", "backend\InventoryService\CKMS.InventoryService.Blanket\CKMS.InventoryService.Blanket.csproj", "{0475D4B2-CE96-4172-ADF3-8FACDCC014BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.NotificationService.Blanket", "backend\NotificationService\CKMS.NotificationService.Blanket\CKMS.NotificationService.Blanket.csproj", "{7126E4DE-07E0-4A9C-9133-AC6B9EBD6658}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.NotificationService.Blanket", "backend\NotificationService\CKMS.NotificationService.Blanket\CKMS.NotificationService.Blanket.csproj", "{7126E4DE-07E0-4A9C-9133-AC6B9EBD6658}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.OrderService.Blanket", "backend\OrderService\CKMS.OrderService.Blanket\CKMS.OrderService.Blanket.csproj", "{7FB337CB-2522-49C1-846F-B4AC438AC4AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.OrderService.Blanket", "backend\OrderService\CKMS.OrderService.Blanket\CKMS.OrderService.Blanket.csproj", "{7FB337CB-2522-49C1-846F-B4AC438AC4AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalyticsService", "AnalyticsService", "{F5CAD448-02D3-42CB-A8CC-26B42D9570E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.DataAccess", "backend\AnalyticsService\CKMS.AnalyticsService.DataAccess\CKMS.AnalyticsService.DataAccess.csproj", "{B467710C-7BFD-4315-9718-519B4EFD9586}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.Blanket", "backend\AnalyticsService\CKMS.AnalyticsService.Blanket\CKMS.AnalyticsService.Blanket.csproj", "{5897F249-FD32-47EE-B489-E1442B2B322A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.API", "backend\AnalyticsService\CKMS.AnalyticsService.API\CKMS.AnalyticsService.API.csproj", "{35350DBC-AFBE-49F9-9509-41D8FFE142F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +137,18 @@ Global
 		{7FB337CB-2522-49C1-846F-B4AC438AC4AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7FB337CB-2522-49C1-846F-B4AC438AC4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FB337CB-2522-49C1-846F-B4AC438AC4AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B467710C-7BFD-4315-9718-519B4EFD9586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B467710C-7BFD-4315-9718-519B4EFD9586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B467710C-7BFD-4315-9718-519B4EFD9586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B467710C-7BFD-4315-9718-519B4EFD9586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5897F249-FD32-47EE-B489-E1442B2B322A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5897F249-FD32-47EE-B489-E1442B2B322A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5897F249-FD32-47EE-B489-E1442B2B322A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5897F249-FD32-47EE-B489-E1442B2B322A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +174,10 @@ Global
 		{0475D4B2-CE96-4172-ADF3-8FACDCC014BC} = {37E83500-CADF-4244-B67B-24D1CAF12B8F}
 		{7126E4DE-07E0-4A9C-9133-AC6B9EBD6658} = {6D8AEA25-CA44-49D5-994A-B53316A82648}
 		{7FB337CB-2522-49C1-846F-B4AC438AC4AB} = {DF5BCAFE-6A9F-4F7C-9D9A-712DF418E274}
+		{F5CAD448-02D3-42CB-A8CC-26B42D9570E2} = {7D121E3C-D993-41E5-9078-8C540A08BC77}
+		{B467710C-7BFD-4315-9718-519B4EFD9586} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
+		{5897F249-FD32-47EE-B489-E1442B2B322A} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
+		{35350DBC-AFBE-49F9-9509-41D8FFE142F1} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FACC6D2D-101D-4039-B8CB-83FB363BB345}
