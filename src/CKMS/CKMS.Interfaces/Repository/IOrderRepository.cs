@@ -34,4 +34,5 @@ namespace CKMS.Interfaces.Repository
     {
         Task<Payment?> GetPaymentByOrderIdAsync(Guid orderId);
     }
+    public interface IOrderAuditRepository: IGenericRepository<OrderAuditTable> { }
 }

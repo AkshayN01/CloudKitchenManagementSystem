@@ -19,11 +19,13 @@ namespace CKMS.Interfaces.Repository
         IPersonalDiscountRespository PersonalDiscountRespository { get; }
         IDiscountUsageRepository IDiscountUsageRepository { get; }
         IPaymentRepository PaymentRepository { get; }
+        IOrderAuditRepository OrderAuditRepository { get; }
     }
     public interface IAdminUserUnitOfWork : IUnitOfWork
     {
         IAdminUserRepository AdminUserRepository { get; }
         IKitchenRepository KitchenRepository { get; }
+        IKitchenAuditRespository KitchenAuditRespository { get; }
     }
     public interface IInventoryUnitOfWork : IUnitOfWork
     {
@@ -33,10 +35,12 @@ namespace CKMS.Interfaces.Repository
         ICategoryRepository CategoryRepository { get; }
         IRecipeItemRepository RecipeItemRepository { get; }
         IRecipeRepository RecipeRepository { get; }
+        IMenuItemAuditRepository MenuItemAuditRepository { get; }
     }
     public interface ICustomerUnitOfWork : IUnitOfWork
     {
         ICustomerRepository CustomerRepository { get; }
         IAddressRepository AddressRepository { get; }
+        ICustomerAuditRepository CustomerAuditRepository { get; }
     }
 }

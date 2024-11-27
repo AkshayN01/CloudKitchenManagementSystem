@@ -40,4 +40,9 @@ namespace CKMS.Contracts.DBModels.InventoryService
         public DateTime UpdatedAt { get; set; }
         public ICollection<MenuItem> Items { get; set; }
     }
+    public class MenuItemAuditTable : AuditTable
+    {
+        [Required]
+        public Int64 MenuItemId { get; set; }
+    }
 }

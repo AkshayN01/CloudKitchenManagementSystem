@@ -19,4 +19,5 @@ namespace CKMS.Interfaces.Repository
     public interface ICategoryRepository : IGenericRepository<Category> { }
     public interface IRecipeRepository : IGenericRepository<Recipe> { }
     public interface IRecipeItemRepository : IGenericRepository<RecipeItem> { }
+    public interface IMenuItemAuditRepository : IGenericRepository<MenuItemAuditTable> { }
 }

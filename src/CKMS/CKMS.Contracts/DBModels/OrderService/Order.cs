@@ -36,6 +36,10 @@ namespace CKMS.Contracts.DBModels.OrderService
         public int Quantity { get; set; }
         public Order Order { get; set; } = null!; //Required
     }
+    public class OrderAuditTable : AuditTable
+    {
+        public Guid OrderId { get; set; }
+    }
 
     public enum OrderStatus
     {

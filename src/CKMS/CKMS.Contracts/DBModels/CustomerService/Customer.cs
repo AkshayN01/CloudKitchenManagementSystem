@@ -31,4 +31,8 @@ namespace CKMS.Contracts.DBModels.CustomerService
         public Guid CustomerId { get; set; } //Foreign Key
         public Customer Customer { get; set; } = null!; //Required
     }
+    public class CustomerAuditTable : AuditTable
+    {
+        public Guid CustomerId { get; set; }
+    }
 }

@@ -15,4 +15,5 @@ namespace CKMS.Interfaces.Repository
     {
         Task<List<Address>> GetAddressByCustomerId(Guid customerId);
     }
+    public interface ICustomerAuditRepository : IGenericRepository<CustomerAuditTable> { }
 }
