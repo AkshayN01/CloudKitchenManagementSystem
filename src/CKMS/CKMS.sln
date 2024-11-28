@@ -53,11 +53,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.OrderService.Blanket",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AnalyticsService", "AnalyticsService", "{F5CAD448-02D3-42CB-A8CC-26B42D9570E2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.DataAccess", "backend\AnalyticsService\CKMS.AnalyticsService.DataAccess\CKMS.AnalyticsService.DataAccess.csproj", "{B467710C-7BFD-4315-9718-519B4EFD9586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AnalyticsService.DataAccess", "backend\AnalyticsService\CKMS.AnalyticsService.DataAccess\CKMS.AnalyticsService.DataAccess.csproj", "{B467710C-7BFD-4315-9718-519B4EFD9586}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.Blanket", "backend\AnalyticsService\CKMS.AnalyticsService.Blanket\CKMS.AnalyticsService.Blanket.csproj", "{5897F249-FD32-47EE-B489-E1442B2B322A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AnalyticsService.Blanket", "backend\AnalyticsService\CKMS.AnalyticsService.Blanket\CKMS.AnalyticsService.Blanket.csproj", "{5897F249-FD32-47EE-B489-E1442B2B322A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CKMS.AnalyticsService.API", "backend\AnalyticsService\CKMS.AnalyticsService.API\CKMS.AnalyticsService.API.csproj", "{35350DBC-AFBE-49F9-9509-41D8FFE142F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CKMS.AnalyticsService.API", "backend\AnalyticsService\CKMS.AnalyticsService.API\CKMS.AnalyticsService.API.csproj", "{35350DBC-AFBE-49F9-9509-41D8FFE142F1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{69BEC193-CD30-4A82-9D29-E86746FAE1AB}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "CKMS.Admin", "frontend\CKMS.Admin\CKMS.Admin.esproj", "{DCE2372C-82A4-402A-84A2-67AB4EA37D70}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "CKMS.Customer", "frontend\CKMS.Customer\CKMS.Customer.esproj", "{639E303F-C528-4306-8BDC-33A2102F787B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +155,18 @@ Global
 		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35350DBC-AFBE-49F9-9509-41D8FFE142F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{639E303F-C528-4306-8BDC-33A2102F787B}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +196,8 @@ Global
 		{B467710C-7BFD-4315-9718-519B4EFD9586} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
 		{5897F249-FD32-47EE-B489-E1442B2B322A} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
 		{35350DBC-AFBE-49F9-9509-41D8FFE142F1} = {F5CAD448-02D3-42CB-A8CC-26B42D9570E2}
+		{DCE2372C-82A4-402A-84A2-67AB4EA37D70} = {69BEC193-CD30-4A82-9D29-E86746FAE1AB}
+		{639E303F-C528-4306-8BDC-33A2102F787B} = {69BEC193-CD30-4A82-9D29-E86746FAE1AB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FACC6D2D-101D-4039-B8CB-83FB363BB345}
