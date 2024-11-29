@@ -19,6 +19,10 @@ namespace CKMS.AdminUserService.DataAccess.Repository
             modelBuilder.Entity<AdminUser>()
                 .HasIndex(a => a.UserName)
                 .IsUnique();
+
+            modelBuilder.Entity<Kitchen>()
+                .HasIndex(k => k.EmailId)
+                .IsUnique();
         }
     }
 }
