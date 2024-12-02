@@ -1,12 +1,17 @@
-﻿using CKMS.Contracts.DBModels.InventoryService;
+﻿using CKMS.Contracts.DBModels.CustomerService;
+using CKMS.Contracts.DBModels.InventoryService;
+using CKMS.Library.SeedData.CustomerService;
+using CKMS.Library.SeedData.InventoryService;
 using Microsoft.EntityFrameworkCore;
 
 namespace CKMS.InventoryService.DataAccess.Repository
 {
     public class InventoryServiceDbContext : DbContext
     {
+        public InventoryServiceDbContext(DbContextOptions<InventoryServiceDbContext> options) : base(options) { }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<InventoryMovement> InventoryMovements { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<RecipeItem> RecipeItems { get; set; }
@@ -30,6 +35,22 @@ namespace CKMS.InventoryService.DataAccess.Repository
                 .WithMany(m => m.Items)
                 .HasForeignKey(m => m.CategoryId)
                 .IsRequired();
+        }
+        public async Task SeedTestDataAsync()
+        {
+            if (!Inventories.Any())
+            {
+                Inventories.AddRange(InventorySeedData.GetInventories());
+            }
+            if (!InventoryMovements.Any())
+            {
+                InventoryMovements.AddRange(InventorySeedData.GetInventoryMovements());
+            }
+            if (!Categories.Any())
+                Categories.AddRange(MenuItemSeedData.GetCategories());
+            if (!MenuItems.Any())
+                MenuItems.AddRange(MenuItemSeedData.GetMenuItems());
+            await SaveChangesAsync();
         }
     }
 }
