@@ -35,7 +35,6 @@ namespace CKMS.Contracts.DBModels.InventoryService
         [Required]
         public Int64 InventoryId { get; set; } //Foreign Key
         public Guid KitchenId { get; set; } = Guid.Empty!; //Required
-        public int MovementType { get; set; }
         public float Quantity { get; set; }
         public DateTime MovementDate { get; set; }
         public Inventory Inventory { get; set; } = null!; //Required
@@ -48,6 +47,7 @@ namespace CKMS.Contracts.DBModels.InventoryService
         kilograms = 1,
         litres = 2,
         millilitres = 3,
-        dozen = 4
+        dozen = 4,
+        count = 5
     }
 }

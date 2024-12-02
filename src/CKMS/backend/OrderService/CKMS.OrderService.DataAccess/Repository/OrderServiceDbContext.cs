@@ -1,4 +1,7 @@
-﻿using CKMS.Contracts.DBModels.OrderService;
+﻿using CKMS.Contracts.DBModels.InventoryService;
+using CKMS.Contracts.DBModels.OrderService;
+using CKMS.Library.SeedData.InventoryService;
+using CKMS.Library.SeedData.OrderService;
 using Microsoft.EntityFrameworkCore;
 
 namespace CKMS.OrderService.DataAccess.Repository
@@ -10,6 +13,9 @@ namespace CKMS.OrderService.DataAccess.Repository
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<PersonalDiscounts> PersonalDiscounts { get; set; }
+        public DbSet<DiscountUsage> DiscountUsages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,6 +49,24 @@ namespace CKMS.OrderService.DataAccess.Repository
 
             modelBuilder.Entity<Payment>()
                 .HasIndex(x => x.OrderId);
+        }
+        public async Task SeedTestDataAsync()
+        {
+            if(!Discounts.Any())
+                Discounts.AddRange(DiscountSeedData.GetDiscounts());
+            if (!Orders.Any())
+            {
+                Orders.AddRange(OrderSeedData.GetOrders());
+            }
+            if (!OrderItems.Any())
+            {
+                OrderItems.AddRange(OrderSeedData.GetOrderItems());
+            }
+            if (!DiscountUsages.Any())
+                DiscountUsages.AddRange(OrderSeedData.GetDiscountUsages());
+            if (!Payments.Any())
+                Payments.AddRange(OrderSeedData.GetPayments());
+            await SaveChangesAsync();
         }
     }
 }
