@@ -11,15 +11,25 @@ namespace CKMS.Library.SeedData.OrderService
 {
     public static class OrderSeedData
     {
+        private static List<Customer> CustomerSeedList = new List<Customer>();
+        private static List<MenuItem> MenuItemSeedList = new List<MenuItem>();
+        private static String DiscountUsageFileName = "DiscountUsage.json";
+        private static String OrdersFileName = "Orders.json";
+        private static String OrderItemsFileName = "OrderItems.json";
+        private static String PaymentFileName = "Payments.json";
         private static List<DiscountUsage> DiscountUsages { get; set; }
         private static List<Order> Orders { get; set; }
         private static List<OrderItem> OrderItems { get; set; }
         private static List<Discount> Discounts { get; set; }
         private static List<Payment> Payment { get; set; }
-        public static List<Order> GetOrders()
+        public static async Task<List<Order>> GetOrders()
         {
             if(Orders == null)
             {
+                Orders = await Utility.ReadFromFile<List<Order>>(DiscountUsageFileName);
+                if(Orders != null && Orders.Count > 0)
+                    return Orders;
+
                 Random random = new Random();
                 Orders = new List<Order>();
                 DiscountUsages = new List<DiscountUsage>();
@@ -27,9 +37,9 @@ namespace CKMS.Library.SeedData.OrderService
                 Payment = new List<Payment>();
                 //20-50 orders per day
                 //during discount week orders need to increase and sometimes remain the same depending on the percentage
-                List<Kitchen> kitchens = KitchenSeedData.GetKitchenSeedData();
+                List<Kitchen> kitchens = await KitchenSeedData.GetKitchenSeedData();
                 //int orderCount = random.Next(20, 50);
-                Discounts = DiscountSeedData.GetDiscounts();
+                Discounts = await DiscountSeedData.GetDiscounts();
                 DateTime startDate = new DateTime(2024, 01, 1, 11, 00, 00);
                 DateTime endDate = new DateTime(2024, 11, 30, 23, 00, 00);
                 foreach (Kitchen kitchen in kitchens) {
@@ -47,11 +57,11 @@ namespace CKMS.Library.SeedData.OrderService
                         else
                             orderCount = random.Next(20, 50);
 
-                        List<Customer> customerList = PickRandomCustomers(orderCount);
+                        List<Customer> customerList = await PickRandomCustomers(orderCount);
                         foreach (Customer customer in customerList)
                         {
-                            DateTime orderDate = startDate.AddMinutes(random.Next(0, 780)); //picks time between 11am and 11pm
-                            List<MenuItem> menu = GetRandomMenuItem(random.Next(1, 6));
+                            DateTime orderDate = TimeZoneInfo.ConvertTimeToUtc(startDate.AddMinutes(random.Next(0, 780))); //picks time between 11am and 11pm
+                            List<MenuItem> menu = await GetRandomMenuItem(random.Next(1, 6));
                             Double grossAmount = menu.Sum(x => x.Price);
                             Order order = new Order()
                             {
@@ -65,6 +75,7 @@ namespace CKMS.Library.SeedData.OrderService
                                 OrderId = Guid.NewGuid(),
                                 Status = (int)OrderStatus.placed
                             };
+                            Orders.Add(order);
 
                             foreach (MenuItem menuItem in menu)
                             {
@@ -106,42 +117,59 @@ namespace CKMS.Library.SeedData.OrderService
                         startDate = startDate.AddDays(1);
                     }
                 }
+                await Utility.WriteToFile<List<Order>>(OrdersFileName, Orders);
+                await Utility.WriteToFile<List<OrderItem>>(OrderItemsFileName, OrderItems);
+                await Utility.WriteToFile<List<DiscountUsage>>(DiscountUsageFileName, DiscountUsages);
+                await Utility.WriteToFile<List<Payment>>(PaymentFileName, Payment);
             }
             return Orders;
         }
-        public static List<OrderItem> GetOrderItems()
+        public static async Task<List<OrderItem>> GetOrderItems()
         {
+            if (OrderItems == null)
+                OrderItems = await Utility.ReadFromFile<List<OrderItem>>(OrderItemsFileName);
+
             return OrderItems;
         }
-        public static List<DiscountUsage> GetDiscountUsages()
+        public static async Task<List<DiscountUsage>> GetDiscountUsages()
         {
+            if (DiscountUsages == null)
+                DiscountUsages = await Utility.ReadFromFile<List<DiscountUsage>>(DiscountUsageFileName);
+
             return DiscountUsages;
         }
-        public static List<Payment> GetPayments()
+        public static async Task<List<Payment>> GetPayments()
         {
+            if (Payment == null)
+                Payment = await Utility.ReadFromFile<List<Payment>>(PaymentFileName);
+
             return Payment;
         }
         private static Discount? CheckDiscountDate(DateTime dateTime)
         {
             return Discounts.FirstOrDefault(x => dateTime >= x.StartDate && dateTime <= x.EndDate);
         }
-        private static List<Customer> PickRandomCustomers(int countToPick)
+        private static async Task<List<Customer>> PickRandomCustomers(int countToPick)
         {
-            List<Customer> customers = CustomerSeedData.GetCustomers();
+            if (CustomerSeedList == null || CustomerSeedList.Count == 0)
+                CustomerSeedList = await CustomerSeedData.GetCustomers();
+
             Random random = new Random();
 
             // Shuffle the list
-            List<Customer> shuffledList = customers.OrderBy(x => random.Next()).ToList();
+            List<Customer> shuffledList = CustomerSeedList.OrderBy(x => random.Next()).ToList();
 
             // Take the first N elements
             return shuffledList.Take(countToPick).ToList();
         }
-        private static List<MenuItem> GetRandomMenuItem(int countToPick)
+        private static async Task<List<MenuItem>> GetRandomMenuItem(int countToPick)
         {
-            List<MenuItem> menuItemList = MenuItemSeedData.GetMenuItems();
+            if(MenuItemSeedList == null || MenuItemSeedList.Count == 0)
+                MenuItemSeedList = await MenuItemSeedData.GetMenuItems();
+
             Random random = new Random();
 
-            List<MenuItem> shuffledList = menuItemList.OrderBy(x => random.Next()).ToList();
+            List<MenuItem> shuffledList = MenuItemSeedList.OrderBy(x => random.Next()).ToList();
 
             return shuffledList.Take(countToPick).ToList();
         }

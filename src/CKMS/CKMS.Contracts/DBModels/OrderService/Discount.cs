@@ -10,7 +10,7 @@ namespace CKMS.Contracts.DBModels.OrderService
     public class Discount
     {
         [Key]
-        public Guid DiscountId { get; set; }
+        public Guid DiscountId { get; set; }        
         public int DiscountType { get; set; }
         [Required]
         public Guid KitchenId { get; set; }  =  Guid.Empty!;

@@ -1,9 +1,11 @@
 ﻿using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.OrderService;
+using CKMS.Library.Generic;
 using CKMS.Library.SeedData.AdminUserService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,16 +13,21 @@ namespace CKMS.Library.SeedData.OrderService
 {
     public static class DiscountSeedData
     {
+        private static String DiscountFileName = "Discount.json";
         private static List<Discount>? Discounts { get; set; }
-        public static List<Discount> GetDiscounts()
+        public static async Task<List<Discount>> GetDiscounts()
         {
             if (Discounts == null)
             {
+                Discounts = await Utility.ReadFromFile<List<Discount>>(DiscountFileName);
+                if (Discounts != null && Discounts.Count > 0)
+                    return Discounts;
+
                 Random random = new Random();
                 Discounts = new List<Discount>();
                 HashSet<string> generatedCodes = new HashSet<string>();
                 var weeks = GetRandomWeeksFromEachMonth(2024, 1, 11);
-                List<Kitchen> kitchens = KitchenSeedData.GetKitchenSeedData();
+                List<Kitchen> kitchens = await KitchenSeedData.GetKitchenSeedData();
                 foreach (var kitchen in kitchens)
                 {
                     foreach (var week in weeks)
@@ -28,12 +35,12 @@ namespace CKMS.Library.SeedData.OrderService
                         Discount discount = new Discount()
                         {
                             CouponCode = GenerateUniqueCouponCode(generatedCodes),
-                            CreatedAt = week.StartDate.AddDays(-2),
-                            StartDate = week.StartDate,
+                            CreatedAt = TimeZoneInfo.ConvertTimeToUtc(week.StartDate.AddDays(-2)),
+                            StartDate = TimeZoneInfo.ConvertTimeToUtc(week.StartDate),
                             DiscountId = Guid.NewGuid(),
                             DiscountType = (int)DiscountType.Percentage,
                             DiscountValue = random.Next(5, 15),
-                            EndDate = week.EndDate,
+                            EndDate = TimeZoneInfo.ConvertTimeToUtc(week.EndDate),
                             IsActive = 1,
                             IsPersonalised = 0,
                             KitchenId = kitchen.KitchenId,
@@ -42,6 +49,8 @@ namespace CKMS.Library.SeedData.OrderService
                         Discounts.Add(discount);
                     }
                 }
+
+                await Utility.WriteToFile<List<Discount>>(DiscountFileName, Discounts);
             }
             return Discounts;
         }

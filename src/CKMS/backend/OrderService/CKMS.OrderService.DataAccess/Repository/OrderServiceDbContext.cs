@@ -53,19 +53,20 @@ namespace CKMS.OrderService.DataAccess.Repository
         public async Task SeedTestDataAsync()
         {
             if(!Discounts.Any())
-                Discounts.AddRange(DiscountSeedData.GetDiscounts());
+                Discounts.AddRange(await DiscountSeedData.GetDiscounts());
+
             if (!Orders.Any())
-            {
-                Orders.AddRange(OrderSeedData.GetOrders());
-            }
+                Orders.AddRange(await OrderSeedData.GetOrders());
+            
             if (!OrderItems.Any())
-            {
-                OrderItems.AddRange(OrderSeedData.GetOrderItems());
-            }
+                OrderItems.AddRange(await OrderSeedData.GetOrderItems());
+            
             if (!DiscountUsages.Any())
-                DiscountUsages.AddRange(OrderSeedData.GetDiscountUsages());
+                DiscountUsages.AddRange(await OrderSeedData.GetDiscountUsages());
+
             if (!Payments.Any())
-                Payments.AddRange(OrderSeedData.GetPayments());
+                Payments.AddRange(await OrderSeedData.GetPayments());
+
             await SaveChangesAsync();
         }
     }
