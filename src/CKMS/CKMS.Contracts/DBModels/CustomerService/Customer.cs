@@ -11,7 +11,8 @@ namespace CKMS.Contracts.DBModels.CustomerService
         public String Name { get; set; }
         public String PhoneNumber { get; set; }
         public String UserName { get; set; }
-        public String EmailId { get; set; }
+        [Required]
+        public String EmailId { get; set; } = String.Empty!;
         public String PasswordHash { get; set; }
         public Int64 LoyaltyPoints { get; set; }
         public Int64 TotalOrder {  get; set; }
@@ -22,6 +23,7 @@ namespace CKMS.Contracts.DBModels.CustomerService
 
     public class Address
     {
+        [Key]
         public Guid AddressId { get; set; }
         public String AddressDetail { get; set; }
         public String City { get; set; }
@@ -31,7 +33,7 @@ namespace CKMS.Contracts.DBModels.CustomerService
         public Guid CustomerId { get; set; } //Foreign Key
         public Customer Customer { get; set; } = null!; //Required
     }
-    public class CustomerAuditTable : AuditTable
+    public class CustomerAudit : AuditTable
     {
         public Guid CustomerId { get; set; }
     }

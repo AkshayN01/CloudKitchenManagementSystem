@@ -32,11 +32,11 @@ namespace CKMS.CustomerService.DataAccess.Repository
         {
             if (!Customers.Any())
             {
-                Customers.AddRange(CustomerSeedData.GetCustomers());
+                Customers.AddRange(await CustomerSeedData.GetCustomers());
             }
             if (!Addresss.Any())
             {
-                Addresss.AddRange(CustomerSeedData.GetAddresses());
+                Addresss.AddRange(await CustomerSeedData.GetAddresses());
             }
             await SaveChangesAsync();
         }

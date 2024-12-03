@@ -10,12 +10,19 @@ namespace CKMS.Library.SeedData.CustomerService
 {
     public static class CustomerSeedData
     {
+        private static String CustomerFileName = "Customer.json";
+        private static String AddressFileName = "Address.json";
         public static List<Customer>? Customers { get; set; }
         public static List<Address>? Addresses { get; set; }
-        public static List<Customer> GetCustomers()
+        public static List<CustomerAudit>? CustomerAudits { get; set; }
+        public static async Task<List<Customer>> GetCustomers()
         {
             if (Customers == null)
             {
+                Customers = await Utility.ReadFromFile<List<Customer>>(CustomerFileName);
+                if (Customers != null && Customers.Count > 0)
+                    return Customers;
+
                 Random random = new Random();
                 Customers = new List<Customer>();
                 Addresses = new List<Address>();
@@ -53,12 +60,38 @@ namespace CKMS.Library.SeedData.CustomerService
                     };
                     Customers.Add(customer);
                 }
+                await Utility.WriteToFile<List<Customer>>(CustomerFileName, Customers);
+                await Utility.WriteToFile<List<Address>>(AddressFileName, Addresses);
             }
             return Customers;
         }
-        public static List<Address> GetAddresses()
+        public static async Task<List<Address>?> GetAddresses()
         {
+            if (Addresses == null)
+                Addresses = await Utility.ReadFromFile<List<Address>>(AddressFileName);
+
             return Addresses;
+        }
+        public static async Task<List<CustomerAudit>> GetCustomerAuditsAsync()
+        {
+            if(CustomerAudits == null)
+            {
+                CustomerAudits = new List<CustomerAudit>();
+                List<Customer> customers = await GetCustomers();
+                foreach (var customer in customers.Select((value, i)=> new {value, i}))
+                {
+                    CustomerAudit customerAudit = new CustomerAudit()
+                    {
+                        CreatedAt= DateTime.UtcNow,
+                        CustomerId = customer.value.CustomerId,
+                        Id = customer.i,
+                        Payload = await Utility.SerialiseData(customer.value)
+                    };
+                    CustomerAudits.Add(customerAudit);  
+                }
+            }
+
+            return CustomerAudits;
         }
         static string GenerateRandomName(Random random)
         {
