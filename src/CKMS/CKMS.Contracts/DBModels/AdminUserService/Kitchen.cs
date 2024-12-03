@@ -20,7 +20,7 @@ namespace CKMS.Contracts.DBModels.AdminUserService
         public ICollection<AdminUser> Users { get; set; } = new List<AdminUser>();
     }
     //whenever a new kitchen is registered
-    public class KitchenAuditTable : AuditTable
+    public class KitchenAudit : AuditTable
     {
         public Guid KitchenId { get; set; }
     }

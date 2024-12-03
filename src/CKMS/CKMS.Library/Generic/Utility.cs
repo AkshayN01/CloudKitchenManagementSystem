@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StackExchange.Redis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -74,6 +75,61 @@ namespace CKMS.Library.Generic
             }
 
             return data;
+        }
+        public static async Task<bool> WriteToFile<T>(String fileName, T data, String filePath = "")
+        {
+            bool success = false;
+
+            try
+            {
+                if(filePath == "")
+                    filePath = GetDefaultFolderPath(fileName);
+
+                String content = await SerialiseData<T>(data);
+                await File.WriteAllTextAsync(filePath, content);
+                success = true;
+            }
+            catch (Exception ex)
+            {
+                success = false;
+            }
+
+            return success;
+        }
+        public static async Task<T?> ReadFromFile<T>(String fileName, String filePath = "")
+        {
+            try
+            {
+                if (filePath == "")
+                    filePath = GetDefaultFolderPath(fileName);
+
+                String json = await File.ReadAllTextAsync(filePath);
+                if (!String.IsNullOrEmpty(json))
+                {
+                    return await DeserialiseData<T>(json);
+                }
+            }
+            catch (Exception ex)
+            {
+                return default(T);
+            }
+
+            return default(T);
+        }
+        private static String GetDefaultFolderPath(String fileName)
+        {
+            // Get the base directory of the application
+            string baseDirectory = AppContext.BaseDirectory;
+
+            String solutionDirectory = Path.GetFullPath(Path.Combine(baseDirectory, "../../../../../.."));
+
+            // Specify the target folder relative to the base directory
+            string folderName = "SeedData"; // Change to your desired folder name
+            string targetFolderPath = Path.Combine(solutionDirectory, folderName);
+            // Ensure the folder exists
+            Directory.CreateDirectory(targetFolderPath);
+            string filePath = Path.Combine(targetFolderPath, fileName);
+            return filePath;
         }
     }
 }

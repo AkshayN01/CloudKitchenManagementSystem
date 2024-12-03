@@ -17,5 +17,5 @@ namespace CKMS.Interfaces.Repository
     {
         IQueryable<Kitchen> GetAllKitchen();
     }
-    public interface IKitchenAuditRespository : IGenericRepository<KitchenAuditTable> { }
+    public interface IKitchenAuditRespository : IGenericRepository<KitchenAudit> { }
 }

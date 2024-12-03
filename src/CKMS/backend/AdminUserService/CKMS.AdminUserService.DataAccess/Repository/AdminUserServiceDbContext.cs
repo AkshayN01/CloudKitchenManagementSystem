@@ -30,11 +30,11 @@ namespace CKMS.AdminUserService.DataAccess.Repository
         {
             if(!Kitchens.Any())
             {
-                Kitchens.AddRange(KitchenSeedData.GetKitchenSeedData());
+                Kitchens.AddRange(await KitchenSeedData.GetKitchenSeedData());
             }
             if(!AdminUsers.Any())
             {
-                AdminUsers.AddRange(AdminUserSeedData.GetAdminUsers()); 
+                AdminUsers.AddRange(await AdminUserSeedData.GetAdminUsers()); 
             }
             await SaveChangesAsync();
         }
