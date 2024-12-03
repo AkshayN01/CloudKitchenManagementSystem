@@ -5,8 +5,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import { environment } from '../environments/environment';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+
+import { JWT_OPTIONS, JwtModule } from '@auth0/angular-jwt';
 
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
@@ -28,6 +32,10 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginComponent } from './components/login/login.component';
+
+export function tokenGetter() {
+  return localStorage.getItem(environment.authStorageName);
+}
 
 @NgModule({
   declarations: [
@@ -58,7 +66,21 @@ import { LoginComponent } from './components/login/login.component';
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatProgressSpinnerModule,
+    MatProgressSpinnerModule,JwtModule.forRoot({
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: () => ({
+          tokenGetter: tokenGetter,
+          allowedDomains: [environment.backendDomain],
+          disallowedRoutes: 
+          [
+            environment.loginAPIUrl, 
+            environment.registerAPIUrl
+          ],
+        }),
+        deps: []
+      }
+    })
   ],
   providers: [
     provideAnimationsAsync()
