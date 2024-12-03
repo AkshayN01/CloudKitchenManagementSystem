@@ -1,5 +1,6 @@
 ﻿using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.InventoryService;
+using CKMS.Library.Generic;
 using CKMS.Library.SeedData.AdminUserService;
 using System;
 using System.Collections.Generic;
@@ -27,18 +28,24 @@ namespace CKMS.Library.SeedData.InventoryService
     }
     public static class InventorySeedData
     {
-        public static List<InventoryMovement> Movements { get; set; }
+        private static String InventoryFileName = "Inventory.json";
+        private static String InventoryMovementFileName = "InventoryMovement.json";
+        public static List<InventoryMovement>? Movements { get; set; }
         public static List<InventoryData> InventoryData { get; set; }
-        public static List<Inventory> Inventories { get; set; }
+        public static List<Inventory>? Inventories { get; set; }
         public static DateTime MoveInDate = new DateTime(2024, 01, 01);
         public static DateTime EndDate = new DateTime(2024, 11, 30);
 
-        public static List<Inventory> GetInventories()
+        public static async Task<List<Inventory>> GetInventories()
         {
             if(Inventories == null)
             {
+                Inventories = await Utility.ReadFromFile<List<Inventory>>(InventoryFileName);
+                if (Inventories != null && Inventories.Count > 0)
+                    return Inventories;
+
                 Inventories = new List<Inventory>();
-                List<Kitchen> Kitchens = KitchenSeedData.GetKitchenSeedData();
+                List<Kitchen> Kitchens = await KitchenSeedData.GetKitchenSeedData();
                 List<InventoryData> indevtoryData = GetInventoryData();
                 foreach (Kitchen kitchen in Kitchens) {
                     foreach (var item in indevtoryData.Select((value, i) => new { i, value }))
@@ -46,7 +53,7 @@ namespace CKMS.Library.SeedData.InventoryService
                         Inventory inventory = new Inventory()
                         {
                             CreatedAt = DateTime.UtcNow,
-                            InventoryId = item.i,
+                            InventoryId = item.i + 1,
                             InventoryName = item.value.Name,
                             KitchenId = kitchen.KitchenId,
                             LastUpdatedAt = DateTime.UtcNow,
@@ -58,17 +65,23 @@ namespace CKMS.Library.SeedData.InventoryService
                         Inventories.Add(inventory);
                     }
                 }
+                await Utility.WriteToFile<List<Inventory>>(InventoryFileName, Inventories);
             }
             return Inventories;
         }
         
-        public static List<InventoryMovement> GetInventoryMovements()
+        public static async Task<List<InventoryMovement>> GetInventoryMovements()
         {
             if(Movements == null)
             {
+                Movements = await Utility.ReadFromFile<List<InventoryMovement>>(InventoryMovementFileName);
+                if(Movements != null && Movements.Count > 0)
+                    return Movements;
+
                 Movements = new List<InventoryMovement>();
                 List<InventoryData> inventoryData = GetInventoryData();
-                List<Inventory> inventories = GetInventories();
+                List<Inventory> inventories = await GetInventories();
+                int count = 1;
                 foreach (Inventory inventory in inventories)
                 {
                     InventoryData? data = inventoryData.FirstOrDefault(x => x.Name.Equals(inventory.InventoryName));
@@ -79,10 +92,11 @@ namespace CKMS.Library.SeedData.InventoryService
                         {
                             InventoryMovement movement = new InventoryMovement()
                             {
-                                CreatedAt = dateTime,
+                                Id = count,
+                                CreatedAt = TimeZoneInfo.ConvertTimeToUtc(dateTime),
                                 InventoryId = inventory.InventoryId,
                                 KitchenId = inventory.KitchenId,
-                                MovementDate = dateTime,
+                                MovementDate = TimeZoneInfo.ConvertTimeToUtc(dateTime),
                                 Quantity = data.Quantity,
                             };
                             Movements.Add(movement);
@@ -92,9 +106,12 @@ namespace CKMS.Library.SeedData.InventoryService
                                 (int)InventoryMovementFrequency.Weekly => dateTime.AddDays(data.MovementFrequencyValue * 7),
                                 (int)InventoryMovementFrequency.Daily => dateTime.AddDays(data.MovementFrequencyValue),
                             };
+                            count++;
                         }
                     }
                 }
+
+                await Utility.WriteToFile<List<InventoryMovement>>(InventoryMovementFileName, Movements);
 
             }
             return Movements;

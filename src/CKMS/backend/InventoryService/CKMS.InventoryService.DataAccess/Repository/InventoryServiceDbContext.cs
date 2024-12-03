@@ -39,17 +39,17 @@ namespace CKMS.InventoryService.DataAccess.Repository
         public async Task SeedTestDataAsync()
         {
             if (!Inventories.Any())
-            {
-                Inventories.AddRange(InventorySeedData.GetInventories());
-            }
+                Inventories.AddRange(await InventorySeedData.GetInventories());
+            
             if (!InventoryMovements.Any())
-            {
-                InventoryMovements.AddRange(InventorySeedData.GetInventoryMovements());
-            }
+                InventoryMovements.AddRange(await InventorySeedData.GetInventoryMovements());
+
             if (!Categories.Any())
-                Categories.AddRange(MenuItemSeedData.GetCategories());
+                Categories.AddRange(await MenuItemSeedData.GetCategories());
+
             if (!MenuItems.Any())
-                MenuItems.AddRange(MenuItemSeedData.GetMenuItems());
+                MenuItems.AddRange(await MenuItemSeedData.GetMenuItems());
+
             await SaveChangesAsync();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.InventoryService;
+using CKMS.Library.Generic;
 using CKMS.Library.SeedData.AdminUserService;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ namespace CKMS.Library.SeedData.InventoryService
 {
     public static class MenuItemSeedData
     {
+        private static String CategoryFileName = "Category.json";
+        private static String MenuItemFileName = "MenuItem.json";
         public static List<Category> Categories { get; set; }
         public static List<MenuItem> Items { get; set; }
         public static Dictionary<String, List<String>> Menu = new Dictionary<string, List<string>>()
@@ -25,18 +28,22 @@ namespace CKMS.Library.SeedData.InventoryService
             } }
         };
 
-        public static List<Category> GetCategories()
+        public static async Task<List<Category>> GetCategories()
         {
             if(Categories == null)
             {
+                Categories = await Utility.ReadFromFile<List<Category>>(CategoryFileName);
+                if(Categories != null && Categories.Count > 0)
+                    return Categories;
+
                 Categories = new List<Category>();
-                List<Kitchen> kitchens = KitchenSeedData.GetKitchenSeedData();
+                List<Kitchen> kitchens = await KitchenSeedData.GetKitchenSeedData();
                 foreach (Kitchen k in kitchens) {
                     foreach (var item in Menu.Select((value, i) => new { value, i }))
                     {
                         Category category = new Category()
                         {
-                            CategoryId = item.i,
+                            CategoryId = item.i + 1,
                             CreatedAt = DateTime.UtcNow,
                             Description = "",
                             KitchenId = k.KitchenId,
@@ -45,17 +52,22 @@ namespace CKMS.Library.SeedData.InventoryService
                         Categories.Add(category);
                     }
                 }
+                await Utility.WriteToFile<List<Category>>(CategoryFileName, Categories);
             }
             return Categories;
         }
 
-        public static List<MenuItem> GetMenuItems()
+        public static async Task<List<MenuItem>> GetMenuItems()
         {
             if(Items == null)
             {
+                Items = await Utility.ReadFromFile<List<MenuItem>>(MenuItemFileName);
+                if(Items != null && Items.Count > 0)
+                    return Items;
+
                 Random random = new Random();
                 Items = new List<MenuItem>();
-                List<Category> categories = GetCategories();
+                List<Category> categories = await GetCategories();
                 int count = 1;
                 foreach (var item in categories)
                 {
@@ -86,6 +98,7 @@ namespace CKMS.Library.SeedData.InventoryService
                         Items.Add(menuItem);
                     }
                 }
+                await Utility.WriteToFile<List<MenuItem>>(MenuItemFileName, Items);
             }
             return Items;
         }

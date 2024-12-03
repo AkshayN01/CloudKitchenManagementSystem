@@ -41,6 +41,14 @@ namespace CKMS.Contracts.DBModels.InventoryService
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
     }
+    public class InventoryAudit: AuditTable
+    {
+        public Int64 InventoryId { get; set; }
+    }
+    public class InventoryMovementAudit : AuditTable
+    {
+        public Int64 InventoryMovementId { get; set; }
+    }
     public enum Unit
     {
         grams = 0,

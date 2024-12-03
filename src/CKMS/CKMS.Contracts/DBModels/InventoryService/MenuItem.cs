@@ -10,7 +10,7 @@ namespace CKMS.Contracts.DBModels.InventoryService
 {
     public class MenuItem
     {
-        [Required]
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int64 MenuItemId { get; set; }
         [Required]
@@ -28,7 +28,6 @@ namespace CKMS.Contracts.DBModels.InventoryService
     public class Category
     {
         [Key]
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Int64 CategoryId { get; set;}
         [Required]
@@ -40,7 +39,11 @@ namespace CKMS.Contracts.DBModels.InventoryService
         public DateTime UpdatedAt { get; set; }
         public ICollection<MenuItem> Items { get; set; }
     }
-    public class MenuItemAuditTable : AuditTable
+    public class CategoryAudit : AuditTable
+    {
+        public Int64 CategoryId { get; set; }
+    }
+    public class MenuItemAudit : AuditTable
     {
         [Required]
         public Int64 MenuItemId { get; set; }

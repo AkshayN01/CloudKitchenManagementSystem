@@ -234,7 +234,6 @@ namespace CKMS.InventoryService.Blanket
                     InventoryId = payload.InventoryId,
                     KitchenId = payload.KitchenId,
                     MovementDate = payload.MovementDate,
-                    MovementType = payload.MovementType,
                     Quantity = payload.Quantity
                 };
 
@@ -298,7 +297,6 @@ namespace CKMS.InventoryService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory movement id");
 
                 inventoryMovement.MovementDate = payload.MovementDate;
-                inventoryMovement.MovementType = payload.MovementType;
                 inventoryMovement.Quantity = payload.Quantity;
                 inventoryMovement.InventoryId = payload.InventoryId;
                 inventoryMovement.UpdatedAt = DateTime.UtcNow;
