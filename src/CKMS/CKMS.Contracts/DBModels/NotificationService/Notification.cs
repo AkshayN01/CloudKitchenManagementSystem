@@ -12,7 +12,14 @@ namespace CKMS.Contracts.DBModels.NotificationService
         public Guid UserId { get; set; }
         public String Title { get; set; }
         public String Description { get; set; }
+        public int NotificationType { get; set; }
         public int IsSent { get; set; }
         public DateTime DateTime {  get; set; }
+    }
+    public enum NotificationType
+    {
+        Email = 1,
+        Browser = 2,
+        App = 3
     }
 }
