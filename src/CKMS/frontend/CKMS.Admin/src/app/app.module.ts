@@ -32,6 +32,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -40,7 +41,8 @@ export function tokenGetter() {
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -71,7 +73,12 @@ export function tokenGetter() {
         provide: JWT_OPTIONS,
         useFactory: () => ({
           tokenGetter: tokenGetter,
-          allowedDomains: [environment.backendDomain],
+          allowedDomains: [
+            environment.adminServiceDomain, 
+            environment.orderServiceDomain, 
+            environment.inventoryServiceDomain, 
+            environment.notificationServiceDomain
+          ],
           disallowedRoutes: 
           [
             environment.loginAPIUrl, 
