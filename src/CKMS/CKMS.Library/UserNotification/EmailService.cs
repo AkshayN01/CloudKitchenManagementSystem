@@ -44,13 +44,13 @@ namespace CKMS.Library.UserNotification
             return notification;
         }
 
-        private (String, String) GetNotifcationBody(int notificationScenario)
-        {
-            return notificationScenario switch
-            {
-                (int)NotificationScenario.AdminVerification => ("Verify your account", "")
-            };
-        }
+        //private (String, String) GetNotifcationBody(int notificationScenario)
+        //{
+        //    return notificationScenario switch
+        //    {
+        //        (int)NotificationScenario.AdminVerification => ("Verify your account", "")
+        //    };
+        //}
 
     }
 }

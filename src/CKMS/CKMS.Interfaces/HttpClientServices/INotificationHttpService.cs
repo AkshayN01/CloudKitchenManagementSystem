@@ -1,4 +1,5 @@
 ﻿using CKMS.Contracts.DBModels.NotificationService;
+using CKMS.Contracts.DTOs.Notification.Request;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace CKMS.Interfaces.HttpClientServices
 {
     public interface INotificationHttpService
     {
-        Task<bool> SendNotification(CKMS.Contracts.DBModels.NotificationService.Notification payload);
+        Task<bool> SendNotification(List<NotificationPayload> payload);
     }
 }

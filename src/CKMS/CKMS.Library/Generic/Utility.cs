@@ -131,5 +131,85 @@ namespace CKMS.Library.Generic
             string filePath = Path.Combine(targetFolderPath, fileName);
             return filePath;
         }
+        public static (string, string) GetAccountVerificationEmailContent(string verificationUrl, string recipientName)
+        {
+            string subject = "Verify your account";
+            string body =  $@"
+        <html>
+        <head>
+            <style>
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f8f9fa;
+                    color: #333;
+                }}
+                .email-container {{
+                    max-width: 600px;
+                    margin: 20px auto;
+                    padding: 20px;
+                    background: #ffffff;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }}
+                .email-header {{
+                    text-align: center;
+                    margin-bottom: 20px;
+                }}
+                .email-header h1 {{
+                    font-size: 24px;
+                    color: #007bff;
+                }}
+                .email-body {{
+                    text-align: center;
+                }}
+                .email-body p {{
+                    font-size: 16px;
+                    margin: 15px 0;
+                }}
+                .verify-button {{
+                    display: inline-block;
+                    padding: 10px 20px;
+                    font-size: 16px;
+                    color: #ffffff;
+                    background-color: #007bff;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    margin-top: 20px;
+                }}
+                .verify-button:hover {{
+                    background-color: #0056b3;
+                }}
+                .email-footer {{
+                    text-align: center;
+                    margin-top: 20px;
+                    font-size: 12px;
+                    color: #777;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class='email-container'>
+                <div class='email-header'>
+                    <h1>Verify Your Account</h1>
+                </div>
+                <div class='email-body'>
+                    <p>Hi {recipientName},</p>
+                    <p>Thank you for registering with us! Please verify your email address by clicking the button below:</p>
+                    <a href='{verificationUrl}' class='verify-button'>Verify Account</a>
+                    <p>If you didn’t create this account, you can safely ignore this email.</p>
+                </div>
+                <div class='email-footer'>
+                    <p>&copy; {DateTime.Now.Year} Cloud Kitchen. All Rights Reserved.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
+
+            return (subject, body);
+        }
     }
 }
