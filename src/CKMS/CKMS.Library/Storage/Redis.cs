@@ -1,4 +1,5 @@
 ﻿using CKMS.Contracts.Configuration;
+using CKMS.Contracts.DBModels.CustomerService;
 using CKMS.Interfaces.Storage;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
@@ -12,8 +13,8 @@ namespace CKMS.Library.Storage
 {
     public class Redis : CKMS.Interfaces.Storage.IRedis
     {
-        public static ConnectionMultiplexer _ClientManager;
-        public static Contracts.Configuration.Redis _ConnectionEnvironment;
+        private readonly IDatabase _redisDB;
+        public string CustomerSetName => "Customers";
 
         public string KitchenKey => "kitchen";
 
@@ -21,99 +22,34 @@ namespace CKMS.Library.Storage
 
         public string orderKey => "order";
 
-        public Redis(IOptions<Application> appSettings)
+        public Redis(IConnectionMultiplexer muxer)
         {
-            _ConnectionEnvironment = appSettings.Value.connection.redis;
-        }
-        public void Multiplexer()
-        {
-            if (_ClientManager == null || !_ClientManager.IsConnected)
-                ConnectMultiplexer();
-        }
-        private static void ConnectMultiplexer()
-        {
-            EndPointCollection mEndPointCollection = new EndPointCollection();
-            ConfigurationOptions mConfigurationOptions = new ConfigurationOptions();
-
-            mConfigurationOptions = new ConfigurationOptions
-            {
-                AbortOnConnectFail = false,
-                KeepAlive = 60, // 60 sec to ensure connection is alive
-                ConnectTimeout = 10000, // 10 sec
-                SyncTimeout = 10000, // 10 sec
-            };
-
-            String mRedisConn = _ConnectionEnvironment.server;
-
-            foreach (String mStr in mRedisConn.Split(',').ToList())
-            {
-                mConfigurationOptions.EndPoints.Add(mStr.Trim(), _ConnectionEnvironment.port);
-            }
-
-            _ClientManager = ConnectionMultiplexer.Connect(mConfigurationOptions);
-        }
-        private static void ConnectDisposer()
-        {
-            //_ClientManager.Dispose();
-        }
-        public void Disposer()
-        {
-            ConnectDisposer();
+            _redisDB = muxer.GetDatabase();
         }
 
-        public string Get(string key)
+        public async Task HashSet(string key, HashEntry[] hashEntries)
         {
-            throw new NotImplementedException();
+            await _redisDB.HashSetAsync(key, hashEntries);
+        }
+        public async Task<HashEntry[]> HashGetAll(string key)
+        {
+            return await _redisDB.HashGetAllAsync(key);
         }
 
-        public bool Has(string key)
+        public async Task<string> HashGet(string key, string field)
         {
-            throw new NotImplementedException();
+            RedisValue redisValue = await _redisDB.HashGetAsync(key, field);
+            return redisValue.ToString();
         }
 
-        public bool Remove(string key)
+        public async Task<bool> Has(string key)
         {
-            throw new NotImplementedException();
+            return await _redisDB.KeyExistsAsync(key);
         }
 
-        public bool Set(string key, object content, bool serialize)
+        public async Task<bool> HashExist(string key, string val)
         {
-            throw new NotImplementedException();
-        }
-
-        Task<string> CKMS.Interfaces.Storage.IRedis.Get(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> CKMS.Interfaces.Storage.IRedis.Set(string key, object content, bool serialize)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> CKMS.Interfaces.Storage.IRedis.Has(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<bool> CKMS.Interfaces.Storage.IRedis.Remove(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<HashEntry[]> HashGetAll(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> HashExist(string key, string val)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<string> HashGet(string key, string field)
-        {
-            throw new NotImplementedException();
+            return await _redisDB.HashExistsAsync(key, val);
         }
     }
 }
