@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.OrderService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.Order.Request;
@@ -43,6 +44,7 @@ namespace CKMS.OrderService.Blanket
                 if (payload.Items == null || payload.Items.Count == 0)
                     return APIResponse.ConstructExceptionResponse(retVal, "Empty cart");
 
+                //order is already present in the 
                 if (!String.IsNullOrEmpty(payload.OrderId))
                 {
                     Guid _OrderId = new Guid(payload.OrderId);
@@ -56,15 +58,35 @@ namespace CKMS.OrderService.Blanket
                     if (_Order.KitchenId.ToString() != payload.KitchenId)
                         return APIResponse.ConstructExceptionResponse(retVal, "Kitchen Id doesn't match");
 
-                    Tuple<bool, String> tuple = await AddItemsToOrder(payload, _OrderId);
+                    Tuple<bool, Double, String> tuple = await AddItemsToOrder(payload, _OrderId, _Order.KitchenId.ToString());
                     if (tuple.Item1)
                     {
+                        _Order.GrossAmount = tuple.Item2;
+                        _Order.NetAmount = tuple.Item2;
+                        //check if there was any discount applied
+                        DiscountUsage? discountUsage = await _OrderUnitOfWork.IDiscountUsageRepository.GetDiscountUsageByOrderIdAsync(_OrderId);
+                        if(discountUsage != null)
+                        {
+                            Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetByGuidAsync(discountUsage.DiscountId);
+                            if (discount.DiscountType == (int)DiscountType.Percentage)
+                            {
+                                _Order.NetAmount = _Order.GrossAmount - ((discount.DiscountValue * _Order.GrossAmount) / 100);
+                            }
+                            else if (discount.DiscountType == (int)DiscountType.FixedAmount)
+                            {
+                                _Order.NetAmount = _Order.GrossAmount - discount.DiscountValue;
+                            }
+                        }
+
+                        _OrderUnitOfWork.OrderRepository.Update(_Order);
+                        await _OrderUnitOfWork.CompleteAsync();
+
                         data = true;
                         retVal = 1;
                         return APIResponse.ConstructHTTPResponse(data, retVal, message);
                     }
                     else
-                        return APIResponse.ConstructExceptionResponse(retVal, tuple.Item2);
+                        return APIResponse.ConstructExceptionResponse(retVal, tuple.Item3);
                 }
 
                 Guid userId = new Guid(payload.CustomerId);
@@ -91,49 +113,8 @@ namespace CKMS.OrderService.Blanket
 
                 Guid OrderId = new Guid();
 
-                //verify menu items are correct
-                String RedisKey = $"{_Redis.KitchenKey}:{kitchenId}";
-                var menu = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{kitchenId}");
-                if (menu == null)
-                    return APIResponse.ConstructExceptionResponse(-50, "System Error: No menu items found");
-
-                Dictionary<string, Double> results = new Dictionary<string, Double>();
-                foreach (var item in payload.Items)
-                {
-                    foreach(var menuItem in menu)
-                    {
-                        if(menuItem.Name != RedisValue.Null && menuItem.Name.StartsWith("menu:"+Convert.ToString(item.MenuItemId)))
-                        {
-                            //extract menu id
-                            String val = menuItem.Name;
-                            String[] values = val.Split(":");
-                            results.Add(values[1], Convert.ToDouble(menuItem.Value) * item.Quantity);
-                        }
-                    }
-                }
-
-                if(results.Count != payload.Items.Count)
-                {
-                    String ItemsNotPresent = String.Empty;
-                    foreach (var item in payload.Items)
-                    {
-                        var itemId = Convert.ToString(item.MenuItemId);
-                        if (!results.ContainsKey(itemId))
-                            ItemsNotPresent += itemId + " ";
-                    }
-                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Menu Item Found : " + ItemsNotPresent);
-                }
-
-                //calculate total amount
-                Double TotalAmount = 0;
-                foreach (var item in results)
-                {
-                    TotalAmount += Convert.ToDouble(item.Value);
-                }
-
                 Contracts.DBModels.OrderService.Order order = new Contracts.DBModels.OrderService.Order()
                 {
-                    GrossAmount = TotalAmount,
                     Address = AddressId,
                     CreatedAt = DateTime.UtcNow,
                     CustomerId = userId,
@@ -141,15 +122,16 @@ namespace CKMS.OrderService.Blanket
                     OrderDate = payload.OrderDate,
                     OrderId = OrderId,
                     Status = (int)OrderStatus.cart,
-                    NetAmount = TotalAmount,
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                await _OrderUnitOfWork.OrderRepository.AddAsync(order);
-                Tuple<bool, String> tuple1 = await AddItemsToOrder(payload, OrderId, false);
+                Tuple<bool, Double, String> tuple1 = await AddItemsToOrder(payload, OrderId, kitchenId.ToString());
                 if(!tuple1.Item1)
-                    return APIResponse.ConstructExceptionResponse(retVal, tuple1.Item2);
-                
+                    return APIResponse.ConstructExceptionResponse(retVal, tuple1.Item3);
+
+                order.GrossAmount = tuple1.Item2;
+                order.NetAmount = tuple1.Item2;
+                await _OrderUnitOfWork.OrderRepository.AddAsync(order);
                 await _OrderUnitOfWork.CompleteAsync();
                 data = true;
                 retVal = 1;
@@ -163,17 +145,31 @@ namespace CKMS.OrderService.Blanket
 
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
-        private async Task<Tuple<bool, String>> AddItemsToOrder(OrderPayload payload, Guid OrderId, bool isExistingOrder = true)
+        private async Task<Tuple<bool, Double, String>> AddItemsToOrder(OrderPayload payload, Guid OrderId, String kitchenId)
         {
             bool success = false;
+            Double TotalAmount = 0;
             String message = String.Empty;
             try
             {
+                //verify menu items are correct
+                String RedisKey = $"{_Redis.KitchenKey}:{kitchenId}";
+                var menu = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{kitchenId}");
+                if (menu == null)
+                    return new Tuple<bool, Double, string>(false, 0, "System Error: No menu items found");
+
                 List<OrderItem> orderItems = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(OrderId);
                 if (orderItems != null && orderItems.Count > 0)
                 {
+
                     foreach (OrderItemPayload orderItemPayload in payload.Items)
                     {
+                        var menuItem = menu.FirstOrDefault(x => x.Name.StartsWith("menu:" + Convert.ToString(orderItemPayload.MenuItemId)));
+                        if (menuItem.Name == RedisValue.Null)
+                            throw new Exception("Invalid Menu Item : " + orderItemPayload.MenuItemId);
+
+                        TotalAmount += (Convert.ToDouble(menuItem.Value) * orderItemPayload.Quantity);
+
                         OrderItem? orderItem = orderItems.FirstOrDefault(x => x.MenuItemId == orderItemPayload.MenuItemId);
                         if (orderItem != null && (orderItem.Quantity != orderItemPayload.Quantity))
                         {
@@ -197,6 +193,12 @@ namespace CKMS.OrderService.Blanket
                 {
                     foreach(OrderItemPayload orderItemPayload in payload.Items)
                     {
+                        var menuItem = menu.FirstOrDefault(x => x.Name.StartsWith("menu:" + Convert.ToString(orderItemPayload.MenuItemId)));
+                        if (menuItem.Name == RedisValue.Null)
+                            throw new Exception("Invalid Menu Item : " + orderItemPayload.MenuItemId);
+
+                        TotalAmount += (Convert.ToDouble(menuItem.Value) * orderItemPayload.Quantity);
+
                         OrderItem item = new OrderItem()
                         {
                             MenuItemId = orderItemPayload.MenuItemId,
@@ -207,8 +209,6 @@ namespace CKMS.OrderService.Blanket
                         await _OrderUnitOfWork.OrderItemRepository.AddAsync(item);
                     }
                 }
-                if(isExistingOrder)
-                    await _OrderUnitOfWork.CompleteAsync();
 
                 success = true;
             }
@@ -218,7 +218,7 @@ namespace CKMS.OrderService.Blanket
                 success = false;
             }
 
-            return new Tuple<bool, string>(success, message);
+            return new Tuple<bool, Double, string>(success, TotalAmount, message);
         }
         //API to confirm an order - to be called only when payment method is Cash on delivery
         public async Task<HTTPResponse> ConfirmOrder(ConfirmOrderPayload payload)
