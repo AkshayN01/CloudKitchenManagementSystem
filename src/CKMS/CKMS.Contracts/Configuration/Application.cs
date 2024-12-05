@@ -20,7 +20,6 @@ namespace CKMS.Contracts.Configuration
     }
     public class Connection
     {
-        public Redis redis { get; set; }
         public SendGridOptions sendGridOptions { get; set; }
         public RabbitMqConfiguration rabbitMqConfiguration { get; set; }
     }
@@ -29,12 +28,6 @@ namespace CKMS.Contracts.Configuration
         public String APIKey { get; set; }
         public String FromEmail { get; set; }
         public String FromName { get; set; }
-    }
-    public class Redis
-    {
-        public String server { get; set; }
-        public Int32 port { get; set; }
-        public bool apply { get; set; }
     }
     public class RabbitMqConfiguration
     {
