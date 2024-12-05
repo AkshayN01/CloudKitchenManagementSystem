@@ -114,7 +114,7 @@ namespace CKMS.InventoryService.Blanket
                 InventoryListDTO inventoryListDTO = new InventoryListDTO();
 
                 Guid kitchenId = new Guid(KitchenId);
-                IEnumerable<Inventory> inventories = await _InventoryUnitOfWork.InventoryRepository.GetAllByKitchenId(kitchenId);
+                IQueryable<Inventory> inventories = _InventoryUnitOfWork.InventoryRepository.GetAllByKitchenId(kitchenId);
                 if(inventories != null)
                 {
                     var inventoryList = inventories.ToList();

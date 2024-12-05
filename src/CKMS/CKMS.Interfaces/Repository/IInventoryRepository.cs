@@ -9,12 +9,12 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IInventoryRepository : IGenericRepository<Inventory> 
     {
-        Task<IEnumerable<Inventory>> GetAllByKitchenId(Guid KitchenId);
+        IQueryable<Inventory> GetAllByKitchenId(Guid KitchenId, bool tracking = false);
     }
     public interface IInventoryMovementRepository : IGenericRepository<InventoryMovement> { }
     public interface IMenuItemRepository : IGenericRepository<MenuItem> 
     {
-        Task<IQueryable<MenuItem>> GetAllByKitchenId(Guid KitchenId);
+        IQueryable<MenuItem> GetAllByKitchenId(Guid KitchenId, bool tracking = false);
     }
     public interface ICategoryRepository : IGenericRepository<Category> { }
     public interface IRecipeRepository : IGenericRepository<Recipe> { }
