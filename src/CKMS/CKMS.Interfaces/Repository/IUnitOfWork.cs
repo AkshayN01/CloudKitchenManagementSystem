@@ -43,4 +43,9 @@ namespace CKMS.Interfaces.Repository
         IAddressRepository AddressRepository { get; }
         ICustomerAuditRepository CustomerAuditRepository { get; }
     }
+    public interface INotificationUnitOfWork : IUnitOfWork
+    {
+        INotificationRepository NotificationRepository { get; }
+        INotificationAuditRepository NotificationAuditRepository { get; }
+    }
 }
