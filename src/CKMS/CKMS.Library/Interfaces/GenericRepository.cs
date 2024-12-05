@@ -40,5 +40,12 @@ namespace CKMS.Library.Interfaces
         {
             await _context.SaveChangesAsync();
         }
+
+        public async Task<TEntity> AddAndReturnEntity(TEntity entity)
+        {
+           _context.Add(entity);
+            await _context.SaveChangesAsync();
+            return entity;
+        }
     }
 }
