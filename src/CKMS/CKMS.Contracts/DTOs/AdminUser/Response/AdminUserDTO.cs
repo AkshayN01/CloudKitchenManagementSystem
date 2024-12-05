@@ -8,6 +8,11 @@ using System.Threading.Tasks;
 
 namespace CKMS.Contracts.DTOs.AdminUser.Response
 {
+    public class AdminUserLoginDTO
+    {
+        public String Name { get; set; }
+        public String token { get; set; }
+    }
     public class AdminUserDTO
     {
         public Guid UserId { get; set; }

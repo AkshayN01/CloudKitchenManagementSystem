@@ -3,6 +3,7 @@ using CKMS.AdminUserService.Blanket;
 using CKMS.Contracts.Configuration;
 using CKMS.Contracts.DTOs.AdminUser.Request;
 using CKMS.Interfaces.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -11,14 +12,14 @@ namespace CKMS.AdminUserService.API.Controllers
     public partial class AdminController
     {
         [HttpPost]
-        [Route("/api/admin/add-kitchen")]
-        public async Task<IActionResult> AddKitchen([FromBody] KitchenPayload payload)
+        [Route("/api/admin/register-kitchen")]
+        public async Task<IActionResult> RegisterKitchen([FromBody] KitchenPayload payload)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
 
             try
             {
-                var httpResponse = await _kitchenBlanket.AddKitchen(payload);
+                var httpResponse = await _kitchenBlanket.RegisterKitchen(payload);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -28,6 +29,7 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/api/admin/get-kitchen/{kitchenId}")]
         public async Task<IActionResult> GetKitchen(string kitchenId)
         {
@@ -48,6 +50,7 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/api/admin/get-all-kitchen")]
         public async Task<IActionResult> GetAllKitchen(int pageNumber, int pageSize)
         {
@@ -68,6 +71,7 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("/api/admin/update-kitchen")]
         public async Task<IActionResult> UpdateKitchen([FromBody] KitchenUpdatePayload payload)
         {
@@ -88,6 +92,7 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("/api/admin/delete-kitchen")]
         public async Task<IActionResult> DeleteKitchen([FromBody] String kitchenId)
         {

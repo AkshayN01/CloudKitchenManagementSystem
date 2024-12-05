@@ -8,7 +8,15 @@ namespace CKMS.Contracts.Configuration
 {
     public class Application
     {
+        public String VerficationUrl { get; set; }
         public Connection connection { get; set; }
+        public JWTAuthentication JWTAuthentication { get; set; }
+    }
+    public class JWTAuthentication
+    {
+        public String secretKey { get; set; }
+        public String issuer { get; set; }
+        public String audience { get; set; }
     }
     public class Connection
     {

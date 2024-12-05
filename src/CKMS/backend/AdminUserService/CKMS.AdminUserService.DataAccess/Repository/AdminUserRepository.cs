@@ -26,12 +26,12 @@ namespace CKMS.AdminUserService.DataAccess.Repository
             return query.Where(x => x.KitchenId == kitchenId);
         }
 
-        public IQueryable<AdminUser> GetUsersByRole(int roleId, bool tracking = false)
+        public IQueryable<AdminUser> GetUsersByRole(int roleId, Guid KitchenId, bool tracking = false)
         {
             IQueryable<AdminUser> query = _dbSet;
             if (tracking)
                 query.AsNoTracking();
-            return query.Where(x => x.RoleId == roleId);
+            return query.Where(x => x.RoleId == roleId && x.KitchenId == KitchenId);
         }
     }
 }

@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using CKMS.AdminUserService.Blanket;
 using CKMS.Contracts.Configuration;
+using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DTOs.AdminUser.Request;
+using CKMS.Interfaces.HttpClientServices;
 using CKMS.Interfaces.Repository;
+using CKMS.Interfaces.Storage;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 
@@ -15,13 +19,13 @@ namespace CKMS.AdminUserService.API.Controllers
         private readonly Application _appSettings;
         private readonly UserAccounts _userAccounts;
         private readonly KitchenBlanket _kitchenBlanket;
-        public AdminController(IAdminUserUnitOfWork unitOfWork, IMapper mapper, IOptions<Application> appSettings)
+        public AdminController(IAdminUserUnitOfWork unitOfWork, IMapper mapper, IOptions<Application> appSettings, IRedis redis, INotificationHttpService notificationHttpService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _appSettings = appSettings.Value;
-            _userAccounts = new UserAccounts(unitOfWork, mapper);
-            _kitchenBlanket = new KitchenBlanket(unitOfWork, mapper);
+            _userAccounts = new UserAccounts(unitOfWork, mapper, appSettings);
+            _kitchenBlanket = new KitchenBlanket(unitOfWork, mapper, redis, notificationHttpService, appSettings);
         }
 
         [HttpPost]
@@ -42,6 +46,7 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("/api/admin/add-user")]
         public async Task<IActionResult> AddUser([FromBody] AdminUserPayload payload)
         {
@@ -50,9 +55,11 @@ namespace CKMS.AdminUserService.API.Controllers
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
             if (userguid == null) { return Unauthorized(); }
 
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+
             try
             {
-                var httpResponse = await _userAccounts.AddUser(payload);
+                var httpResponse = await _userAccounts.AddUser(payload, kitchenId);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -62,17 +69,19 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/api/admin/get-user/{userId}")]
         public async Task<IActionResult> GetUser(string userId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+            if (userguid == null || kitchenId == null) { return Unauthorized(); }
 
             try
             {
-                var httpResponse = await _userAccounts.GetUserAccount(userId);
+                var httpResponse = await _userAccounts.GetUserAccount(userId, kitchenId);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -82,17 +91,19 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [Route("/api/admin/get-users/{roleId}")]
         public async Task<IActionResult> GetUsersByRole(int roleId, int pageNumber, int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+            if (userguid == null || kitchenId == null) { return Unauthorized(); }
 
             try
             {
-                var httpResponse = await _userAccounts.GetUserAccountsByRoleId(roleId, pageSize, pageNumber);
+                var httpResponse = await _userAccounts.GetUserAccountsByRoleId(roleId, kitchenId, pageSize, pageNumber);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -102,13 +113,15 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpGet]
-        [Route("/api/admin/get-kitchen-users/{kitchenId}")]
-        public async Task<IActionResult> GetUserByKitchen(String kitchenId, int pageNumber, int pageSize)
+        [Authorize]
+        [Route("/api/admin/get-kitchen-users")]
+        public async Task<IActionResult> GetUserByKitchen(int pageNumber, int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+            if (userguid == null || kitchenId == null) { return Unauthorized(); }
 
             try
             {
@@ -122,13 +135,17 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("/api/admin/update-user")]
         public async Task<IActionResult> UpdateUser([FromBody] AdminUserUpdatePayload payload)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
+            var roleId = claims.FirstOrDefault(c => c.Type == "roleId")?.Value;
+            if (userguid == null || roleId == null) { return Unauthorized(); }
+
+            if(payload.UserId != userguid && Convert.ToInt32(roleId) != (int)Role.SuperAdmin) { return Unauthorized(); }
 
             try
             {
@@ -142,13 +159,17 @@ namespace CKMS.AdminUserService.API.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("/api/admin/delete-user")]
         public async Task<IActionResult> DeleteUser([FromBody] String userId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
-            if (userguid == null) { return Unauthorized(); }
+            var roleId = claims.FirstOrDefault(c => c.Type == "roleId")?.Value;
+            if (userguid == null || roleId == null) { return Unauthorized(); }
+
+            if (userId != userguid && Convert.ToInt32(roleId) != (int)Role.SuperAdmin) { return Unauthorized(); }
 
             try
             {

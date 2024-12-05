@@ -10,20 +10,33 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CKMS.Interfaces.Storage;
+using CKMS.Interfaces.HttpClientServices;
+using CKMS.Contracts.DBModels.NotificationService;
+using CKMS.Contracts.DTOs.Notification.Request;
+using CKMS.Library.Authentication;
+using Microsoft.Extensions.Options;
+using CKMS.Contracts.Configuration;
 
 namespace CKMS.AdminUserService.Blanket
 {
     public class KitchenBlanket
     {
+        private readonly IRedis _redis;
         private readonly IMapper _mapper;
+        private readonly Application _appSettings;
         private readonly IAdminUserUnitOfWork _AdminUserUnitOfWork;
-        public KitchenBlanket(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper)
+        private readonly INotificationHttpService _notificationHttpService;
+        public KitchenBlanket(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper, IRedis redis, INotificationHttpService notificationHttpService, IOptions<Application> appSettings)
         {
+            _redis = redis;
             _mapper = mapper;
+            _appSettings = appSettings.Value;
             _AdminUserUnitOfWork = adminUserUnitOfWork;
+            _notificationHttpService = notificationHttpService;
         }
 
-        public async Task<HTTPResponse> AddKitchen(KitchenPayload payload)
+        public async Task<HTTPResponse> RegisterKitchen(KitchenPayload payload)
         {
             int retVal = -40;
             string message = string.Empty;
@@ -48,9 +61,44 @@ namespace CKMS.AdminUserService.Blanket
                 };
 
                 await _AdminUserUnitOfWork.KitchenRepository.AddAsync(kitchen);
+
+                AdminUser adminUser = new AdminUser()
+                {
+                    CreatedAt = DateTime.UtcNow,
+                    KitchenId = kitchen.KitchenId,
+                    EmailId = payload.AdminUserPayload.EmailId,
+                    FullName = payload.AdminUserPayload.FullName,
+                    IsEmailVerified = 0,
+                    LastUpdatedAt = DateTime.UtcNow,
+                    RoleId = payload.AdminUserPayload.RoleId,
+                    UserName = payload.AdminUserPayload.UserName,
+                    UserId = new Guid(),
+                };
+
+                adminUser.VerificationToken = JWTAuth.
+                    GenerateVerificationToken(adminUser.UserId.ToString(), _appSettings.JWTAuthentication.secretKey, 
+                    _appSettings.JWTAuthentication.issuer, _appSettings.JWTAuthentication.audience, 60);
+
+                await _AdminUserUnitOfWork.AdminUserRepository.AddAsync(adminUser);
+
                 await _AdminUserUnitOfWork.CompleteAsync();
 
-                data = true;
+                String verificationUrl = _appSettings.VerficationUrl + adminUser.VerificationToken;
+                (String subject, String emailBody) = Utility.GetAccountVerificationEmailContent(verificationUrl, adminUser.FullName);
+                //send email for verification
+                NotificationPayload notificationPayload = new NotificationPayload()
+                {
+                    UserId = adminUser.UserId.ToString(),
+                    Recipient = adminUser.EmailId,
+                    NotificationType = (int)NotificationType.Email,
+                    Scenario = (int)NotificationScenario.AdminVerification,
+                    UserType = (int)NotificationUserType.Admin,
+                    Message = emailBody,
+                    Title = subject,
+                };
+                List<NotificationPayload> payloads = new List<NotificationPayload>() { notificationPayload };
+                data = await _notificationHttpService.SendNotification(payloads);
+
                 retVal = 1;
             }
             catch (Exception ex)
@@ -99,6 +147,7 @@ namespace CKMS.AdminUserService.Blanket
             try
             {
                 KitchenListDTO kitchenListDTO = new KitchenListDTO();
+                
                 IQueryable<Kitchen> kitchens = _AdminUserUnitOfWork.KitchenRepository.GetAllKitchen();
 
                 kitchenListDTO.TotalCount = kitchens.Count();

@@ -1,20 +1,25 @@
 ﻿using AutoMapper;
+using CKMS.Contracts.Configuration;
 using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.AdminUser.Request;
 using CKMS.Contracts.DTOs.AdminUser.Response;
 using CKMS.Interfaces.Repository;
+using CKMS.Library.Authentication;
 using CKMS.Library.Generic;
+using Microsoft.Extensions.Options;
 
 namespace CKMS.AdminUserService.Blanket
 {
     public class UserAccounts
     {
         private readonly IMapper _mapper;
+        private readonly Application _appSettings;
         private readonly IAdminUserUnitOfWork _AdminUserUnitOfWork;
-        public UserAccounts(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper) 
+        public UserAccounts(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper, IOptions<Application> appSettings) 
         {
             _mapper = mapper;
+            _appSettings = appSettings.Value;
             _AdminUserUnitOfWork = adminUserUnitOfWork;
         }
         public async Task<HTTPResponse> Login(LoginRequest loginRequest)
@@ -25,13 +30,16 @@ namespace CKMS.AdminUserService.Blanket
             int retVal = -40;
             string message = string.Empty;
             Object? data = default(Object?);
-            AdminUserDTO userDTO = new AdminUserDTO();
+            AdminUserLoginDTO userDTO = new AdminUserLoginDTO();
 
             try
             {
                 AdminUser? adminUser = await _AdminUserUnitOfWork.AdminUserRepository.GetUserByUsername(loginRequest.UserName);
                 if (adminUser == null)
                     throw new Exception("Invalid user name");
+
+                if (adminUser.IsEmailVerified == 0)
+                    throw new Exception("Email Id is not verified");
 
                 //check password
                 bool IsValid = PasswordHasher.VerifyPassword(loginRequest.Password, adminUser.PasswordHash);
@@ -44,7 +52,9 @@ namespace CKMS.AdminUserService.Blanket
                 _AdminUserUnitOfWork.AdminUserRepository.Update(adminUser);
                 await _AdminUserUnitOfWork.CompleteAsync();
 
-                _mapper.Map(adminUser, userDTO);
+                userDTO.Name = adminUser.FullName;
+                userDTO.token = JWTAuth.
+                    GenerateJWTToken(adminUser.UserId.ToString(), adminUser.KitchenId.ToString(), adminUser.RoleId.ToString(), _appSettings.JWTAuthentication.secretKey);
 
                 data = userDTO;
                 retVal = 1;
@@ -58,7 +68,7 @@ namespace CKMS.AdminUserService.Blanket
         }
 
         #region " ADD "
-        public async Task<HTTPResponse> AddUser(AdminUserPayload payload)
+        public async Task<HTTPResponse> AddUser(AdminUserPayload payload, String? KitchenId)
         {
             if (payload == null)
                 return APIResponse.ConstructExceptionResponse(-40, "Payload is missing");
@@ -71,10 +81,10 @@ namespace CKMS.AdminUserService.Blanket
             try
             {
                 //check if Kitchen Id is valid or not
-                if (String.IsNullOrEmpty(payload.KitchenId))
+                if (String.IsNullOrEmpty(KitchenId))
                     return APIResponse.ConstructExceptionResponse(-40, "KitchenId is missing");
 
-                Guid kitchenId = new Guid(payload.KitchenId);
+                Guid kitchenId = new Guid(KitchenId);
                 Kitchen? kitchen = await _AdminUserUnitOfWork.KitchenRepository.GetByGuidAsync(kitchenId);
                 if (kitchen == null)
                     return APIResponse.ConstructExceptionResponse(-40, "Invalid Kitchen Id");
@@ -110,7 +120,48 @@ namespace CKMS.AdminUserService.Blanket
         #endregion
 
         #region " GET "
-        public async Task<HTTPResponse> GetUserAccount(string _userId)
+        public async Task<HTTPResponse> VerifyUserAccount(String token, String userId)
+        {
+            int retVal = -40;
+            string message = string.Empty;
+            Object? data = default(Object?);
+
+            try
+            {
+                //check if User is present or not
+                if (String.IsNullOrEmpty(userId))
+                    return APIResponse.ConstructExceptionResponse(-40, "UserId is missing");
+
+                Guid UserId = new Guid(userId);
+                AdminUser? adminUser = await _AdminUserUnitOfWork.AdminUserRepository.GetByGuidAsync(UserId);
+
+                if (adminUser == null)
+                    return APIResponse.ConstructExceptionResponse(-40, "User not found");
+
+                if (token != adminUser.VerificationToken)
+                    return APIResponse.ConstructExceptionResponse(-40, "Invalid token");
+
+                adminUser.IsEmailVerified = 1;
+                _AdminUserUnitOfWork.AdminUserRepository.Update(adminUser);
+
+                //Update Kitchen
+                Kitchen? kitchen = await _AdminUserUnitOfWork.KitchenRepository.GetByGuidAsync(adminUser.KitchenId);
+                kitchen.IsActive = 1;
+                _AdminUserUnitOfWork.KitchenRepository.Update(kitchen);
+
+                await _AdminUserUnitOfWork.CompleteAsync();
+
+                data = true;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+        public async Task<HTTPResponse> GetUserAccount(string _userId, String? kitchenId)
         {
             if (String.IsNullOrEmpty(_userId))
                 return APIResponse.ConstructExceptionResponse(-40, "UserId missing");
@@ -126,6 +177,10 @@ namespace CKMS.AdminUserService.Blanket
                 AdminUser? adminUser = await _AdminUserUnitOfWork.AdminUserRepository.GetByGuidAsync(userId);
                 if (adminUser == null)
                     throw new Exception("Invalid user id");
+
+                if (adminUser.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(401, "Do not have enough permissions");
+
                 _mapper.Map(adminUser, userDTO);
 
                 data = userDTO;
@@ -138,7 +193,7 @@ namespace CKMS.AdminUserService.Blanket
 
             return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
-        public async Task<HTTPResponse> GetUserAccountsByRoleId(int roleId, int pageSize, int pageNumber)
+        public async Task<HTTPResponse> GetUserAccountsByRoleId(int roleId, String KitchenId, int pageSize, int pageNumber)
         {
             if (roleId == 0)
                 return APIResponse.ConstructExceptionResponse(-40, "RoleId is missing");
@@ -150,7 +205,8 @@ namespace CKMS.AdminUserService.Blanket
 
             try
             {
-                IQueryable<AdminUser> adminUsers = _AdminUserUnitOfWork.AdminUserRepository.GetUsersByRole(roleId);
+                Guid kitchenId = new Guid(KitchenId);
+                IQueryable<AdminUser> adminUsers = _AdminUserUnitOfWork.AdminUserRepository.GetUsersByRole(roleId, kitchenId);
                 if (adminUsers != null)
                 {
                     userListDTO.TotalCount = adminUsers.Count();
@@ -206,6 +262,7 @@ namespace CKMS.AdminUserService.Blanket
         #endregion
 
         #region " UPDATE "
+
         public async Task<HTTPResponse> UpdateUser(AdminUserUpdatePayload payload)
         {
             if (payload == null)

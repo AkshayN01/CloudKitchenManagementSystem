@@ -21,6 +21,8 @@ namespace CKMS.Contracts.DTOs.AdminUser.Request
         public string PostalCode { get; set; } = string.Empty!;
         [Required]
         public string Country { get; set; } = string.Empty!;
+        [Required]
+        public AdminUserPayload AdminUserPayload { get; set; } = null!;
     }
     public class KitchenUpdatePayload
     {

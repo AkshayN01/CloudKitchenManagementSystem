@@ -15,6 +15,7 @@ namespace CKMS.Contracts.DBModels.AdminUserService
         public string Country { get; set; } = string.Empty;
         [Required]
         public String EmailId { get; set; } = string.Empty!;
+        public int IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime LastUpdatedAt { get; set; }
         public ICollection<AdminUser> Users { get; set; } = new List<AdminUser>();

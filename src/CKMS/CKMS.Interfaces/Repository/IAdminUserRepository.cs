@@ -9,13 +9,13 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IAdminUserRepository : IGenericRepository<AdminUser>
     {
-        IQueryable<AdminUser> GetUsersByRole(int roleId, bool tracking = false);
+        IQueryable<AdminUser> GetUsersByRole(int roleId, Guid KitchenId, bool tracking = false);
         IQueryable<AdminUser> GetUsersByKitchen(Guid kitchenId, bool tracking = false);
-        Task<AdminUser?> GetUserByUsername(string username);
+        Task<AdminUser?> GetUserByUsername(string username, bool tracking = false);
     }
     public interface IKitchenRepository : IGenericRepository<Kitchen>
     {
-        IQueryable<Kitchen> GetAllKitchen();
+        IQueryable<Kitchen> GetAllKitchen(bool tracking = false);
     }
     public interface IKitchenAuditRespository : IGenericRepository<KitchenAudit> { }
 }
