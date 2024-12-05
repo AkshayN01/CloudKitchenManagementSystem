@@ -6,24 +6,35 @@ using CKMS.Interfaces.HttpClientServices;
 using CKMS.Library.Services;
 using CKMS.Contracts.Configuration;
 using System.Text.Json;
-using CKMS.Interfaces.UserNotification;
-using CKMS.Library.UserNotification;
 using CKMS.Interfaces.Repository;
 using CKMS.Library.Interfaces;
+using StackExchange.Redis;
+using CKMS.Library.Storage;
+using CKMS.Library.SeedData.RedisSeed;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager configuration = builder.Configuration;
 
 // Add services to the container.
-builder.Services.Configure<Application>(
-    builder.Configuration.GetSection("Application"));
-
 var connectionString = builder.Configuration.GetConnectionString("Database") ?? "";
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "";
+
+builder.Services.Configure<Application>(builder.Configuration.GetSection("Application"));
+
 builder.Services.AddDbContext<AdminUserServiceDbContext>(options => options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped(typeof(IAdminUserRepository), typeof(AdminUserRepository));
 builder.Services.AddScoped(typeof(IKitchenRepository), typeof(KitchenRepository));
+builder.Services.AddScoped(typeof(IKitchenAuditRespository), typeof(KitchenAuditRepository));
+
+builder.Services.AddScoped<IAdminUserUnitOfWork, AdminUserUnitOfWork>();
+
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+
+builder.Services.AddScoped<CKMS.Interfaces.Storage.IRedis, Redis>();
+
+builder.Services.AddSingleton<RedisAdminServiceSeed>();
 
 builder.Services.AddHttpClient<INotificationHttpService, NotificationHttpService>(client =>
 {
@@ -58,6 +69,12 @@ if (app.Environment.IsDevelopment())
 
         // Seed test data.
         await dbContext.SeedTestDataAsync();
+    }
+
+    using(var scope = app.Services.CreateScope())
+    {
+        var seeder = scope.ServiceProvider.GetRequiredService<RedisAdminServiceSeed>();
+        await seeder.SeedData();
     }
 }
 
