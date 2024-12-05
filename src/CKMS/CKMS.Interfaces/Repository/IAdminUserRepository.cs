@@ -11,7 +11,7 @@ namespace CKMS.Interfaces.Repository
     {
         IQueryable<AdminUser> GetUsersByRole(int roleId, Guid KitchenId, bool tracking = false);
         IQueryable<AdminUser> GetUsersByKitchen(Guid kitchenId, bool tracking = false);
-        Task<AdminUser?> GetUserByUsername(string username, bool tracking = false);
+        Task<AdminUser?> GetUserByUsername(string username);
     }
     public interface IKitchenRepository : IGenericRepository<Kitchen>
     {

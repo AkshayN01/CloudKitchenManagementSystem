@@ -12,7 +12,7 @@ namespace CKMS.AdminUserService.DataAccess.Repository
 {
     public class AdminUserRepository : GenericRepository<AdminUser>, IAdminUserRepository
     {
-        public AdminUserRepository(DbContext dbContext) : base(dbContext) { }
+        public AdminUserRepository(AdminUserServiceDbContext dbContext) : base(dbContext) { }
         public Task<AdminUser?> GetUserByUsername(string username)
         {
             return _dbSet.FirstOrDefaultAsync(x => x.UserName == username);

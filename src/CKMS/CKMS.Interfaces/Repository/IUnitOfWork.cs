@@ -8,7 +8,7 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IUnitOfWork : IDisposable
     {
-        Task<int> CompleteAsync();
+        Task CompleteAsync();
     }
 
     public interface IOrderUnitOfWork : IUnitOfWork

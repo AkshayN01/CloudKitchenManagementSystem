@@ -12,7 +12,7 @@ namespace CKMS.AdminUserService.DataAccess.Repository
 {
     public class KitchenRepository : GenericRepository<Kitchen>, IKitchenRepository
     {
-        public KitchenRepository(DbContext dbContext): base(dbContext) { }
+        public KitchenRepository(AdminUserServiceDbContext dbContext): base(dbContext) { }
         public IQueryable<Kitchen> GetAllKitchen(bool tracking = false)
         {
             IQueryable<Kitchen> query = _dbSet;
