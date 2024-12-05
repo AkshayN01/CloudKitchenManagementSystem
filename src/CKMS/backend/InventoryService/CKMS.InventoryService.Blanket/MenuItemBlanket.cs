@@ -11,15 +11,16 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CKMS.Interfaces.Storage;
+using StackExchange.Redis;
 
 namespace CKMS.InventoryService.Blanket
 {
     public class MenuItemBlanket
     {
-        private readonly IRedis _Redis;
+        private readonly Interfaces.Storage.IRedis _Redis;
         private readonly IMapper _Mapper;
         private readonly IInventoryUnitOfWork _InventoryUnitOfWork;
-        public MenuItemBlanket(IInventoryUnitOfWork inventoryUnitOfWork, IMapper mapper, IRedis redis)
+        public MenuItemBlanket(IInventoryUnitOfWork inventoryUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis)
         {
             _Redis = redis;
             _Mapper = mapper;
@@ -59,8 +60,13 @@ namespace CKMS.InventoryService.Blanket
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                await _InventoryUnitOfWork.MenuItemRepository.AddAsync(menuItem);
+                MenuItem menu = await _InventoryUnitOfWork.MenuItemRepository.AddAndReturnEntity(menuItem);
                 await _InventoryUnitOfWork.CompleteAsync();
+
+                //add to redis
+                string keyName = $"{_Redis.KitchenKey}:{payload.KitchenId}";
+                HashEntry[] hashEntries = new HashEntry[] { new HashEntry($"menu:{menu.MenuItemId}", $"{menu.Name}:{menu.Price}" )};
+                await _Redis.HashSet(keyName, hashEntries);
 
                 data = true;
                 retVal = 1;
@@ -185,6 +191,11 @@ namespace CKMS.InventoryService.Blanket
                 _InventoryUnitOfWork.MenuItemRepository.Update(menuItem);
                 await _InventoryUnitOfWork.CompleteAsync();
 
+                //update in redis
+                string keyName = $"{_Redis.KitchenKey}:{menuItem.KitchenId}";
+                HashEntry[] hashEntries = new HashEntry[] { new HashEntry($"menu:{menuItem.MenuItemId}", $"{menuItem.Name}:{menuItem.Price}") };
+                await _Redis.HashSet(keyName, hashEntries);
+
                 data = true;
                 retVal = 1;
             }
@@ -213,6 +224,14 @@ namespace CKMS.InventoryService.Blanket
 
                 _InventoryUnitOfWork.MenuItemRepository.Delete(menuItem);
                 await _InventoryUnitOfWork.CompleteAsync();
+
+                //delete in redis
+                string keyName = $"{_Redis.KitchenKey}:{menuItem.KitchenId}";
+                string fieldName = $"menu:{menuItem.MenuItemId}";
+                await _Redis.HashDelete(keyName, fieldName);
+
+                data = true;
+                retVal = 1;
             }
             catch (Exception ex)
             {
