@@ -16,8 +16,12 @@ namespace CKMS.Contracts.DBModels.CustomerService
         public String PasswordHash { get; set; }
         public Int64 LoyaltyPoints { get; set; }
         public Int64 TotalOrder {  get; set; }
+        public String? VerificationToken { get; set; }
+        public int IsVerified { get; set; }
+        public int IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime LastLogin { get; set; }
         public ICollection<Address> AddressList { get; set; } = new List<Address>();
     }
 
