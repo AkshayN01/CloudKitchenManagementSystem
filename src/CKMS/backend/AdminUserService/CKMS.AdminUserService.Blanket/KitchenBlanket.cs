@@ -17,17 +17,18 @@ using CKMS.Contracts.DTOs.Notification.Request;
 using CKMS.Library.Authentication;
 using Microsoft.Extensions.Options;
 using CKMS.Contracts.Configuration;
+using StackExchange.Redis;
 
 namespace CKMS.AdminUserService.Blanket
 {
     public class KitchenBlanket
     {
-        private readonly IRedis _redis;
+        private readonly Interfaces.Storage.IRedis _redis;
         private readonly IMapper _mapper;
         private readonly Application _appSettings;
         private readonly IAdminUserUnitOfWork _AdminUserUnitOfWork;
         private readonly INotificationHttpService _notificationHttpService;
-        public KitchenBlanket(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper, IRedis redis, INotificationHttpService notificationHttpService, IOptions<Application> appSettings)
+        public KitchenBlanket(IAdminUserUnitOfWork adminUserUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis, INotificationHttpService notificationHttpService, IOptions<Application> appSettings)
         {
             _redis = redis;
             _mapper = mapper;
@@ -82,6 +83,15 @@ namespace CKMS.AdminUserService.Blanket
                 await _AdminUserUnitOfWork.AdminUserRepository.AddAsync(adminUser);
 
                 await _AdminUserUnitOfWork.CompleteAsync();
+
+                String address = $"{kitchen.Address}, {kitchen.Region}, {kitchen.City}, {kitchen.PostalCode}";
+                String keyName = "kitchen:" + kitchen.KitchenId;
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("name", kitchen.KitchenName),
+                    new HashEntry("address", address)
+                };
+                await _redis.HashSet(keyName, hashEntries);
 
                 String verificationUrl = _appSettings.VerficationUrl + adminUser.VerificationToken;
                 (String subject, String emailBody) = Utility.GetAccountVerificationEmailContent(verificationUrl, adminUser.FullName);
