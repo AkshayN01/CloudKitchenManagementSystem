@@ -43,13 +43,13 @@ namespace CKMS.Contracts.DBModels.OrderService
 
     public enum OrderStatus
     {
-        cart = 0,
-        placed = 1,
-        accepted = 2,
-        inprogress = 3,
-        delivered = 4,
-        cancelled = 5,
-        outfordelivery = 6,
-        failed = 7
+        cart = 1,
+        placed = 2,
+        accepted = 3,
+        inprogress = 4,
+        outfordelivery = 5,
+        delivered = 6,
+        cancelled = 7,
+        failed = 8
     }
 }

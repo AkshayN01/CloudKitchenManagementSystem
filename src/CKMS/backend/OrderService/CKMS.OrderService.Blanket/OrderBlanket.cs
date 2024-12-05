@@ -399,8 +399,8 @@ namespace CKMS.OrderService.Blanket
                 IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = await _OrderUnitOfWork.OrderRepository.GetOrdersByCustomerIdAsync( _UserId );
                 orderList.TotalCount = orderQuery.Count();
 
-                List<Contracts.DBModels.OrderService.Order> Orders = orderQuery.Skip((pageNumber - 1) * pageSize)
-                    .Take(pageSize).ToList();
+                List<Contracts.DBModels.OrderService.Order> Orders = orderQuery.OrderByDescending(x => x.OrderDate)
+                    .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
                 if(Orders != null && Orders.Count > 0)
                 {
@@ -497,13 +497,14 @@ namespace CKMS.OrderService.Blanket
 
                 //only send those orders that isnt in cart and isnt failed
                 if(String.IsNullOrEmpty(status))
-                    orderQuery = orderQuery.Where(x => x.Status != (int)OrderStatus.cart || x.Status != (int)OrderStatus.failed);
+                    orderQuery = orderQuery.Where(x => x.Status != (int)OrderStatus.cart || x.Status != (int)OrderStatus.failed)
+                        .OrderByDescending(x => x.OrderDate).ThenBy(x => x.Status);
                 else
                 {
                     if (Enum.TryParse(typeof(OrderStatus), status, out var result) && Enum.IsDefined(typeof(OrderStatus), result))
                     {
                         int orderStatus = (int)(OrderStatus)result;
-                        orderQuery = orderQuery.Where(x => x.Status == orderStatus);
+                        orderQuery = orderQuery.Where(x => x.Status == orderStatus).OrderByDescending(x => x.OrderDate);
                         data = true;
                         retVal = 1;
                     }
