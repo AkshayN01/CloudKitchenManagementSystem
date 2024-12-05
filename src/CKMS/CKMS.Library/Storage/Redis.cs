@@ -51,5 +51,10 @@ namespace CKMS.Library.Storage
         {
             return await _redisDB.HashExistsAsync(key, val);
         }
+
+        public async Task<bool> DeleteKey(string key)
+        {
+            return await _redisDB.KeyDeleteAsync(key);
+        }
     }
 }

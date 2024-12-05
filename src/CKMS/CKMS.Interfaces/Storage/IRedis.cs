@@ -19,5 +19,6 @@ namespace CKMS.Interfaces.Storage
         Task<String> HashGet(String key, String field);
         Task<bool> Has(String key);
         Task<bool> HashExist(String key, string val);
+        Task<bool> DeleteKey(String key);
     }
 }
