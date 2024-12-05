@@ -15,9 +15,9 @@ namespace CKMS.Library.Queue
         private readonly ConnectionFactory _connnectionFactory;
         private readonly RabbitMqConfiguration _configuration;
 
-        public RabbitMQConnection(IOptions<RabbitMqConfiguration> options)
+        public RabbitMQConnection(IOptions<Application> options)
         {
-            _configuration = options.Value;
+            _configuration = options.Value.connection.rabbitMqConfiguration;
             _connnectionFactory = new ConnectionFactory()
             {
                 UserName = _configuration.Username,
