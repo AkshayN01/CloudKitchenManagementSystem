@@ -1,11 +1,19 @@
 ﻿using AutoMapper;
+using CKMS.Contracts.Configuration;
+using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.CustomerService;
+using CKMS.Contracts.DBModels.NotificationService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.Customer.Request;
 using CKMS.Contracts.DTOs.Customer.Response;
+using CKMS.Contracts.DTOs.Notification.Request;
+using CKMS.Interfaces.HttpClientServices;
 using CKMS.Interfaces.Repository;
 using CKMS.Interfaces.Storage;
+using CKMS.Library.Authentication;
 using CKMS.Library.Generic;
+using Microsoft.Extensions.Options;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +24,18 @@ namespace CKMS.CustomerService.Blanket
 {
     public class CustomerBlanket
     {
-        private readonly IRedis _Redis;
+        private readonly Interfaces.Storage.IRedis _Redis;
         private readonly IMapper _Mapper;
+        private readonly Application _appSettings;
         private readonly ICustomerUnitOfWork _CustomerUnitOfWork;
-        public CustomerBlanket(ICustomerUnitOfWork customerUnitOfWork, IMapper mapper, IRedis redis)
+        private readonly INotificationHttpService _notificationHttpService;
+        public CustomerBlanket(ICustomerUnitOfWork customerUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis, IOptions<Application> appSettings, INotificationHttpService notificationHttpService)
         {
             _Redis = redis;
             _Mapper = mapper;
+            _appSettings = appSettings.Value;
             _CustomerUnitOfWork = customerUnitOfWork;
+            _notificationHttpService = notificationHttpService;
         }
         //API to Register
         public async Task<HTTPResponse> RegisterUser(RegisterPayload payload)
@@ -48,7 +60,12 @@ namespace CKMS.CustomerService.Blanket
                     PhoneNumber = payload.PhoneNumber,
                     UserName = payload.EmailId.ToString(),
                     UpdatedAt = DateTime.UtcNow,
+                    IsActive = 1,
+                    IsVerified = 0,
                 };
+                customer.VerificationToken = JWTAuth.
+                    GenerateVerificationToken(customer.CustomerId.ToString(), _appSettings.JWTAuthentication.secretKey,
+                    _appSettings.JWTAuthentication.issuer, _appSettings.JWTAuthentication.audience, 60);
 
                 customer.PasswordHash = PasswordHasher.HashPassword(payload.Password);
 
@@ -57,6 +74,21 @@ namespace CKMS.CustomerService.Blanket
 
 
                 //send verification code
+                String verificationUrl = _appSettings.VerficationUrl + customer.VerificationToken;
+                (String subject, String emailBody) = Utility.GetAccountVerificationEmailContent(verificationUrl, customer.Name);
+                //send email for verification
+                NotificationPayload notificationPayload = new NotificationPayload()
+                {
+                    UserId = customer.CustomerId.ToString(),
+                    Recipient = customer.EmailId,
+                    NotificationType = (int)NotificationType.Email,
+                    Scenario = (int)NotificationScenario.AdminVerification,
+                    UserType = (int)NotificationUserType.Admin,
+                    Message = emailBody,
+                    Title = subject,
+                };
+                List<NotificationPayload> payloads = new List<NotificationPayload>() { notificationPayload };
+                data = await _notificationHttpService.SendNotification(payloads);
 
                 data = true;
                 retVal = 1;
@@ -69,6 +101,53 @@ namespace CKMS.CustomerService.Blanket
             }
 
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+
+        //API to Verify Account
+        public async Task<HTTPResponse> VerifyUserAccount(String token, String userId)
+        {
+            int retVal = -40;
+            string message = string.Empty;
+            Object? data = default(Object?);
+
+            try
+            {
+                //check if User is present or not
+                if (String.IsNullOrEmpty(userId))
+                    return APIResponse.ConstructExceptionResponse(-40, "UserId is missing");
+
+                Guid UserId = new Guid(userId);
+                Customer? customer = await _CustomerUnitOfWork.CustomerRepository.GetByGuidAsync(UserId);
+
+                if (customer == null)
+                    return APIResponse.ConstructExceptionResponse(-40, "User not found");
+
+                if (token != customer.VerificationToken)
+                    return APIResponse.ConstructExceptionResponse(-40, "Invalid token");
+
+                customer.IsVerified = 1;
+
+                _CustomerUnitOfWork.CustomerRepository.Update(customer);
+                await _CustomerUnitOfWork.CompleteAsync();
+
+                //Add user to redis
+                string keyName = $"{_Redis.CustomerKey}:{customer.CustomerId}";
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("emailId", customer.EmailId),
+                    new HashEntry("phoneNumber", customer.PhoneNumber),
+                };
+                await _Redis.HashSet(keyName, hashEntries);
+
+                data = true;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
 
         //API for login
@@ -89,6 +168,10 @@ namespace CKMS.CustomerService.Blanket
 
                 CustomerDTO customerDTO = new CustomerDTO();
                 _Mapper.Map(customer, customerDTO);
+
+                customer.LastLogin = DateTime.UtcNow;
+                _CustomerUnitOfWork.CustomerRepository.Update(customer);
+                await _CustomerUnitOfWork.CompleteAsync();
 
                 data = customerDTO;
                 retVal = 1;
@@ -173,6 +256,15 @@ namespace CKMS.CustomerService.Blanket
                 _CustomerUnitOfWork.CustomerRepository.Update(customer);
                 await _CustomerUnitOfWork.CompleteAsync();
 
+                //Update user in redis
+                string keyName = $"{_Redis.CustomerKey}:{customer.CustomerId}";
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("emailId", customer.EmailId),
+                    new HashEntry("phoneNumber", customer.PhoneNumber),
+                };
+                await _Redis.HashSet(keyName, hashEntries);
+
                 data = true;
                 retVal = 1;
             }
@@ -206,6 +298,10 @@ namespace CKMS.CustomerService.Blanket
 
                 _CustomerUnitOfWork.CustomerRepository.Delete(customer);
                 await _CustomerUnitOfWork.CompleteAsync();
+
+                //de;ete user in redis
+                string keyName = $"{_Redis.CustomerKey}:{customer.CustomerId}";
+                await _Redis.DeleteKey(keyName);
 
                 data = true;
                 retVal = 1;
