@@ -16,7 +16,7 @@ namespace CKMS.AdminUserService.DataAccess.Repository
         public IQueryable<Kitchen> GetAllKitchen(bool tracking = false)
         {
             IQueryable<Kitchen> query = _dbSet;
-            if (tracking)
+            if (!tracking)
                 query.AsNoTracking();
 
             return query.Where(x => x.IsActive == 1);

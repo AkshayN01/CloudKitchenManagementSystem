@@ -21,7 +21,7 @@ namespace CKMS.AdminUserService.DataAccess.Repository
         public IQueryable<AdminUser> GetUsersByKitchen(Guid kitchenId, bool tracking = false)
         {
             IQueryable<AdminUser> query = _dbSet;
-            if (tracking)
+            if (!tracking)
                 query.AsNoTracking();
             return query.Where(x => x.KitchenId == kitchenId);
         }
@@ -29,7 +29,7 @@ namespace CKMS.AdminUserService.DataAccess.Repository
         public IQueryable<AdminUser> GetUsersByRole(int roleId, Guid KitchenId, bool tracking = false)
         {
             IQueryable<AdminUser> query = _dbSet;
-            if (tracking)
+            if (!tracking)
                 query.AsNoTracking();
             return query.Where(x => x.RoleId == roleId && x.KitchenId == KitchenId);
         }
