@@ -11,15 +11,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CKMS.Interfaces.Storage;
+using StackExchange.Redis;
 
 namespace CKMS.CustomerService.Blanket
 {
     public class AddressBlanket
     {
-        private readonly IRedis _Redis;
+        private readonly Interfaces.Storage.IRedis _Redis;
         private readonly IMapper _Mapper;
         private readonly ICustomerUnitOfWork _CustomerUnitOfWork;
-        public AddressBlanket(ICustomerUnitOfWork customerUnitOfWork, IMapper mapper, IRedis redis)
+        public AddressBlanket(ICustomerUnitOfWork customerUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis)
         {
             _Redis = redis;
             _Mapper = mapper;
@@ -61,6 +62,15 @@ namespace CKMS.CustomerService.Blanket
 
                 await _CustomerUnitOfWork.AddressRepository.AddAsync(address);
                 await _CustomerUnitOfWork.CompleteAsync();
+
+                //add data to redis
+                string keyName = $"{_Redis.CustomerKey}:{customer.CustomerId}";
+                String addressDetail = $"{address.AddressDetail}, {address.Region}, {address.City}, {address.PostalCode}";
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("address:" + address.AddressId, addressDetail)
+                };
+                await _Redis.HashSet(keyName, hashEntries);
 
                 data = true;
                 retVal = 1;
@@ -183,6 +193,15 @@ namespace CKMS.CustomerService.Blanket
                 _CustomerUnitOfWork.AddressRepository.Update(address);
                 await _CustomerUnitOfWork.CompleteAsync();
 
+                //update data in redis
+                string keyName = $"{_Redis.CustomerKey}:{address.CustomerId}";
+                String addressDetail = $"{address.AddressDetail}, {address.Region}, {address.City}, {address.PostalCode}";
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("address:" + address.AddressId, addressDetail)
+                };
+                await _Redis.HashSet(keyName, hashEntries);
+
                 data = true;
                 retVal = 1;
             }
@@ -216,6 +235,11 @@ namespace CKMS.CustomerService.Blanket
 
                 _CustomerUnitOfWork.AddressRepository.Delete(address);
                 await _CustomerUnitOfWork.CompleteAsync();
+
+                //delete data in redis
+                string keyName = $"{_Redis.CustomerKey}:{address.CustomerId}";
+                string addressKey = $"address:{addressId}";
+                await _Redis.HashDelete(keyName, addressKey);
 
                 data = true;
                 retVal = 1;
