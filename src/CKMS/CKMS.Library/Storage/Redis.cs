@@ -56,5 +56,10 @@ namespace CKMS.Library.Storage
         {
             return await _redisDB.KeyDeleteAsync(key);
         }
+
+        public async Task<bool> HashDelete(string key, string fieldName)
+        {
+            return await _redisDB.HashDeleteAsync(key, fieldName);
+        }
     }
 }
