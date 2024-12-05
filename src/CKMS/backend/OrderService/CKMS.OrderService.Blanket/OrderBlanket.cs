@@ -197,7 +197,9 @@ namespace CKMS.OrderService.Blanket
                         if (menuItem.Name == RedisValue.Null)
                             throw new Exception("Invalid Menu Item : " + orderItemPayload.MenuItemId);
 
-                        TotalAmount += (Convert.ToDouble(menuItem.Value) * orderItemPayload.Quantity);
+                        String val = menuItem.Value;
+                        String[] values = val.Split(":");
+                        TotalAmount += (Convert.ToDouble(values[1]) * orderItemPayload.Quantity);
 
                         OrderItem item = new OrderItem()
                         {
