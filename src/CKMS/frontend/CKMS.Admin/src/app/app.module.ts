@@ -33,6 +33,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -42,7 +43,8 @@ export function tokenGetter() {
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    VerifyAccountComponent
   ],
   imports: [
     BrowserModule,

@@ -9,9 +9,9 @@ import { LoginResponse } from '../../models/response/login/login';
   providedIn: 'root'
 })
 export class UserAccountService {
-
+  
+  private baseUrl: string = environment.apiUrl;
   private loginAPIUrl = environment.loginAPIUrl;
-  private registerAPIUrl = environment.registerAPIUrl;
 
   constructor(private apiService: HttpService) { }
 
@@ -19,5 +19,8 @@ export class UserAccountService {
     return this.apiService.postData<LoginResponse, LoginRequest>(this.loginAPIUrl, payload);
   }
 
-  register()
+  verifyAccount(token: string): Observable<boolean>{
+    var apiUrl = this.baseUrl + '/register-kitchen?'+ 'token='+token;
+    return this.apiService.getData<boolean>(apiUrl);
+  }
 }
