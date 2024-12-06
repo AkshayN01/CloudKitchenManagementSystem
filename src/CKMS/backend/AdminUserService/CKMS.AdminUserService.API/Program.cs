@@ -36,6 +36,8 @@ builder.Services.AddScoped<CKMS.Interfaces.Storage.IRedis, Redis>();
 
 builder.Services.AddSingleton<RedisAdminServiceSeed>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddHttpClient<INotificationHttpService, NotificationHttpService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["BaseUrl"]);
