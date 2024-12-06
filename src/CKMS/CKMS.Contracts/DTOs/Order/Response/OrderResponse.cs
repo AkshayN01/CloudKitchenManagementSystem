@@ -31,7 +31,6 @@ namespace CKMS.Contracts.DTOs.Order.Response
         public double GrossAmount { get; set; }
         public String Status { get; set; } = String.Empty;
         public String Address { get; set; } = String.Empty;
-        public int IsCancelled { get; set; } = 0;
         public ICollection<OrderItemDTO> Items { get; set; } = new List<OrderItemDTO>();
         public Payment? Payment { get; set; }
     }
