@@ -185,6 +185,7 @@ namespace CKMS.OrderService.Blanket
         #endregion
         #region " Customer "
         //API to apply discount
+        //IsApplied is set to 0, it is set to 1 only after the order is placed.
         public async Task<HTTPResponse> ApplyDiscount(DiscountUsagePayload payload)
         {
             int retVal = -40;
@@ -222,6 +223,12 @@ namespace CKMS.OrderService.Blanket
                 if (order == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
 
+                //check if other discount is already applied
+                DiscountUsage? discountUsageByOrder = await _OrderUnitOfWork.IDiscountUsageRepository
+                    .GetDiscountUsageByOrderIdAsync(OrderId);
+                if (discountUsageByOrder != null && discountUsageByOrder.DiscountId != discount.DiscountId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Other disocunt has already been applied : " + discount.CouponCode);
+
                 IEnumerable<DiscountUsage> discounts = await _OrderUnitOfWork.IDiscountUsageRepository
                     .GetUsageByUserIdAndDiscountId(userId, discount.DiscountId);
 
@@ -251,7 +258,7 @@ namespace CKMS.OrderService.Blanket
                     {
                         CreatedAt = DateTime.UtcNow,
                         DiscountId = discount.DiscountId,
-                        IsApplied = payload.IsApplied,
+                        IsApplied = 0,
                         OrderId = OrderId,
                         UpdatedAt = DateTime.UtcNow,
                         UsageId = new Guid(),
@@ -331,7 +338,7 @@ namespace CKMS.OrderService.Blanket
 
                 //_OrderUnitOfWork.IDiscountUsageRepository.Delete(orderSpecificUsage);
                 discountUsage.UpdatedAt = DateTime.Now;
-                discountUsage.IsApplied = 0;
+                discountUsage.IsApplied = 2; //cancelled
                 _OrderUnitOfWork.IDiscountUsageRepository.Update(discountUsage);
 
                 //update order details
