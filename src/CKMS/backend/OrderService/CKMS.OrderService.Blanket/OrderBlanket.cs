@@ -259,6 +259,9 @@ namespace CKMS.OrderService.Blanket
                 if (order == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
 
+                if (order.CustomerId.ToString() != userId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
+
                 order.Status = (int)OrderStatus.placed;
                 order.UpdatedAt = DateTime.UtcNow;
                 _OrderUnitOfWork.OrderRepository.Update(order);
@@ -300,7 +303,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to cancel an order
-        public async Task<HTTPResponse> CancelOrder(String orderId)
+        public async Task<HTTPResponse> CancelOrder(String userId, String orderId)
         {
 
             int retVal = -40;
@@ -316,6 +319,9 @@ namespace CKMS.OrderService.Blanket
 
                 if (Order == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
+
+                if (Order.CustomerId.ToString() != userId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 //to cancel order, it should be placed within 5min
                 if (DateTime.UtcNow.Subtract(Order.OrderDate).TotalMinutes > 5)
@@ -480,7 +486,7 @@ namespace CKMS.OrderService.Blanket
 
         #region " Business Owner "
         //API to update an order - Accept/Decline
-        public async Task<HTTPResponse> UpdateOrder(String orderId, String status)
+        public async Task<HTTPResponse> UpdateOrder(String orderId, String status, String kitchenId)
         {
 
             int retVal = -40;
@@ -496,6 +502,9 @@ namespace CKMS.OrderService.Blanket
                 Order? order = await _OrderUnitOfWork.OrderRepository.GetByGuidAsync(OrderId);
                 if (order == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
+
+                if (order.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 if (Enum.TryParse(typeof(OrderStatus), status, out var result) && Enum.IsDefined(typeof(OrderStatus), result))
                 {
@@ -519,7 +528,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to view an order
-        public async Task<HTTPResponse> ViewKitchenOrder(String kitchenId, String orderId, String status, int pageSize, int pageNumber)
+        public async Task<HTTPResponse> ViewKitchenOrder(String kitchenId, String orderId)
         {
 
             int retVal = -40;
