@@ -71,8 +71,8 @@ namespace CKMS.AdminUserService.Blanket
                     FullName = payload.AdminUserPayload.FullName,
                     IsEmailVerified = 0,
                     LastUpdatedAt = DateTime.UtcNow,
-                    RoleId = payload.AdminUserPayload.RoleId,
-                    UserName = payload.AdminUserPayload.UserName,
+                    RoleId = (int)Contracts.DBModels.AdminUserService.Role.SuperAdmin,
+                    UserName = payload.AdminUserPayload.EmailId,
                     UserId = new Guid(),
                 };
 
