@@ -1,0 +1,18 @@
+.company-name {
+    font-size: 20px;
+    font-weight: bold;
+}
+  
+.spacer {
+    flex: 1 1 auto;
+}
+  
+.notification-section, .user-section {
+    display: flex;
+    align-items: center;
+}
+  
+.notification-section button {
+    margin-right: 8px;
+}
+  
