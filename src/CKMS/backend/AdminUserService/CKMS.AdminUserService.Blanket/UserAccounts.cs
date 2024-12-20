@@ -54,7 +54,7 @@ namespace CKMS.AdminUserService.Blanket
 
                 userDTO.Name = adminUser.FullName;
                 userDTO.token = JWTAuth.
-                    GenerateJWTToken(adminUser.UserId.ToString(), adminUser.KitchenId.ToString(), adminUser.RoleId.ToString(), _appSettings.JWTAuthentication.secretKey);
+                    GenerateAdminJWTToken(adminUser.UserId.ToString(), adminUser.KitchenId.ToString(), adminUser.RoleId.ToString(), _appSettings.JWTAuthentication.secretKey);
 
                 data = userDTO;
                 retVal = 1;
