@@ -12,7 +12,7 @@ namespace CKMS.Library.Authentication
 {
     public static class JWTAuth
     {
-        public static String GenerateJWTToken(String userId, String kitchenId, String roleId, String secretKey)
+        public static String GenerateAdminJWTToken(String userId, String kitchenId, String roleId, String secretKey)
         {
             List<Claim> claims = new List<Claim>()
             {
@@ -21,6 +21,22 @@ namespace CKMS.Library.Authentication
                 new Claim("kitchenId", kitchenId),
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64) // Issued At
             };
+
+            return GenerateToken(claims, secretKey);
+        }
+        public static String GenerateCustomerJWTToken(String userId, String FullName, String secretKey)
+        {
+            List<Claim> claims = new List<Claim>()
+            {
+                new Claim("id", userId),
+                new Claim("name", FullName),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64) // Issued At
+            };
+
+            return GenerateToken(claims, secretKey);
+        }
+        private static String GenerateToken(List<Claim> claims, String secretKey)
+        {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
             var tokenDescriptor = new SecurityTokenDescriptor
