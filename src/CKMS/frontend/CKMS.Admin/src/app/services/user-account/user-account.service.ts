@@ -23,4 +23,9 @@ export class UserAccountService {
     var apiUrl = this.baseUrl + '/register-kitchen?'+ 'token='+token;
     return this.apiService.getData<boolean>(apiUrl);
   }
+
+  registerKitchen(payload: any): Observable<boolean>{
+    var apiUrl = this.baseUrl + '/register-kitchen';
+    return this.apiService.postData<boolean, any>(apiUrl, payload);
+  }
 }
