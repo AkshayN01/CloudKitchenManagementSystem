@@ -1,4 +1,5 @@
-﻿using CKMS.Contracts.DBModels.InventoryService;
+﻿using CKMS.Contracts.DBModels;
+using CKMS.Contracts.DBModels.InventoryService;
 using CKMS.Contracts.DBModels.OrderService;
 using CKMS.Library.SeedData.InventoryService;
 using CKMS.Library.SeedData.OrderService;
@@ -16,7 +17,7 @@ namespace CKMS.OrderService.DataAccess.Repository
         public DbSet<Discount> Discounts { get; set; }
         public DbSet<PersonalDiscounts> PersonalDiscounts { get; set; }
         public DbSet<DiscountUsage> DiscountUsages { get; set; }
-
+        public DbSet<AuditTable> Audit {  get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<OrderItem>()
@@ -41,6 +42,12 @@ namespace CKMS.OrderService.DataAccess.Repository
                 .HasOne(p => p.Discount)
                 .WithMany(p => p.DiscountUsages)
                 .HasForeignKey(p => p.DiscountId)
+                .IsRequired();
+
+            modelBuilder.Entity<DiscountUsage>()
+                .HasOne(p => p.Order)
+                .WithOne(p => p.DiscountUsage)
+                .HasForeignKey<DiscountUsage>(p => p.OrderId)
                 .IsRequired();
 
             modelBuilder.Entity<Discount>()

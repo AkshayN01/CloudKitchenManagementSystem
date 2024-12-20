@@ -1,4 +1,5 @@
-﻿using CKMS.Contracts.DBModels.OrderService;
+﻿using CKMS.Contracts.DBModels;
+using CKMS.Contracts.DBModels.OrderService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace CKMS.Interfaces.Repository
     {
         Task<List<OrderItem>> GetOrdersByOrderIdAsync(Guid orderId);
         Task<Int64> GetOrdersCountByOrderIdAsync(Guid orderId);
+        Task DeleteByMenuItemId(Int64 MenuItemId);
     }
     public interface IDicountRepository : IGenericRepository<Discount> 
     {
@@ -34,5 +36,5 @@ namespace CKMS.Interfaces.Repository
     {
         Task<Payment?> GetPaymentByOrderIdAsync(Guid orderId);
     }
-    public interface IOrderAuditRepository: IGenericRepository<OrderAuditTable> { }
+    public interface IOrderAuditRepository: IGenericRepository<AuditTable> { }
 }
