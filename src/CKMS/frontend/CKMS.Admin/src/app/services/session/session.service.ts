@@ -8,6 +8,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SessionService {
   authStorageName: string;
+  nameStorageName: string = 'AdminName';
   loginData!: LoginResponse;
 
   constructor(private jwtHelper: JwtHelperService) { 
@@ -15,11 +16,16 @@ export class SessionService {
   }
 
   saveDetails = (details: LoginResponse) => {
+    localStorage.setItem(this.nameStorageName, details.name);
     localStorage.setItem(this.authStorageName, details.token);
   }
 
   getToken = (): string | null => {
     return localStorage.getItem(this.authStorageName);
+  }
+
+  getUserName = (): string | null => {
+    return localStorage.getItem(this.nameStorageName);
   }
 
   isTokenExpired(): boolean {
@@ -36,5 +42,9 @@ export class SessionService {
   
   deleteDetails = () => {
     localStorage.removeItem(this.authStorageName);
+  }
+
+  logout = () => {
+    
   }
 }
