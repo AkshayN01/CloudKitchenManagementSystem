@@ -6,11 +6,11 @@ namespace CKMS.NotificationService.API.Hubs
     {
         public override async Task OnConnectedAsync()
         {
-            // Assume CustomerId is passed as a query string or obtained from claims
-            var customerId = Context.User?.FindFirst("customerId")?.Value ?? Context.GetHttpContext()?.Request.Query["customerId"];
+            var customerId = Context.User?.FindFirst("id")?.Value;
 
             if (!string.IsNullOrEmpty(customerId))
             {
+                //here group is created to send noti to users bu their customerId
                 await Groups.AddToGroupAsync(Context.ConnectionId, customerId);
             }
 
@@ -19,7 +19,7 @@ namespace CKMS.NotificationService.API.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            var customerId = Context.User?.FindFirst("customerId")?.Value ?? Context.GetHttpContext()?.Request.Query["customerId"];
+            var customerId = Context.User?.FindFirst("id")?.Value;
 
             if (!string.IsNullOrEmpty(customerId))
             {
@@ -27,6 +27,10 @@ namespace CKMS.NotificationService.API.Hubs
             }
 
             await base.OnDisconnectedAsync(exception);
+        }
+        public async Task SendMessageToGroup(string groupName, string user, string message)
+        {
+            await Clients.Group(groupName).SendAsync("ReceiveNotification", user, message);
         }
     }
 }
