@@ -22,6 +22,7 @@ namespace CKMS.Contracts.DBModels.OrderService
         public DateTime UpdatedAt { get; set; }
         public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
         public Payment? Payment { get; set; }
+        public DiscountUsage? DiscountUsage { get; set; }
     }
 
     public class OrderItem
@@ -35,10 +36,6 @@ namespace CKMS.Contracts.DBModels.OrderService
         [Required]
         public int Quantity { get; set; }
         public Order Order { get; set; } = null!; //Required
-    }
-    public class OrderAuditTable : AuditTable
-    {
-        public Guid OrderId { get; set; }
     }
 
     public enum OrderStatus

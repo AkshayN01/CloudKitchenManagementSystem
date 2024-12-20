@@ -51,6 +51,7 @@ namespace CKMS.Contracts.DBModels.OrderService
         public int IsApplied { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Order Order { get; set; } = null!;
         public Discount Discount { get; set; } = null!;
     }
     public enum DiscountType
