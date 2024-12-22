@@ -47,6 +47,11 @@ namespace CKMS.Library.Generic
         {
             return Enum.IsDefined(typeof(TEnum), value);
         }
+
+        public static String? GetEnumStringValue<TEnum>(int value) where TEnum : Enum 
+        {
+            return Enum.GetName(typeof(TEnum), value);
+        }
         public static async Task<String> SerialiseData<T>(T data)
         {
             String json = String.Empty;

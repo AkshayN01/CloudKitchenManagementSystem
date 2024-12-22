@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CKMS.Contracts.DBModels.OrderService;
 using CKMS.Contracts.DTOs.Order.Response;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,18 @@ namespace CKMS.Library.AMProfiles
                 .ForMember(dest => dest.CustomerId, src => src.MapFrom(x => x.CustomerId))
                 .ForMember(dest => dest.GrossAmount, src => src.MapFrom(x => x.GrossAmount))
                 .ForMember(dest => dest.NetAmount, src => src.MapFrom(x => x.NetAmount))
-                .ForMember(dest => dest.Status, src => src.MapFrom(x => x.Status));
+                .ForMember(dest => dest.Status, src => src.MapFrom(x =>
+                Library.Generic.Utility.GetEnumStringValue<OrderStatus>(x.Status)));
+
+
+            CreateMap<Order, OrderDetailDTO>()
+                .ForMember(dest => dest.OrderId, src => src.MapFrom(x => x.OrderId))
+                .ForMember(dest => dest.OrderDate, src => src.MapFrom(x => x.OrderDate))
+                .ForMember(dest => dest.Address, src => src.MapFrom(x => x.Address))
+                .ForMember(dest => dest.GrossAmount, src => src.MapFrom(x => x.GrossAmount))
+                .ForMember(dest => dest.NetAmount, src => src.MapFrom(x => x.NetAmount))
+                .ForMember(dest => dest.Status, src => src.MapFrom(x => 
+                Library.Generic.Utility.GetEnumStringValue<OrderStatus>(x.Status)));
         }
     }
 }

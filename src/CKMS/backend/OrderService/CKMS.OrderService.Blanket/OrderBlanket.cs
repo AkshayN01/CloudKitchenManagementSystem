@@ -391,7 +391,12 @@ namespace CKMS.OrderService.Blanket
                 if (details == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
 
+                Payment? payment = await _OrderUnitOfWork.PaymentRepository.GetPaymentByOrderIdAsync(OrderId);
+                if (payment != null)
+                    orderDTO.PaymentStatus = payment.PaymentStatus.ToString();
+
                 List<OrderItem> items = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(OrderId);
+
                 orderDTO.Items = new List<OrderItemDTO>();
                 if (items != null)
                 {
@@ -536,6 +541,7 @@ namespace CKMS.OrderService.Blanket
             String message = String.Empty;
             try
             {
+                OrderDetailDTO orderDetailDTO = new OrderDetailDTO();
                 Guid OrderId = new Guid(orderId);
                 Order? order = await _OrderUnitOfWork.OrderRepository.GetByGuidAsync(OrderId);
                 if (order == null)
@@ -543,6 +549,15 @@ namespace CKMS.OrderService.Blanket
 
                 if (order.KitchenId.ToString() != kitchenId)
                     return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions to view this order");
+
+                _Mapper.Map(orderDetailDTO, order);
+
+                String RedisCustomerKey = $"{_Redis.CustomerKey}:{order.CustomerId}";
+                //get user data
+                var userData = await _Redis.HashGetAll(RedisCustomerKey);
+                if (userData == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {order.CustomerId}");
+                orderDetailDTO.CustomerName = userData.FirstOrDefault(x => x.Name.StartsWith("Name")).ToString();
 
                 List<OrderItem> orderItems = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(order.OrderId);
                 
@@ -552,20 +567,53 @@ namespace CKMS.OrderService.Blanket
                     Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetByGuidAsync(discountUsage.DiscountId);
                     if (discount != null)
                     {
-
+                        orderDetailDTO.DiscountCouponCode = discount.CouponCode;
                     }
                 }
-                OrderList orderList = new OrderList();
+
                 Guid KitchenId = new Guid(kitchenId);
                 bool IsKitchenExist = await _Redis.Has($"{_Redis.KitchenKey}:{KitchenId}");
                 if (!IsKitchenExist)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid kitchen id found: {kitchenId}");
 
-                
+                //get menu Item name
+                var details = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{kitchenId}");
+                if (details == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
 
-                data = orderList;
+                List<OrderItem> items = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(OrderId);
+
+                orderDetailDTO.Items = new List<OrderItemDTO>();
+                if (items != null)
+                {
+                    foreach (var item in items)
+                    {
+                        foreach (var menuItem in details)
+                        {
+                            if (menuItem.Name != RedisValue.Null && menuItem.Name.StartsWith("menu:" + Convert.ToString(item.MenuItemId)))
+                            {
+                                //extract menu id
+                                String val = menuItem.Name;
+                                String[] values = val.Split(":");
+                                OrderItemDTO itemDTO = new OrderItemDTO()
+                                {
+                                    ItemName = values[2],
+                                    MenuItemId = item.MenuItemId,
+                                    OrderId = item.OrderId,
+                                    Quantity = item.Quantity,
+                                };
+                                orderDetailDTO.Items.Add(itemDTO);
+                            }
+                        }
+                    }
+                }
+
+                Payment? payment = await _OrderUnitOfWork.PaymentRepository.GetPaymentByOrderIdAsync(OrderId);
+                if (payment != null)
+                    orderDetailDTO.PaymentStatus = payment.PaymentStatus.ToString();
+
+                data = orderDetailDTO;
                 retVal = 1;
-
             }
             catch (Exception ex)
             {
