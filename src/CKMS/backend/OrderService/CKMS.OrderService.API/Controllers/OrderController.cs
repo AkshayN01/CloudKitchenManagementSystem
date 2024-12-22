@@ -73,7 +73,7 @@ namespace CKMS.OrderService.API.Controllers
         [HttpPut]
         [Authorize]
         [Route("/api/order/cancel-order/{orderId}")]
-        public async Task<IActionResult> CancelOrder([FromQuery] String orderId)
+        public async Task<IActionResult> CancelOrder([FromRoute] String orderId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -95,7 +95,7 @@ namespace CKMS.OrderService.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("/api/order/view-order/{orderId}/{kitchenId}")]
-        public async Task<IActionResult> ViewOrder([FromQuery] String orderId, String kitchenId)
+        public async Task<IActionResult> ViewOrder([FromRoute] String orderId, [FromQuery] String kitchenId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -141,7 +141,7 @@ namespace CKMS.OrderService.API.Controllers
         [HttpPut]
         [Authorize]
         [Route("/api/order/kitchen/update-order/{orderId}")]
-        public async Task<IActionResult> UpdateOrder([FromQuery] String orderId, [FromBody] String status)
+        public async Task<IActionResult> UpdateOrder([FromRoute] String orderId, [FromBody] String status)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -166,7 +166,7 @@ namespace CKMS.OrderService.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("/api/order/kitchen/view-order/{orderId}")]
-        public async Task<IActionResult> ViewKitchenOrder([FromQuery] String orderId)
+        public async Task<IActionResult> ViewKitchenOrder([FromRoute] String orderId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
