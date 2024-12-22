@@ -72,6 +72,16 @@ namespace CKMS.CustomerService.Blanket
                 await _CustomerUnitOfWork.CustomerRepository.AddAsync(customer);
                 await _CustomerUnitOfWork.CompleteAsync();
 
+                //add data to redis
+                string keyName = $"customer:{customer.CustomerId}";
+                HashEntry[] hashEntries = new HashEntry[]
+                {
+                    new HashEntry("name", customer.Name),
+                    new HashEntry("emailId", customer.EmailId),
+                    new HashEntry("phoneNumber", customer.PhoneNumber),
+                };
+                await _Redis.HashSet(keyName, hashEntries);
+
 
                 //send verification code
                 String verificationUrl = _appSettings.VerficationUrl + customer.VerificationToken;
