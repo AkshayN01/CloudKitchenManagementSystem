@@ -23,6 +23,7 @@ namespace CKMS.Library.SeedData.RedisSeed
                 string keyName = $"customer:{customer.CustomerId}";
                 List<HashEntry> hashEntries = new List<HashEntry>()
                 {
+                    new HashEntry("name", customer.Name),
                     new HashEntry("emailId", customer.EmailId),
                     new HashEntry("phoneNumber", customer.PhoneNumber),
                 };

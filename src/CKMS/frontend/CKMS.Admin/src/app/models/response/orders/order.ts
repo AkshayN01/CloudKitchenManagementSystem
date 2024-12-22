@@ -1,7 +1,6 @@
 export interface OrderList{
     orders: OrderListDTO[],
-    pageNumber: number,
-    pageSize: number
+    totalNumber: number
 }
 
 export interface OrderListDTO{
