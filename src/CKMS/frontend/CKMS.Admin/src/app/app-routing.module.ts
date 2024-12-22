@@ -3,12 +3,20 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
+import { HeaderComponent } from './components/protected/header/header.component';
+import { OrdersComponent } from './components/protected/orders/orders.component';
 
 const routes: Routes = [
   {path:'', pathMatch: 'full', redirectTo: '/login'},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'verify-account', component: VerifyAccountComponent},
+  {path: '', component: HeaderComponent,
+  children:[
+
+    {path: 'orders', component: OrdersComponent}
+  ],
+}
 ];
 
 @NgModule({

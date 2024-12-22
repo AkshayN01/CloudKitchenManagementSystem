@@ -1,0 +1,49 @@
+<div class="order-list">
+    <h1>Order List</h1>
+  
+    <!-- Order Table -->
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8" matSort (matSortChange)="onSortChange($event)">
+  
+      <!-- Order Date Column -->
+      <ng-container matColumnDef="orderDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Order Date </mat-header-cell>
+        <mat-cell *matCellDef="let order"> {{ order.OrderDate | date: 'shortDate' }} </mat-cell>
+      </ng-container>
+  
+      <!-- Order Status Column -->
+      <ng-container matColumnDef="orderStatus">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Order Status </mat-header-cell>
+        <mat-cell *matCellDef="let order"> {{ order.OrderStatus }} </mat-cell>
+      </ng-container>
+  
+      <!-- Net Amount Column -->
+      <ng-container matColumnDef="netAmount">
+        <mat-header-cell *matHeaderCellDef> Net Amount </mat-header-cell>
+        <mat-cell *matCellDef="let order"> {{ order.NetAmount | currency }} </mat-cell>
+      </ng-container>
+  
+      <!-- Item Count Column -->
+      <ng-container matColumnDef="itemCount">
+        <mat-header-cell *matHeaderCellDef> Item Count </mat-header-cell>
+        <mat-cell *matCellDef="let order"> {{ order.ItemCount }} </mat-cell>
+      </ng-container>
+  
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+        <mat-cell *matCellDef="let order">
+          <button mat-button color="primary" (click)="openConfirmationDialog('accept', order)">Accept</button>
+          <button mat-button color="warn" (click)="openConfirmationDialog('decline', order)">Decline</button>
+        </mat-cell>
+      </ng-container>
+  
+      <!-- Header and Row Definitions -->
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  
+    </mat-table>
+  
+    <!-- Pagination Controls -->
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  </div>
+  

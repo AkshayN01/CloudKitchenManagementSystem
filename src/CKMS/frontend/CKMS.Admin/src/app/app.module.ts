@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
+import { HttpClientModule } from '@angular/common/http';
+
 import { environment } from '../environments/environment';
 
 import { RouterModule } from '@angular/router';
@@ -31,9 +33,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
+import { OrdersComponent } from './components/protected/orders/orders.component';
+import { HeaderComponent } from './components/protected/header/header.component';
+import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -44,11 +50,15 @@ export function tokenGetter() {
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    VerifyAccountComponent
+    VerifyAccountComponent,
+    OrdersComponent,
+    HeaderComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     RouterModule,
     FormsModule,
     ReactiveFormsModule,
@@ -70,7 +80,9 @@ export function tokenGetter() {
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatProgressSpinnerModule,JwtModule.forRoot({
+    MatProgressSpinnerModule,
+    MatTableModule,
+    JwtModule.forRoot({
       jwtOptionsProvider: {
         provide: JWT_OPTIONS,
         useFactory: () => ({

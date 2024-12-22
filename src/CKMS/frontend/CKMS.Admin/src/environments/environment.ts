@@ -1,10 +1,11 @@
 export const environment = {
-    adminServiceDomain: "localhost",
-    orderServiceDomain: "localhost",
-    inventoryServiceDomain: "localhost",
-    notificationServiceDomain: "localhost",
+    adminServiceDomain: "https://localhost:7229/",
+    orderServiceDomain: "https://localhost:7229/",
+    inventoryServiceDomain: "https://localhost:7229/",
+    notificationServiceDomain: "https://localhost:7229/",
     authStorageName: "authToken",
     apiUrl: "/api",
     loginAPIUrl: "/login",
-    registerAPIUrl: "/register"
+    registerAPIUrl: "/register",
+    notificationAdminUrl: ""
 };
