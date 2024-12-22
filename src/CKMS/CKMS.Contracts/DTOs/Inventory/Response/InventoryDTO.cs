@@ -22,6 +22,11 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
         public float RestockThreshold { get; set; }
         public float MaxStockLevel { get; set; }
     }
+    public class InventoryMovementListDTO
+    {
+        public Int64 TotalCount { get; set; }
+        public List<InventoryMovementDTO> InventoryMovements { get; set; }
+    }
     public class InventoryMovementDTO
     {
         public Int64 Id { get; set; }

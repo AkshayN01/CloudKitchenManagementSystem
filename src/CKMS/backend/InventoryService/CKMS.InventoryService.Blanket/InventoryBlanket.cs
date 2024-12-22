@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CKMS.Contracts.DBModels.AdminUserService;
 using CKMS.Contracts.DBModels.InventoryService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.Inventory.Request;
@@ -72,7 +73,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " GET "
-        public async Task<HTTPResponse> GetInventoryById(int Id)
+        public async Task<HTTPResponse> GetInventoryById(Int64 Id)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -138,7 +139,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " UPDATE "
-        public async Task<HTTPResponse> UpdateInventory(InventoryUpdatePayload payload)
+        public async Task<HTTPResponse> UpdateInventory(InventoryUpdatePayload payload, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -154,7 +155,10 @@ namespace CKMS.InventoryService.Blanket
                 if (inventory == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory id");
 
-                if(!String.IsNullOrEmpty(payload.InventoryName))
+                if (inventory.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
+
+                if (!String.IsNullOrEmpty(payload.InventoryName))
                     inventory.InventoryName = payload.InventoryName;
 
                 inventory.Unit = payload.Unit;
@@ -180,7 +184,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " DELETE "
-        public async Task<HTTPResponse> DeleteInventory(Int64 InventoryId)
+        public async Task<HTTPResponse> DeleteInventory(Int64 InventoryId, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -192,6 +196,9 @@ namespace CKMS.InventoryService.Blanket
 
                 if (inventory == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory id");
+
+                if (inventory.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 _InventoryUnitOfWork.InventoryRepository.Delete(inventory);
                 await _InventoryUnitOfWork.CompleteAsync();
@@ -256,7 +263,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " GET "
-        public async Task<HTTPResponse> GetInventoryMovementById(int Id)
+        public async Task<HTTPResponse> GetInventoryMovementById(Int64 Id)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -280,10 +287,37 @@ namespace CKMS.InventoryService.Blanket
 
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
+
+        public async Task<HTTPResponse> GetInventoryMovements(Int64 InventoryId, int pageNumber, int pageSize)
+        {
+            int retVal = -40;
+            Object? data = default(Object?);
+            String message = String.Empty;
+            InventoryMovementListDTO inventoryListDTO = new InventoryMovementListDTO();
+            try
+            {
+                IQueryable<InventoryMovement> inventoryMovements = _InventoryUnitOfWork.InventoryMovementRepository.GetAllByInventoryId(InventoryId);
+                if (inventoryMovements != null)
+                {
+                    var inventoryMovementList = inventoryMovements.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+                    inventoryListDTO.TotalCount = inventoryMovements.Count();
+
+                    _Mapper.Map(inventoryMovementList, inventoryListDTO.InventoryMovements);
+                    data = inventoryListDTO;
+                    retVal = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                return APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
         #endregion
 
         #region " UPDATE "
-        public async Task<HTTPResponse> UpdateInventoryMovement(InventoryMovementUpdatePayload payload)
+        public async Task<HTTPResponse> UpdateInventoryMovement(InventoryMovementUpdatePayload payload, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -297,6 +331,9 @@ namespace CKMS.InventoryService.Blanket
 
                 if (inventoryMovement == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory movement id");
+
+                if (inventoryMovement.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 inventoryMovement.MovementDate = payload.MovementDate;
                 inventoryMovement.Quantity = payload.Quantity;
@@ -320,7 +357,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " DELETE "
-        public async Task<HTTPResponse> DeleteInventoryMovement(Int64 id)
+        public async Task<HTTPResponse> DeleteInventoryMovement(Int64 id, string kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -331,6 +368,9 @@ namespace CKMS.InventoryService.Blanket
 
                 if (inventoryMovement == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid inventory movement id");
+
+                if (inventoryMovement.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 _InventoryUnitOfWork.InventoryMovementRepository.Delete(inventoryMovement);
                 await _InventoryUnitOfWork.CompleteAsync();

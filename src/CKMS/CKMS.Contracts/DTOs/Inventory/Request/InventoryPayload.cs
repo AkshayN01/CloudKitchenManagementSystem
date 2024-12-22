@@ -11,8 +11,6 @@ namespace CKMS.Contracts.DTOs.Inventory.Request
     {
         [Required]
         public String InventoryName { get; set; } = String.Empty!;
-        [Required]
-        public Guid KitchenId { get; set; } = Guid.Empty!;
         public float Quantity { get; set; }
         public int Unit { get; set; }
         public float RestockThreshold { get; set; }
@@ -32,8 +30,6 @@ namespace CKMS.Contracts.DTOs.Inventory.Request
     {
         [Required]
         public Int64 InventoryId { get; set; } //Foreign Key
-        [Required]
-        public Guid KitchenId { get; set; } = Guid.Empty!; //Required
         public int MovementType { get; set; }
         public float Quantity { get; set; }
         public DateTime MovementDate { get; set; }

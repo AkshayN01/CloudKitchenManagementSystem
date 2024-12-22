@@ -18,8 +18,4 @@
     <ProjectReference Include="..\CKMS.InventoryService.Blanket\CKMS.InventoryService.Blanket.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

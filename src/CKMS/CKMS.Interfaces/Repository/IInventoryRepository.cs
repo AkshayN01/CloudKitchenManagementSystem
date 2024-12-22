@@ -11,7 +11,10 @@ namespace CKMS.Interfaces.Repository
     {
         IQueryable<Inventory> GetAllByKitchenId(Guid KitchenId, bool tracking = false);
     }
-    public interface IInventoryMovementRepository : IGenericRepository<InventoryMovement> { }
+    public interface IInventoryMovementRepository : IGenericRepository<InventoryMovement>
+    {
+        IQueryable<InventoryMovement> GetAllByInventoryId(Int64 InventoryId, bool tracking = false);
+    }
     public interface IMenuItemRepository : IGenericRepository<MenuItem> 
     {
         IQueryable<MenuItem> GetAllByKitchenId(Guid KitchenId, bool tracking = false);
