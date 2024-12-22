@@ -1,0 +1,51 @@
+<div class="order-detail-container">
+    <h1>Order Details</h1>
+  
+    <!-- Order Information -->
+    <mat-card class="order-info">
+      <mat-card-title>Order ID: {{ orderDetail?.orderId }}</mat-card-title>
+      <mat-card-content>
+        <p><strong>Customer Name:</strong> {{ orderDetail?.customerName }}</p>
+        <p><strong>Address:</strong> {{ orderDetail?.address }}</p>
+        <p><strong>Discount Code:</strong> {{ orderDetail?.discountCouponCode || 'N/A' }}</p>
+        <p><strong>Gross Amount:</strong> {{ orderDetail?.grossAmount | currency }}</p>
+        <p><strong>Net Amount:</strong> {{ orderDetail?.netAmount | currency }}</p>
+        <p><strong>Order Date:</strong> {{ orderDetail?.orderDate | date: 'short' }}</p>
+        <p><strong>Status:</strong> {{ orderDetail?.status }}</p>
+        <p><strong>Payment Status:</strong> {{ orderDetail?.paymentStatus }}</p>
+  
+        <!-- Update Status Dropdown -->
+        <mat-form-field appearance="fill">
+          <mat-label>Update Status</mat-label>
+          <mat-select [(value)]="selectedStatus" (selectionChange)="updateOrderStatus()">
+            <mat-option value="In Progress">In Progress</mat-option>
+            <mat-option value="Out for Delivery">Out for Delivery</mat-option>
+            <mat-option value="Delivered">Delivered</mat-option>
+            <mat-option value="Cancelled">Cancelled</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+  
+    <!-- Order Items Table -->
+    <h2>Order Items</h2>
+    <mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  
+      <!-- Item Name Column -->
+      <ng-container matColumnDef="itemName">
+        <mat-header-cell *matHeaderCellDef> Item Name </mat-header-cell>
+        <mat-cell *matCellDef="let item"> {{ item.itemName }} </mat-cell>
+      </ng-container>
+  
+      <!-- Quantity Column -->
+      <ng-container matColumnDef="quantity">
+        <mat-header-cell *matHeaderCellDef> Quantity </mat-header-cell>
+        <mat-cell *matCellDef="let item"> {{ item.quantity }} </mat-cell>
+      </ng-container>
+  
+      <!-- Header and Row Definitions -->
+      <mat-header-row *matHeaderRowDef="['itemName', 'quantity']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['itemName', 'quantity'];"></mat-row>
+    </mat-table>
+  </div>
+  
