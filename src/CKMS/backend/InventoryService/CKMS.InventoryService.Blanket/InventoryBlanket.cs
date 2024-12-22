@@ -27,7 +27,7 @@ namespace CKMS.InventoryService.Blanket
         }
         #region " INVENTORY "
         #region " ADD "
-        public async Task<HTTPResponse> AddInventory(InventoryPayload payload)
+        public async Task<HTTPResponse> AddInventory(InventoryPayload payload, string kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -38,7 +38,8 @@ namespace CKMS.InventoryService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Payload is empty");
 
                 //verify kitchen id is valid
-                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{payload.KitchenId}");
+                Guid KitchenId = new Guid(kitchenId);
+                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{kitchenId}");
 
                 if (!isKitchenIdExists)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
@@ -47,7 +48,7 @@ namespace CKMS.InventoryService.Blanket
                 {
                     CreatedAt = DateTime.UtcNow,
                     InventoryName = payload.InventoryName,
-                    KitchenId = payload.KitchenId,
+                    KitchenId = KitchenId,
                     LastUpdatedAt = DateTime.UtcNow,
                     MaxStockLevel = payload.MaxStockLevel,
                     RestockThreshold = payload.RestockThreshold,
@@ -207,7 +208,7 @@ namespace CKMS.InventoryService.Blanket
 
         #region " INVENTORY MOVEMENT "
         #region " ADD "
-        public async Task<HTTPResponse> AddInventoryMovement(InventoryMovementPayload payload)
+        public async Task<HTTPResponse> AddInventoryMovement(InventoryMovementPayload payload, string kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -218,7 +219,8 @@ namespace CKMS.InventoryService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Payload is empty");
 
                 //verify kitchen id is valid
-                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{payload.KitchenId}");
+                Guid KitchenId = new Guid(kitchenId);
+                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{kitchenId}");
 
                 if (!isKitchenIdExists)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
@@ -232,7 +234,7 @@ namespace CKMS.InventoryService.Blanket
                 {
                     CreatedAt = DateTime.UtcNow,
                     InventoryId = payload.InventoryId,
-                    KitchenId = payload.KitchenId,
+                    KitchenId = KitchenId,
                     MovementDate = payload.MovementDate,
                     Quantity = payload.Quantity
                 };
