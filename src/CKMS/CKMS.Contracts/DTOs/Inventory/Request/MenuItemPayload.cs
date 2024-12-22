@@ -10,8 +10,6 @@ namespace CKMS.Contracts.DTOs.Inventory.Request
     public class MenuItemPayload
     {
         [Required]
-        public Guid KitchenId { get; set; } = Guid.Empty!;
-        [Required]
         public String Name { get; set; } = String.Empty!;
         public String Description { get; set; } = String.Empty;
         public float Price { get; set; }

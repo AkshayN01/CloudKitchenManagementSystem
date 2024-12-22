@@ -27,7 +27,7 @@ namespace CKMS.InventoryService.Blanket
             _InventoryUnitOfWork = inventoryUnitOfWork;
         }
         #region " ADD "
-        public async Task<HTTPResponse> AddMenuItem(MenuItemPayload payload)
+        public async Task<HTTPResponse> AddMenuItem(MenuItemPayload payload, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -38,7 +38,8 @@ namespace CKMS.InventoryService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Payload is empty");
 
                 //verify kitchen id is valid
-                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{payload.KitchenId}");
+                Guid KitchenId = new Guid(kitchenId);
+                bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{kitchenId}");
 
                 if (!isKitchenIdExists)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
@@ -54,7 +55,7 @@ namespace CKMS.InventoryService.Blanket
                     CategoryId = payload.CategoryId,
                     Description = payload.Description,
                     IsAvalilable = payload.IsAvalilable,
-                    KitchenId = payload.KitchenId,
+                    KitchenId = KitchenId,
                     Name = payload.Name,
                     Price = payload.Price,
                     UpdatedAt = DateTime.UtcNow,
@@ -64,7 +65,7 @@ namespace CKMS.InventoryService.Blanket
                 await _InventoryUnitOfWork.CompleteAsync();
 
                 //add to redis
-                string keyName = $"{_Redis.KitchenKey}:{payload.KitchenId}";
+                string keyName = $"{_Redis.KitchenKey}:{kitchenId}";
                 HashEntry[] hashEntries = new HashEntry[] { new HashEntry($"menu:{menu.MenuItemId}", $"{menu.Name}:{menu.Price}" )};
                 await _Redis.HashSet(keyName, hashEntries);
 
@@ -81,7 +82,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " GET "
-        public async Task<HTTPResponse> GetMenuItemById(int Id)
+        public async Task<HTTPResponse> GetMenuItemById(Int64 Id)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -128,7 +129,7 @@ namespace CKMS.InventoryService.Blanket
                 List<MenuItem> items = new List<MenuItem>();
 
                 Guid kitchenId = new Guid(KitchenId);
-                IQueryable<MenuItem> menuItems = await _InventoryUnitOfWork.MenuItemRepository.GetAllByKitchenId(kitchenId);
+                IQueryable<MenuItem> menuItems = _InventoryUnitOfWork.MenuItemRepository.GetAllByKitchenId(kitchenId);
                 if (menuItems != null)
                 {
                     menuItemListDTO.TotalCount = menuItems.Count();
@@ -152,7 +153,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " UPDATE "
-        public async Task<HTTPResponse> UpdateMenuItem(MenuItemUpdatePayload payload)
+        public async Task<HTTPResponse> UpdateMenuItem(MenuItemUpdatePayload payload, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -167,6 +168,9 @@ namespace CKMS.InventoryService.Blanket
 
                 if (menuItem == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid menu item id");
+
+                if (menuItem.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 if (!String.IsNullOrEmpty(payload.Name))
                     menuItem.Name = payload.Name;
@@ -209,7 +213,7 @@ namespace CKMS.InventoryService.Blanket
         #endregion
 
         #region " DELETE "
-        public async Task<HTTPResponse> DeleteInventory(Int64 menuItemId)
+        public async Task<HTTPResponse> DeleteMenuItem(Int64 menuItemId, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -221,6 +225,9 @@ namespace CKMS.InventoryService.Blanket
 
                 if (menuItem == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid menu item id");
+
+                if (menuItem.KitchenId.ToString() != kitchenId)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
                 _InventoryUnitOfWork.MenuItemRepository.Delete(menuItem);
                 await _InventoryUnitOfWork.CompleteAsync();
