@@ -41,6 +41,7 @@ import { OrdersComponent } from './components/protected/orders/orders.component'
 import { HeaderComponent } from './components/protected/header/header.component';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { OrderDetailComponent } from './components/protected/order-detail/order-detail.component';
+import { AddInventoryComponent } from './components/protected/add-inventory/add-inventory.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -55,7 +56,8 @@ export function tokenGetter() {
     OrdersComponent,
     HeaderComponent,
     ConfirmationDialogComponent,
-    OrderDetailComponent
+    OrderDetailComponent,
+    AddInventoryComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,43 @@
+<!-- add-inventory.component.html -->
+<div class="container">
+    <form [formGroup]="inventoryForm" (ngSubmit)="onSubmit()">
+      <mat-form-field class="full-width">
+        <mat-label>Inventory Name</mat-label>
+        <input matInput formControlName="inventoryName" placeholder="Enter inventory name" />
+        <mat-error *ngIf="inventoryForm.get('inventoryName')?.invalid">Name is required.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Quantity</mat-label>
+        <input matInput type="number" formControlName="quantity" placeholder="Enter quantity" />
+        <mat-error *ngIf="inventoryForm.get('quantity')?.invalid">Quantity must be a non-negative number.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Unit</mat-label>
+        <input matInput type="number" formControlName="unit" placeholder="Enter unit" />
+        <mat-error *ngIf="inventoryForm.get('unit')?.invalid">Unit must be at least 1.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Restock Threshold</mat-label>
+        <input matInput type="number" formControlName="restockThreshold" placeholder="Enter restock threshold" />
+        <mat-error *ngIf="inventoryForm.get('restockThreshold')?.invalid">Threshold must be a non-negative number.</mat-error>
+      </mat-form-field>
+  
+      <mat-form-field class="full-width">
+        <mat-label>Max Stock Level</mat-label>
+        <input matInput type="number" formControlName="maxStockLevel" placeholder="Enter max stock level" />
+        <mat-error *ngIf="inventoryForm.get('maxStockLevel')?.invalid">Max stock level must be at least 1.</mat-error>
+      </mat-form-field>
+  
+      <button mat-raised-button color="primary" type="submit" [disabled]="inventoryForm.invalid">
+        Submit
+      </button>
+  
+      <button mat-raised-button color="accent" *ngIf="isSubmitted" (click)="onAddMore()">
+        Add More
+      </button>
+    </form>
+  </div>
+  

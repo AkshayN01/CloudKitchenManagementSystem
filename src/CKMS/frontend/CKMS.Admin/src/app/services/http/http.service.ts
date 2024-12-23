@@ -53,6 +53,19 @@ export class HttpService {
     );
   }
 
+  deleteData<T>(url: string): Observable<T> {
+    return this.http.delete<HTTPResponse<T>>(url, this.getRequestOptions()).pipe(
+      map((response: HTTPResponse<T>) => {
+        if (response.meta.retVal === 1) {
+          return response.data;
+        } else {
+          this.openSnackBar(response.meta.message);
+          throw new Error(response.meta.message || 'Unexpected response');
+        }
+      })
+    );
+  }
+
   // Helper method to construct request options (headers, etc.)
   private getRequestOptions() {
     // You can add any headers or authentication tokens here
