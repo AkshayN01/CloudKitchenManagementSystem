@@ -71,7 +71,7 @@ namespace CKMS.InventoryService.API.Controllers
 
         [HttpDelete]
         [Authorize]
-        [Route("/api/inventory/update-inventory/{inventoryId}")]
+        [Route("/api/inventory/delete-inventory/{inventoryId}")]
         public async Task<IActionResult> DeleteInventory([FromRoute] Int64 inventoryId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };

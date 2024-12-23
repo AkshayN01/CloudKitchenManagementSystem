@@ -18,7 +18,7 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
         public String InventoryName { get; set; } = String.Empty!;
         public Guid KitchenId { get; set; } = Guid.Empty!;
         public float Quantity { get; set; }
-        public int Unit { get; set; }
+        public String Unit { get; set; }
         public float RestockThreshold { get; set; }
         public float MaxStockLevel { get; set; }
     }

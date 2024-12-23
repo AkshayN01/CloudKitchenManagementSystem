@@ -15,7 +15,7 @@ namespace CKMS.Library.AMProfiles
                 .ForMember(dest => dest.MaxStockLevel, src => src.MapFrom(x => x.MaxStockLevel))
                 .ForMember(dest => dest.InventoryName, src => src.MapFrom(x => x.InventoryName))
                 .ForMember(dest => dest.KitchenId, src => src.MapFrom(x => x.KitchenId))
-                .ForMember(dest => dest.Unit, src => src.MapFrom(x => x.Unit));
+                .ForMember(dest => dest.Unit, src => src.MapFrom(x => Library.Generic.Utility.GetEnumStringValue<Unit>(x.Unit)));
 
             CreateMap<MenuItem, MenuItemDTO>()
                 .ForMember(dest => dest.MenuItemId, src => src.MapFrom(x => x.MenuItemId))
