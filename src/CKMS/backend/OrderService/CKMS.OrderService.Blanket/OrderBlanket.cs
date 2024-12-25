@@ -451,7 +451,7 @@ namespace CKMS.OrderService.Blanket
                 if (!isUserExist)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {userId}");
 
-                IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = await _OrderUnitOfWork.OrderRepository.GetOrdersByCustomerIdAsync( _UserId );
+                IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = _OrderUnitOfWork.OrderRepository.GetOrdersByCustomerIdAsync( _UserId );
                 orderList.TotalCount = orderQuery.Count();
 
                 List<Contracts.DBModels.OrderService.Order> Orders = orderQuery.OrderByDescending(x => x.OrderDate)
@@ -639,7 +639,7 @@ namespace CKMS.OrderService.Blanket
                 if (!IsKitchenExist)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid kitchen id found: {kitchenId}");
 
-                IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = await _OrderUnitOfWork.OrderRepository.GetOrdersByKitchenIdAsync(KitchenId);
+                IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = _OrderUnitOfWork.OrderRepository.GetOrdersByKitchenIdAsync(KitchenId);
                 orderList.TotalCount = orderQuery.Count();
 
                 //only send those orders that isnt in cart and isnt failed

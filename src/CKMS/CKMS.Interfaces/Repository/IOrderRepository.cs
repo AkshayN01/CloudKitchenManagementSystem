@@ -10,8 +10,8 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        Task<IQueryable<Order>> GetOrdersByCustomerIdAsync(Guid customerId);
-        Task<IQueryable<Order>> GetOrdersByKitchenIdAsync(Guid kitchenId);
+        IQueryable<Order> GetOrdersByCustomerIdAsync(Guid customerId, bool tracking = false);
+        IQueryable<Order> GetOrdersByKitchenIdAsync(Guid kitchenId, bool tracking = false);
     }
     public interface IOrderItemRepository : IGenericRepository<OrderItem>
     {
@@ -21,7 +21,7 @@ namespace CKMS.Interfaces.Repository
     }
     public interface IDicountRepository : IGenericRepository<Discount> 
     {
-        Task<Discount> GetDiscountByCouponCodeAsync(String couponCode);
+        Task<Discount?> GetDiscountByCouponCodeAsync(String couponCode);
     }
     public interface IPersonalDiscountRespository : IGenericRepository<PersonalDiscounts> 
     {
