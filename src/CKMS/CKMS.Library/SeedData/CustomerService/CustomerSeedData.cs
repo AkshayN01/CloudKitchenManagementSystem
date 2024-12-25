@@ -57,6 +57,8 @@ namespace CKMS.Library.SeedData.CustomerService
                         PasswordHash = PasswordHasher.HashPassword("admin1234"),
                         PhoneNumber = phone,
                         UserName = email,
+                        IsActive = 1,
+                        IsVerified = 1
                     };
                     Customers.Add(customer);
                 }
