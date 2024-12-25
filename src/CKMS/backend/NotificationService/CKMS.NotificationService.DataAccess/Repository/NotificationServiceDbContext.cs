@@ -7,5 +7,6 @@ namespace CKMS.NotificationService.DataAccess.Repository
     {
         public NotificationServiceDbContext(DbContextOptions<NotificationServiceDbContext> options) : base(options) { }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<NotificationAudit> NotificationAudit { get; set; }
     }
 }
