@@ -1,4 +1,6 @@
-﻿using StackExchange.Redis;
+﻿using Polly.Extensions.Http;
+using Polly;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,10 +75,14 @@ namespace CKMS.Library.Generic
         public static async Task<T?> DeserialiseData<T>(String json)
         {
             T? data = default(T);
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true // Ignore case sensitivity
+            };
 
             using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
             {
-                data = await JsonSerializer.DeserializeAsync<T>(stream);
+                data = await JsonSerializer.DeserializeAsync<T>(stream, options);
             }
 
             return data;
@@ -120,6 +126,14 @@ namespace CKMS.Library.Generic
             }
 
             return default(T);
+        }
+
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
         private static String GetDefaultFolderPath(String fileName)
         {
