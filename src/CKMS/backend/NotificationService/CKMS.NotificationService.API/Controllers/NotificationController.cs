@@ -17,7 +17,7 @@ namespace CKMS.NotificationService.API.Controllers
         }
 
         [HttpPost]
-        [Route("/api/notification/add-notification")]
+        [Route("/api/notification/send-notification")]
         public async Task<IActionResult> AddNotification([FromBody] List<NotificationPayload> payload)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
