@@ -25,6 +25,13 @@ namespace CKMS.Library.AMProfiles
                 .ForMember(dest => dest.Description, src => src.MapFrom(x => x.Description))
                 .ForMember(dest => dest.KitchenId, src => src.MapFrom(x => x.KitchenId))
                 .ForMember(dest => dest.IsAvalilable, src => src.MapFrom(x => x.IsAvalilable));
+
+            CreateMap<InventoryMovement, InventoryMovementDTO>()
+                .ForMember(dest => dest.Id, src => src.MapFrom(x => x.Id))
+                .ForMember(dest => dest.MovementDate, src => src.MapFrom(x => x.MovementDate))
+                .ForMember(dest => dest.Quantity, src => src.MapFrom(x => x.Quantity))
+                .ForMember(dest => dest.InventoryId, src => src.MapFrom(x => x.InventoryId))
+                .ForMember(dest => dest.KitchenId, src => src.MapFrom(x => x.KitchenId));
         }
     }
 }
