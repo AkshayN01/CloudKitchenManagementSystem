@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CKMS.CustomerService.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class intialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -23,8 +23,12 @@ namespace CKMS.CustomerService.DataAccess.Migrations
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
                     LoyaltyPoints = table.Column<long>(type: "bigint", nullable: false),
                     TotalOrder = table.Column<long>(type: "bigint", nullable: false),
+                    VerificationToken = table.Column<string>(type: "text", nullable: true),
+                    IsVerified = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LastLogin = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

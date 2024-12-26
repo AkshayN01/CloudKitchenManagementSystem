@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CKMS.CustomerService.DataAccess.Migrations
 {
     [DbContext(typeof(CustomerServiceDbContext))]
-    [Migration("20241203145618_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241225200703_intial-migration")]
+    partial class intialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,15 @@ namespace CKMS.CustomerService.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("IsActive")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IsVerified")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<long>("LoyaltyPoints")
                         .HasColumnType("bigint");
 
@@ -97,6 +106,9 @@ namespace CKMS.CustomerService.DataAccess.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VerificationToken")
                         .HasColumnType("text");
 
                     b.HasKey("CustomerId");

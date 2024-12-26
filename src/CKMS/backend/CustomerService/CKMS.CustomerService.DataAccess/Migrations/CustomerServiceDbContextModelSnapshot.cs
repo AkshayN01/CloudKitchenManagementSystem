@@ -71,6 +71,15 @@ namespace CKMS.CustomerService.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("IsActive")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IsVerified")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<long>("LoyaltyPoints")
                         .HasColumnType("bigint");
 
@@ -94,6 +103,9 @@ namespace CKMS.CustomerService.DataAccess.Migrations
 
                     b.Property<string>("UserName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("VerificationToken")
                         .HasColumnType("text");
 
                     b.HasKey("CustomerId");
