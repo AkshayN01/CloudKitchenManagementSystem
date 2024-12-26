@@ -113,7 +113,7 @@ namespace CKMS.InventoryService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/menu/{kitchenId}/get-all-menu/{pageSize}/{pageNumber}/{categoryId}")]
+        [Route("/api/menu/{kitchenId}/get-all-menu")]
         public async Task<IActionResult> GetAllInventoryMovements([FromRoute] String kitchenId, [FromQuery] int categoryId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };

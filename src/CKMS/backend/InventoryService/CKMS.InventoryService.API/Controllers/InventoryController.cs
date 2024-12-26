@@ -121,7 +121,7 @@ namespace CKMS.InventoryService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/inventory/get-all-inventory/{pageSize}/{pageNumber}")]
+        [Route("/api/inventory/get-all-inventory")]
         public async Task<IActionResult> GetAllInventory([FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
@@ -250,7 +250,7 @@ namespace CKMS.InventoryService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/inventory/get-all-inventory-movement/{inventoryId}/{pageSize}/{pageNumber}")]
+        [Route("/api/inventory/get-all-inventory-movement/{inventoryId}")]
         public async Task<IActionResult> GetAllInventoryMovements([FromRoute] Int64 inventoryId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
