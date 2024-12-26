@@ -1,11 +1,14 @@
 ﻿using CKMS.Contracts.DTOs.Notification.Request;
 using CKMS.Interfaces.HttpClientServices;
 using CKMS.Library.Generic;
+using Polly.Extensions.Http;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CKMS.Contracts.DTOs;
 
 namespace CKMS.Library.Services
 {
@@ -18,7 +21,7 @@ namespace CKMS.Library.Services
         }
         public async Task<bool> SendNotification(List<NotificationPayload> payload)
         {
-            String endpoint = "/send-notification";
+            String endpoint = "/api/notification/send-notification";
             if(payload == null)
                 return false;
 
@@ -33,7 +36,9 @@ namespace CKMS.Library.Services
             // Deserialize and return the response content
             var content = await response.Content.ReadAsStringAsync();
 
-            bool success = Convert.ToBoolean(content);
+            HTTPResponse? httpResponse = await Utility.DeserialiseData<HTTPResponse>(content);
+
+            //bool success = Convert.ToBoolean(httpResponse?.Data);
 
             return true;
         }
