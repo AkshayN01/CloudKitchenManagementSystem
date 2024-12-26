@@ -94,8 +94,8 @@ namespace CKMS.OrderService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/order/view-order/{orderId}/{kitchenId}")]
-        public async Task<IActionResult> ViewOrder([FromRoute] String orderId, [FromQuery] String kitchenId)
+        [Route("/api/order/view-order/{orderId}")]
+        public async Task<IActionResult> ViewOrder([FromRoute] String orderId, [FromQuery] String? kitchenId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -116,7 +116,7 @@ namespace CKMS.OrderService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/order/view-all-orders/{pageSize}/{pageNumber}")]
+        [Route("/api/order/view-all-orders")]
         public async Task<IActionResult> ViewOrders([FromQuery] int pageSize, int pageNumber)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
@@ -190,8 +190,8 @@ namespace CKMS.OrderService.API.Controllers
 
         [HttpGet]
         [Authorize]
-        [Route("/api/order/kitchen/view-all-orders/{pageSize}/{pageNumber}/{status}")]
-        public async Task<IActionResult> ViewAllKitchenOrders([FromQuery] int pageSize, int pageNumber, String status)
+        [Route("/api/order/kitchen/view-all-orders")]
+        public async Task<IActionResult> ViewAllKitchenOrders([FromQuery] int pageSize, [FromQuery]int pageNumber, [FromQuery]String? status)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;

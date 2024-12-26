@@ -365,7 +365,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to view an order
-        public async Task<HTTPResponse> ViewOrder(String orderId, String kitchenId, String userId)
+        public async Task<HTTPResponse> ViewOrder(String orderId, String? kitchenId, String userId)
         {
 
             int retVal = -40;
@@ -387,7 +387,7 @@ namespace CKMS.OrderService.Blanket
 
 
                 //get menu Item name
-                var details = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{kitchenId}");
+                var details = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{order.KitchenId}");
                 if (details == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
 
@@ -625,7 +625,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to view all orders
-        public async Task<HTTPResponse> ViewAllKitchenOrder(String kitchenId, String status, int pageSize, int pageNumber)
+        public async Task<HTTPResponse> ViewAllKitchenOrder(String kitchenId, String? status, int pageSize, int pageNumber)
         {
 
             int retVal = -40;
@@ -640,7 +640,7 @@ namespace CKMS.OrderService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid kitchen id found: {kitchenId}");
 
                 IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = _OrderUnitOfWork.OrderRepository.GetOrdersByKitchenIdAsync(KitchenId);
-                orderList.TotalCount = orderQuery.Count();
+                
 
                 //only send those orders that isnt in cart and isnt failed
                 if(String.IsNullOrEmpty(status))
@@ -658,7 +658,7 @@ namespace CKMS.OrderService.Blanket
                     else
                         return APIResponse.ConstructExceptionResponse(retVal, "Invalid Status");
                 }
-
+                orderList.TotalCount = orderQuery.Count();
                 List<Contracts.DBModels.OrderService.Order> Orders = orderQuery.Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize).ToList();
 
