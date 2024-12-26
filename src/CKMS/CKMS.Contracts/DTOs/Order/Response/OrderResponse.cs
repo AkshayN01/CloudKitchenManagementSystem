@@ -10,7 +10,7 @@ namespace CKMS.Contracts.DTOs.Order.Response
 {
     public class OrderList
     {
-        public List<OrderListDTO> Orders { get; set; }
+        public List<OrderListDTO> Orders { get; set; } = new List<OrderListDTO>();
         public Int64 TotalCount { get; set; }
     }
     public class OrderListDTO

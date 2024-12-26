@@ -10,7 +10,7 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
     public class InventoryListDTO
     {
         public Int64 TotalCount { get; set; }
-        public List<InventoryDTO> Inventories { get; set;}
+        public List<InventoryDTO> Inventories { get; set; } = new List<InventoryDTO>();
     }
     public class InventoryDTO
     {
@@ -25,7 +25,7 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
     public class InventoryMovementListDTO
     {
         public Int64 TotalCount { get; set; }
-        public List<InventoryMovementDTO> InventoryMovements { get; set; }
+        public List<InventoryMovementDTO> InventoryMovements { get; set; } = new List<InventoryMovementDTO>();
     }
     public class InventoryMovementDTO
     {

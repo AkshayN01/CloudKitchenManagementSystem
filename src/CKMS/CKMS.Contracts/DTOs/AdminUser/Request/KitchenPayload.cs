@@ -22,7 +22,7 @@ namespace CKMS.Contracts.DTOs.AdminUser.Request
         [Required]
         public string Country { get; set; } = string.Empty!;
         [Required]
-        public AdminUserPayload AdminUserPayload { get; set; } = null!;
+        public AdminUserRegisterPayload AdminUserPayload { get; set; } = null!;
     }
     public class KitchenUpdatePayload
     {

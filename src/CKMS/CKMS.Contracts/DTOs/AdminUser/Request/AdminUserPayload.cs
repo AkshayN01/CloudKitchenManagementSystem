@@ -22,13 +22,10 @@ namespace CKMS.Contracts.DTOs.AdminUser.Request
     public class AdminUserRegisterPayload
     {
         [Required]
-        public string UserName { get; set; } = string.Empty!;
-        [Required]
         [RegularExpression("^[a-zA-Z0-9_\\.-]+@([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$", ErrorMessage = "Email is not valid")]
         public string EmailId { get; set; } = string.Empty!;
         [Required]
         public string FullName { get; set; } = string.Empty!;
-        public int RoleId { get; set; }
         [Required]
         public String Password { get; set; } = String.Empty!;
     }

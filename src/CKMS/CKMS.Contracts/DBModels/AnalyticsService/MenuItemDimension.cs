@@ -39,4 +39,22 @@ namespace CKMS.Contracts.DBModels.AnalyticsService
         public DateTime UpdatedAt { get; set; }
         public ICollection<MenuItemDimension> Items { get; set; }
     }
+    public class IndeventoryTrends
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Int64 Id { get; set; }
+        [Required]
+        public Int64 IndeventoryId { get; set; }
+        [Required]
+        public Guid KitchenId { get; set; } = Guid.Empty!;
+        [Required]
+        public String Name { get; set; }
+        [Required]
+        public Double Quantity { get; set; }
+        [Required] 
+        public int Unit { get;}
+        [Required]
+        public DateTime MovementDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
 }
