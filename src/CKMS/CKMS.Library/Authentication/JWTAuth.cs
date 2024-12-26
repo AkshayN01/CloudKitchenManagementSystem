@@ -59,7 +59,7 @@ namespace CKMS.Library.Authentication
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId), // Subject
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), // Unique ID
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString(), ClaimValueTypes.Integer64) // Issued At
+                new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64) // Issued At
             };
 
             var token = new JwtSecurityToken(
@@ -72,7 +72,7 @@ namespace CKMS.Library.Authentication
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public static ClaimsPrincipal? ValidateToken(string token, String secretKey, String issuer, String audience)
+        public static (String UserId, String Token) ValidateToken(string token, String secretKey, String issuer, String audience)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.UTF8.GetBytes(secretKey);
@@ -92,11 +92,13 @@ namespace CKMS.Library.Authentication
             try
             {
                 var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
-                return principal;
+                String userId = principal.Claims.ToList()[0].Value;
+                String tokenValue = principal?.FindFirstValue(JwtRegisteredClaimNames.Jti);
+                return (userId, tokenValue);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return null; // Token validation failed
+                return ("", ""); // Token validation failed
             }
         }
     }
