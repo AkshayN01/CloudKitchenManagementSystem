@@ -38,6 +38,14 @@ namespace CKMS.InventoryService.DataAccess.Repository
     public class InventoryMovementRepository : GenericRepository<InventoryMovement>, IInventoryMovementRepository
     {
         public InventoryMovementRepository(InventoryServiceDbContext context) : base(context) { }
+
+        public IQueryable<InventoryMovement> GetAllByInventoryId(long InventoryId, bool tracking = false)
+        {
+            IQueryable<InventoryMovement> query = _dbSet;
+            if (!tracking)
+                query.AsNoTracking();
+            return query.Where(x => x.InventoryId == InventoryId);
+        }
     }
     public class MenuItemAuditRepository : GenericRepository<MenuItemAudit>, IMenuItemAuditRepository
     {
