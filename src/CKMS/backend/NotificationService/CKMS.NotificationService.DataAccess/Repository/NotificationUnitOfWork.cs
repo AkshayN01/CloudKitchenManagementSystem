@@ -23,7 +23,7 @@ namespace CKMS.NotificationService.DataAccess.Repository
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            _dbContext.Dispose();
         }
     }
 }
