@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CKMS.Contracts.Configuration;
 using CKMS.Contracts.DBModels.AdminUserService;
+using CKMS.Contracts.DBModels.CustomerService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.AdminUser.Request;
 using CKMS.Contracts.DTOs.AdminUser.Response;
@@ -8,6 +9,9 @@ using CKMS.Interfaces.Repository;
 using CKMS.Library.Authentication;
 using CKMS.Library.Generic;
 using Microsoft.Extensions.Options;
+using StackExchange.Redis;
+using System.Security.Claims;
+using Role = CKMS.Contracts.DBModels.AdminUserService.Role;
 
 namespace CKMS.AdminUserService.Blanket
 {
@@ -105,6 +109,46 @@ namespace CKMS.AdminUserService.Blanket
                 };
 
                 await _AdminUserUnitOfWork.AdminUserRepository.AddAsync(adminUser);
+                await _AdminUserUnitOfWork.CompleteAsync();
+
+                data = true;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return Library.Generic.APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return Library.Generic.APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+
+        public async Task<HTTPResponse> VerifyUserAccount(String token)
+        {
+            int retVal = -40;
+            string message = string.Empty;
+            Object? data = default(Object?);
+
+            try
+            {
+                (String userId, String tokenVal) = JWTAuth.ValidateToken(token, _appSettings.JWTAuthentication.secretKey,
+                    _appSettings.JWTAuthentication.issuer, _appSettings.JWTAuthentication.audience);
+
+                //check if User is present or not
+                if (String.IsNullOrEmpty(userId))
+                    return APIResponse.ConstructExceptionResponse(-40, "UserId is missing");
+
+                Guid UserId = new Guid(userId);
+                AdminUser? adminUser = await _AdminUserUnitOfWork.AdminUserRepository.GetByGuidAsync(UserId);
+
+                if (adminUser == null)
+                    return APIResponse.ConstructExceptionResponse(-40, "User not found");
+
+                if (token != adminUser.VerificationToken)
+                    return APIResponse.ConstructExceptionResponse(-40, "Invalid token");
+
+                adminUser.IsEmailVerified = 1;
+
+                _AdminUserUnitOfWork.AdminUserRepository.Update(adminUser);
                 await _AdminUserUnitOfWork.CompleteAsync();
 
                 data = true;

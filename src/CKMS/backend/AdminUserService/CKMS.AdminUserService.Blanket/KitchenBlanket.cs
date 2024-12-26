@@ -73,15 +73,15 @@ namespace CKMS.AdminUserService.Blanket
                     LastUpdatedAt = DateTime.UtcNow,
                     RoleId = (int)Contracts.DBModels.AdminUserService.Role.SuperAdmin,
                     UserName = payload.AdminUserPayload.EmailId,
-                    UserId = new Guid(),
+                    UserId = Guid.NewGuid(),
                 };
+
 
                 adminUser.VerificationToken = JWTAuth.
                     GenerateVerificationToken(adminUser.UserId.ToString(), _appSettings.JWTAuthentication.secretKey, 
                     _appSettings.JWTAuthentication.issuer, _appSettings.JWTAuthentication.audience, 60);
 
                 await _AdminUserUnitOfWork.AdminUserRepository.AddAsync(adminUser);
-
                 await _AdminUserUnitOfWork.CompleteAsync();
 
                 String address = $"{kitchen.Address}, {kitchen.Region}, {kitchen.City}, {kitchen.PostalCode}";

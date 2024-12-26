@@ -181,5 +181,21 @@ namespace CKMS.AdminUserService.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
+        [HttpGet]
+        [Route("/api/admin/verify-user")]
+        public async Task<IActionResult> VerifyUser([FromQuery] String token)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+
+            try
+            {
+                var httpResponse = await _userAccounts.VerifyUserAccount(token);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
     }
 }
