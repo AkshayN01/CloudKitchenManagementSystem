@@ -34,6 +34,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
 import { environment } from '../environments/environment';
+import { SessionService } from './services/session/session.service';
+import { AuthInterceptor } from './services/http/auth';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -91,7 +93,13 @@ export function tokenGetter() {
     })
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    SessionService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
   ],
   bootstrap: [AppComponent]
 })

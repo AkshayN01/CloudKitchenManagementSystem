@@ -16,3 +16,8 @@ export interface AddressDTO{
     postalCode: string,
     country: string
 }
+
+export interface LoginResponse{
+    name: string,
+    token: string
+}
