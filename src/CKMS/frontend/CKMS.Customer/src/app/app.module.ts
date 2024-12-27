@@ -33,6 +33,12 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 
+import { environment } from '../environments/environment';
+
+export function tokenGetter() {
+  return localStorage.getItem(environment.authStorageName);
+}
+
 @NgModule({
   declarations: [
     AppComponent
@@ -64,6 +70,25 @@ import { MatTableModule } from '@angular/material/table';
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    JwtModule.forRoot({
+      jwtOptionsProvider: {
+        provide: JWT_OPTIONS,
+        useFactory: () => ({
+          tokenGetter: tokenGetter,
+          allowedDomains: [
+            environment.customerServiceDomain, 
+            environment.orderServiceDomain,
+            environment.notificationServiceDomain
+          ],
+          disallowedRoutes: 
+          [
+            environment.loginAPIUrl, 
+            environment.registerAPIUrl
+          ],
+        }),
+        deps: []
+      }
+    })
   ],
   providers: [
     provideAnimationsAsync()
