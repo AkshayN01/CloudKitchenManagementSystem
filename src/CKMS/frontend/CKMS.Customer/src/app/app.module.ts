@@ -80,7 +80,8 @@ export function tokenGetter() {
           allowedDomains: [
             environment.customerServiceDomain, 
             environment.orderServiceDomain,
-            environment.notificationServiceDomain
+            environment.notificationServiceDomain,
+            environment.inventoryServiceDomain
           ],
           disallowedRoutes: 
           [
