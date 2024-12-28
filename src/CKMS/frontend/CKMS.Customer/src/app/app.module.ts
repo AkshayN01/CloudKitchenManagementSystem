@@ -38,6 +38,7 @@ import { SessionService } from './services/session/session.service';
 import { AuthInterceptor } from './services/http/auth';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { HeaderComponent } from './components/protected/header/header.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -47,7 +48,8 @@ export function tokenGetter() {
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
