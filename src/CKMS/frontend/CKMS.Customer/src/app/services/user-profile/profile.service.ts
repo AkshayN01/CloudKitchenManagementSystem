@@ -3,7 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpService } from '../http/http.service';
 import { CustomerUpdatePayload, LoginPayload, RegisterPayload } from '../../models/request/customer';
 import { Observable } from 'rxjs';
-import { CustomerDTO } from '../../models/response/customer';
+import { CustomerDTO, LoginResponse } from '../../models/response/customer';
 
 @Injectable({
   providedIn: 'root'
@@ -19,9 +19,9 @@ export class ProfileService {
     return this.apiService.postData<boolean, RegisterPayload>(apiUrl, payload);
   }
 
-  login(payload: LoginPayload): Observable<boolean>{
+  login(payload: LoginPayload): Observable<LoginResponse>{
     var apiUrl = `${this.baseUrl}/api/customer/login`;
-    return this.apiService.postData<boolean, LoginPayload>(apiUrl, payload);
+    return this.apiService.postData<LoginResponse, LoginPayload>(apiUrl, payload);
   }
 
   verifyAccount(token: string): Observable<boolean>{
