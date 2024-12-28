@@ -5,6 +5,11 @@ export interface RegisterPayload{
     password: string
 }
 
+export interface LoginPayload{
+    userName: string,
+    password: string
+}
+
 export interface CustomerUpdatePayload{
     name: string,
     phoneNumber: string,
