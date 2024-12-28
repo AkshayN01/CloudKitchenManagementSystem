@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace CKMS.Contracts.DTOs.Customer.Request
 {
+    public class CustomerLoginPayload
+    {
+        [Required]
+        public String UserName { get; set; } = String.Empty!;
+        [Required]
+        public String Password { get; set; } = String.Empty!;
+    }
     public class RegisterPayload
     {
         [Required]

@@ -16,4 +16,10 @@ namespace CKMS.Contracts.DTOs.Customer.Response
         public Int64 LoyaltyPoints { get; set; }
         public Int64 TotalOrder { get; set; }
     }
+
+    public class CustomerLoginDTO
+    {
+        public String Name { get; set; }
+        public String Token { get; set; }
+    }
 }

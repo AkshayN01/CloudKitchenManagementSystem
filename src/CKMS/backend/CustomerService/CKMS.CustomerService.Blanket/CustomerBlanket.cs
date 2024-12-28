@@ -114,7 +114,7 @@ namespace CKMS.CustomerService.Blanket
         }
 
         //API to Verify Account
-        public async Task<HTTPResponse> VerifyUserAccount(String token, String userId)
+        public async Task<HTTPResponse> VerifyUserAccount(String token)
         {
             int retVal = -40;
             string message = string.Empty;
@@ -122,6 +122,8 @@ namespace CKMS.CustomerService.Blanket
 
             try
             {
+                (String userId, String tokenVal) = 
+                    JWTAuth.ValidateToken(token, _appSettings.JWTAuthentication.secretKey, _appSettings.JWTAuthentication.issuer, _appSettings.JWTAuthentication.audience);
                 //check if User is present or not
                 if (String.IsNullOrEmpty(userId))
                     return APIResponse.ConstructExceptionResponse(-40, "UserId is missing");
@@ -161,7 +163,7 @@ namespace CKMS.CustomerService.Blanket
         }
 
         //API for login
-        public async Task<HTTPResponse> Login(String username, string password)
+        public async Task<HTTPResponse> Login(CustomerLoginPayload payload)
         {
             int retVal = -40;
             Object? data = default(Object);
@@ -169,21 +171,23 @@ namespace CKMS.CustomerService.Blanket
 
             try
             {
-                Customer? customer = await _CustomerUnitOfWork.CustomerRepository.GetCustomerByUsername(username);
+                Customer? customer = await _CustomerUnitOfWork.CustomerRepository.GetCustomerByUsername(payload.UserName);
                 if (customer == null)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid username");
 
-                if(!PasswordHasher.VerifyPassword(password, customer.PasswordHash))
+                if(!PasswordHasher.VerifyPassword(payload.Password, customer.PasswordHash))
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid password");
-
-                CustomerDTO customerDTO = new CustomerDTO();
-                _Mapper.Map(customer, customerDTO);
+                
+                CustomerLoginDTO loginDTO = new CustomerLoginDTO() { Name = customer.Name };
+                
+                String token = JWTAuth.GenerateCustomerJWTToken(customer.CustomerId.ToString(), customer.Name, _appSettings.JWTAuthentication.secretKey);
+                loginDTO.Token = token;
 
                 customer.LastLogin = DateTime.UtcNow;
                 _CustomerUnitOfWork.CustomerRepository.Update(customer);
                 await _CustomerUnitOfWork.CompleteAsync();
 
-                data = customerDTO;
+                data = loginDTO;
                 retVal = 1;
             }
             catch (Exception ex)
