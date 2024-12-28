@@ -36,6 +36,8 @@ import { MatTableModule } from '@angular/material/table';
 import { environment } from '../environments/environment';
 import { SessionService } from './services/session/session.service';
 import { AuthInterceptor } from './services/http/auth';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -43,7 +45,9 @@ export function tokenGetter() {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
