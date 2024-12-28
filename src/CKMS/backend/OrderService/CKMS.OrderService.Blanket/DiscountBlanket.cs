@@ -30,7 +30,7 @@ namespace CKMS.OrderService.Blanket
         #region " Business Owner "
 
         //API to add discount
-        public async Task<HTTPResponse> AddDiscount(DiscountPayload payload)
+        public async Task<HTTPResponse> AddDiscount(DiscountPayload payload, String kitchenId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -91,7 +91,7 @@ namespace CKMS.OrderService.Blanket
                 else
                 {
                     //verify kitchen id is valid
-                    bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{payload.KitchenId}");
+                    bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{kitchenId}");
 
                     if (!isKitchenIdExists)
                         return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
@@ -105,7 +105,7 @@ namespace CKMS.OrderService.Blanket
                         EndDate = payload.EndDate,
                         IsActive = 1,
                         IsPersonalised = payload.IsPersonalised,
-                        KitchenId = new Guid(payload.KitchenId),
+                        KitchenId = new Guid(kitchenId),
                         StartDate = payload.StartDate,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt= DateTime.UtcNow,
@@ -186,7 +186,7 @@ namespace CKMS.OrderService.Blanket
         #region " Customer "
         //API to apply discount
         //IsApplied is set to 0, it is set to 1 only after the order is placed.
-        public async Task<HTTPResponse> ApplyDiscount(DiscountUsagePayload payload)
+        public async Task<HTTPResponse> ApplyDiscount(DiscountUsagePayload payload, string customerId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -206,10 +206,10 @@ namespace CKMS.OrderService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid CouponCode");
 
                 //check if it's a valid user
-                if (String.IsNullOrEmpty(payload.UserId))
+                if (String.IsNullOrEmpty(customerId))
                     return APIResponse.ConstructExceptionResponse(retVal, "UserId is empty");
 
-                Guid userId = new Guid(payload.UserId);
+                Guid userId = new Guid(customerId);
                 bool isUserExist = await _Redis.Has($"{_Redis.CustomerKey}:{userId}");
                 if (!isUserExist)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {userId}");
@@ -293,7 +293,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to cancel discount
-        public async Task<HTTPResponse> CancelDiscount(DiscountUsagePayload payload)
+        public async Task<HTTPResponse> CancelDiscount(DiscountUsagePayload payload, string customerId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -313,10 +313,10 @@ namespace CKMS.OrderService.Blanket
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid CouponCode");
 
                 //check if it's a valid user
-                if (String.IsNullOrEmpty(payload.UserId))
+                if (String.IsNullOrEmpty(customerId))
                     return APIResponse.ConstructExceptionResponse(retVal, "UserId is empty");
 
-                Guid userId = new Guid(payload.UserId);
+                Guid userId = new Guid(customerId);
                 bool isUserExist = await _Redis.Has($"{_Redis.CustomerKey}:{userId}");
                 if (!isUserExist)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {userId}");

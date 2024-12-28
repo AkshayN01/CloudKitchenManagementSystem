@@ -11,7 +11,6 @@ namespace CKMS.Contracts.DTOs.Order.Request
     {
         public String DiscountId { get; set; }
         public int DiscountType { get; set; }
-        public String KitchenId { get; set; }
         public float DiscountValue { get; set; } //can be a percentage or amount
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -27,8 +26,6 @@ namespace CKMS.Contracts.DTOs.Order.Request
     }
     public class DiscountUsagePayload
     {
-        [Required]
-        public String UserId { get; set; } = String.Empty!;
         [Required]
         public String CouponCode { get; set; } = String.Empty!;
         [Required]

@@ -32,7 +32,7 @@ namespace CKMS.OrderService.Blanket
         }
         #region " Customer "
         //API to add order to cart
-        public async Task<HTTPResponse> AddToCart(OrderPayload payload)
+        public async Task<HTTPResponse> AddToCart(OrderPayload payload, string customerId)
         {
 
             int retVal = -40;
@@ -54,7 +54,7 @@ namespace CKMS.OrderService.Blanket
                     if (_Order == null)
                         return APIResponse.ConstructExceptionResponse(retVal, "Invalid Order Id");
 
-                    if (_Order.CustomerId.ToString() != payload.CustomerId)
+                    if (_Order.CustomerId.ToString() != customerId)
                         return APIResponse.ConstructExceptionResponse(retVal, "Customer Id doesn't match");
 
                     if (_Order.KitchenId.ToString() != payload.KitchenId)
@@ -95,7 +95,7 @@ namespace CKMS.OrderService.Blanket
                         return APIResponse.ConstructExceptionResponse(retVal, message);
                 }
 
-                Guid userId = new Guid(payload.CustomerId);
+                Guid userId = new Guid(customerId);
                 String RedisCustomerKey = $"{_Redis.CustomerKey}:{userId}";
                 //check user exists or not
                 var userData = await _Redis.HashGetAll(RedisCustomerKey);
@@ -105,8 +105,8 @@ namespace CKMS.OrderService.Blanket
                 HashEntry username = userData.FirstOrDefault(x => x.Name.StartsWith("Name"));
 
                 //check if valid Address
-                Guid AddressId = new Guid(payload.Address);
-                HashEntry? address = userData.FirstOrDefault(x => x.Name.StartsWith("Address:" + payload.Address));
+                Guid AddressId = new Guid(payload.AddressId);
+                HashEntry? address = userData.FirstOrDefault(x => x.Name.StartsWith("Address:" + payload.AddressId));
                 if(address == null || !address.HasValue)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user address id found: {AddressId}");
 
@@ -116,9 +116,6 @@ namespace CKMS.OrderService.Blanket
                 if (!isKitchenIdExists)
                     return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
 
-                if (payload.OrderDate < DateTime.UtcNow) //Order date cannot be less than current date
-                    return APIResponse.ConstructExceptionResponse(retVal, "Order date is not valid");
-
                 Guid OrderId = new Guid();
 
                 Contracts.DBModels.OrderService.Order order = new Contracts.DBModels.OrderService.Order()
@@ -127,7 +124,7 @@ namespace CKMS.OrderService.Blanket
                     CreatedAt = DateTime.UtcNow,
                     CustomerId = userId,
                     KitchenId = kitchenId,
-                    OrderDate = payload.OrderDate,
+                    OrderDate = DateTime.UtcNow,
                     OrderId = OrderId,
                     Status = (int)OrderStatus.cart,
                     UpdatedAt = DateTime.UtcNow,
@@ -365,7 +362,7 @@ namespace CKMS.OrderService.Blanket
         }
 
         //API to view an order
-        public async Task<HTTPResponse> ViewOrder(String orderId, String? kitchenId, String userId)
+        public async Task<HTTPResponse> ViewOrder(String orderId, String userId)
         {
 
             int retVal = -40;

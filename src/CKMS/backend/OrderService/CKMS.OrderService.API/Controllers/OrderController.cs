@@ -36,10 +36,9 @@ namespace CKMS.OrderService.API.Controllers
             var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
             if (userguid == null) { return Unauthorized(); }
 
-
             try
             {
-                var httpResponse = await _orderBlanket.AddToCart(payload);
+                var httpResponse = await _orderBlanket.AddToCart(payload, userguid);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
@@ -70,7 +69,7 @@ namespace CKMS.OrderService.API.Controllers
             }
         }
 
-        [HttpPut]
+        [HttpDelete]
         [Authorize]
         [Route("/api/order/cancel-order/{orderId}")]
         public async Task<IActionResult> CancelOrder([FromRoute] String orderId)
@@ -95,7 +94,7 @@ namespace CKMS.OrderService.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("/api/order/view-order/{orderId}")]
-        public async Task<IActionResult> ViewOrder([FromRoute] String orderId, [FromQuery] String? kitchenId)
+        public async Task<IActionResult> ViewOrder([FromRoute] String orderId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -105,7 +104,7 @@ namespace CKMS.OrderService.API.Controllers
 
             try
             {
-                var httpResponse = await _orderBlanket.ViewOrder(orderId, kitchenId, userguid);
+                var httpResponse = await _orderBlanket.ViewOrder(orderId, userguid);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
