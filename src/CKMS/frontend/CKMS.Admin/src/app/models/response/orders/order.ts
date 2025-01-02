@@ -1,6 +1,6 @@
 export interface OrderList{
     orders: OrderListDTO[],
-    totalNumber: number
+    totalCount: number
 }
 
 export interface OrderListDTO{

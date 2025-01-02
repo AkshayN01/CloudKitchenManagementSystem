@@ -1,4 +1,5 @@
 export interface LoginResponse{
     name: string,
-    token: string
+    token: string,
+    kitchenName: string
 }
