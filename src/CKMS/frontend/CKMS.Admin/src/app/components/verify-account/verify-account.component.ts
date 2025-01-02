@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserAccountService } from '../../services/user-account/user-account.service';
 
 @Component({
@@ -12,22 +12,26 @@ export class VerifyAccountComponent implements OnInit{
   loading = true;
   verificationSuccess = false;
 
-  constructor(private route: ActivatedRoute, private userAccountService: UserAccountService) {}
+  constructor(private route: ActivatedRoute, private userAccountService: UserAccountService, private router: Router) {}
 
   ngOnInit() {
     const token = this.route.snapshot.queryParamMap.get('token');
-    setTimeout(() => {
-      if (token) {
-        this.userAccountService.verifyAccount(token).subscribe({
-          next: () => (this.message = 'Account verified successfully!'),
-          error: () => (this.message = 'Verification failed. Please try again.'),
-        });
-      } else {
-        this.message = 'Invalid or missing token.';
-        this.verificationSuccess = false;
-        this.loading = false;
-      }
-    }, 5000);
+    if (token) {
+      this.userAccountService.verifyAccount(token).subscribe((res) => {
+        if(res){
+          this.message = 'Account verified successfully!';
+          setTimeout(()=>{
+            this.router.navigate(['/login']);
+          },3000);
+        }
+        else
+          this.message = 'Verification failed. Please try again.';
+      });
+    } else {
+      this.message = 'Invalid or missing token.';
+      this.verificationSuccess = false;
+      this.loading = false;
+    }
     
   }
 
