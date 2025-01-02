@@ -56,6 +56,9 @@ namespace CKMS.AdminUserService.Blanket
                 _AdminUserUnitOfWork.AdminUserRepository.Update(adminUser);
                 await _AdminUserUnitOfWork.CompleteAsync();
 
+                Kitchen? kitchen = await _AdminUserUnitOfWork.KitchenRepository.GetByGuidAsync(adminUser.KitchenId);
+
+                userDTO.KitchenName = kitchen.KitchenName;
                 userDTO.Name = adminUser.FullName;
                 userDTO.token = JWTAuth.
                     GenerateAdminJWTToken(adminUser.UserId.ToString(), adminUser.KitchenId.ToString(), adminUser.RoleId.ToString(), _appSettings.JWTAuthentication.secretKey);
@@ -149,6 +152,16 @@ namespace CKMS.AdminUserService.Blanket
                 adminUser.IsEmailVerified = 1;
 
                 _AdminUserUnitOfWork.AdminUserRepository.Update(adminUser);
+
+                if(adminUser.RoleId == (int)Role.SuperAdmin)
+                {
+                    Kitchen? kitchen = await _AdminUserUnitOfWork.KitchenRepository.GetByGuidAsync(adminUser.KitchenId);
+                    if(kitchen != null)
+                    {
+                        kitchen.IsActive = 1;
+                        _AdminUserUnitOfWork.KitchenRepository.Update(kitchen);
+                    }
+                }
                 await _AdminUserUnitOfWork.CompleteAsync();
 
                 data = true;

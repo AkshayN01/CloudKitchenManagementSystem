@@ -156,6 +156,10 @@ namespace CKMS.AdminUserService.Blanket
 
             try
             {
+                if (pageSize == 0)
+                    pageSize = 10;
+                if (pageNumber == 0)
+                    pageNumber = 1;
                 KitchenListDTO kitchenListDTO = new KitchenListDTO();
                 
                 IQueryable<Kitchen> kitchens = _AdminUserUnitOfWork.KitchenRepository.GetAllKitchen();
