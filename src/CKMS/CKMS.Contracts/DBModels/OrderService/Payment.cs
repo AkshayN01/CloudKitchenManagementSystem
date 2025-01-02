@@ -24,8 +24,8 @@ namespace CKMS.Contracts.DBModels.OrderService
 
     public enum PaymentMethod
     {
-        CashOnDelivery = 0,
-        Online = 1
+        CashOnDelivery = 1,
+        Online = 2
     }
 
     public enum PaymentStatus
