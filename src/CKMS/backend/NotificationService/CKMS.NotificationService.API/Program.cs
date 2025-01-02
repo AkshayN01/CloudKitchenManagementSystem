@@ -52,12 +52,29 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuer = false,
         ValidateAudience = false
     };
+    x.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+
+            // If the request is for the SignalR hub, add the access token
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/customer-notification-hub") || path.StartsWithSegments("/admin-notification-hub")))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
+// Retrieve AllowedDomains from configuration
+var allowedDomains = builder.Configuration.GetSection("Application:AllowedDomains").Get<string[]>();
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy(name: "CorsPolicy", builder =>
     {
-        builder.WithOrigins(configuration["Application:AllowedDomain"])
+        builder.WithOrigins(allowedDomains)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();
