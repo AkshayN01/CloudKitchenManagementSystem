@@ -1,4 +1,5 @@
 export interface WebNoti{
     title: string,
-    body: string
+    body: string,
+    isViewed: boolean
 }

@@ -1,7 +1,6 @@
 export interface OrderPayload{
     orderId: string,
     kitchenId: string,
-    addressId: string,
     items: OrderItemPayload[]
 }
 
@@ -12,12 +11,12 @@ export interface OrderItemPayload{
 
 export interface ConfirmOrderPayload{
     orderId: string,
-    paymentMethod: number
+    paymentMethod: number,
+    addressId: string,
 }
 
 export interface DiscountUsagePayload{
     couponCode: string,
     orderId: string,
-    isApplied: number,
     appliedDate: string
 }

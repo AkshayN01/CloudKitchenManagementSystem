@@ -18,6 +18,7 @@ export interface OrderDTO{
 }
 
 export interface OrderListDTO{
+    orderId: string,
     kitchenName: string,
     itemCount: number,
     netAmount: number,
@@ -28,4 +29,19 @@ export interface OrderListDTO{
 export interface OrderList{
     orders: OrderListDTO[],
     totalCount: number
+}
+
+export interface OrderCartDTO{
+    orderId: string,
+    customerId: string,
+    orderDate: string,
+    netAmount: number,
+    grossAmount: number,
+    items: OrderItemCartDTO[]
+}
+
+export interface OrderItemCartDTO{
+    menuItemId: number,
+    itemName: string,
+    quantity: number
 }
