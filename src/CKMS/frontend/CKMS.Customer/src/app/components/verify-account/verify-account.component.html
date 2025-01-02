@@ -1,0 +1,16 @@
+<div class="verification-container">
+    <div *ngIf="loading" class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Verifying your account...</p>
+    </div>
+  
+    <div *ngIf="!loading && verificationSuccess">
+      <mat-icon class="success-icon">check_circle</mat-icon>
+      <p>Your account has been verified successfully!</p>
+    </div>
+  
+    <div *ngIf="!loading && !verificationSuccess">
+      <mat-icon class="error-icon">error</mat-icon>
+      <p>Verification failed. Please try again.</p>
+    </div>
+</div>
