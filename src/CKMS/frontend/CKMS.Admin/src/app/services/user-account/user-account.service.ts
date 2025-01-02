@@ -10,7 +10,7 @@ import { LoginResponse } from '../../models/response/login/login';
 })
 export class UserAccountService {
   
-  private baseUrl: string = environment.apiUrl;
+  private baseUrl: string = environment.adminServiceDomain;
   private loginAPIUrl = environment.loginAPIUrl;
 
   constructor(private apiService: HttpService) { }
@@ -20,12 +20,12 @@ export class UserAccountService {
   }
 
   verifyAccount(token: string): Observable<boolean>{
-    var apiUrl = this.baseUrl + '/register-kitchen?'+ 'token='+token;
+    var apiUrl = this.baseUrl + '/api/admin/verify-user?'+ 'token='+token;
     return this.apiService.getData<boolean>(apiUrl);
   }
 
   registerKitchen(payload: any): Observable<boolean>{
-    var apiUrl = this.baseUrl + '/register-kitchen';
+    var apiUrl = this.baseUrl + '/api/admin/register-kitchen';
     return this.apiService.postData<boolean, any>(apiUrl, payload);
   }
 }
