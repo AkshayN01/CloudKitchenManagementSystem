@@ -24,7 +24,10 @@ export class OrderService {
   }
 
   viewAllOrders(pageSize: number, pageNumber: number, staus: string): Observable<OrderList>{
-    var apiUrl = `${this.baseUrl}/api/order/kitchen/view-all-orders?pageSize=${pageSize}&pageNumber=${pageNumber}&status=${staus}`;
+    console.log(staus == '')
+    var apiUrl = `${this.baseUrl}/api/order/kitchen/view-all-orders?pageSize=${pageSize}&pageNumber=${pageNumber}`;
+    if(staus != null && staus != undefined && staus != '')
+      apiUrl += `&status=${staus}`;
     return this.apiService.getData<OrderList>(apiUrl);
   }
 }
