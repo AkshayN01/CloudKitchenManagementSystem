@@ -109,7 +109,7 @@ namespace CKMS.InventoryService.Blanket
 
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
-        public async Task<HTTPResponse> GetAllMenuItem(String KitchenId, int categoryId, int pageNumber, int pageSize)
+        public async Task<HTTPResponse> GetAllMenuItem(String KitchenId, int categoryId)
         {
             int retVal = -40;
             Object? data = default(Object?);
@@ -135,7 +135,7 @@ namespace CKMS.InventoryService.Blanket
                     menuItemListDTO.TotalCount = menuItems.Count();
                     if(categoryId != 0)
                         menuItems = menuItems.Where(x => x.CategoryId == categoryId);
-                    items = menuItems.Skip((pageNumber - 1) * pageSize).Take(pageSize).OrderBy(x => x.CategoryId).ToList();
+                    items = menuItems.OrderBy(x => x.CategoryId).ToList();
 
                     _Mapper.Map(items, menuItemListDTO.MenuItems);
                     data = menuItemListDTO;

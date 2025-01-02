@@ -19,7 +19,7 @@ namespace CKMS.InventoryService.DataAccess.Repository
         {
             IQueryable<Inventory> query = _dbSet;
             if (!tracking)
-                query.AsNoTracking();
+                query = query.AsNoTracking();
             return query.Where(x => x.KitchenId == KitchenId);
         }
     }
@@ -31,7 +31,7 @@ namespace CKMS.InventoryService.DataAccess.Repository
         {
             IQueryable<MenuItem> query = _dbSet;
             if (!tracking)
-                query.AsNoTracking();
+                query = query.AsNoTracking();
             return query.Where(x => x.KitchenId == KitchenId);
         }
     }
@@ -43,7 +43,7 @@ namespace CKMS.InventoryService.DataAccess.Repository
         {
             IQueryable<InventoryMovement> query = _dbSet;
             if (!tracking)
-                query.AsNoTracking();
+                query = query.AsNoTracking();
             return query.Where(x => x.InventoryId == InventoryId);
         }
     }

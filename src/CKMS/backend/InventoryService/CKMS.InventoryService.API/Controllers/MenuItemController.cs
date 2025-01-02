@@ -114,7 +114,7 @@ namespace CKMS.InventoryService.API.Controllers
         [HttpGet]
         [Authorize]
         [Route("/api/menu/{kitchenId}/get-all-menu")]
-        public async Task<IActionResult> GetAllInventoryMovements([FromRoute] String kitchenId, [FromQuery] int categoryId, [FromQuery] int pageNumber, [FromQuery] int pageSize)
+        public async Task<IActionResult> GetAllMenuItems([FromRoute] String kitchenId, [FromQuery] int categoryId)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); };
             var claims = User.Claims;
@@ -123,7 +123,7 @@ namespace CKMS.InventoryService.API.Controllers
 
             try
             {
-                var httpResponse = await _menuItemBlanket.GetAllMenuItem(kitchenId, categoryId, pageNumber, pageSize);
+                var httpResponse = await _menuItemBlanket.GetAllMenuItem(kitchenId, categoryId);
                 return Ok(httpResponse);
             }
             catch (Exception ex)
