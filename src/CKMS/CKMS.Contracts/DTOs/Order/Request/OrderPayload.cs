@@ -13,8 +13,6 @@ namespace CKMS.Contracts.DTOs.Order.Request
         public String OrderId { get; set; }
         [Required]
         public String KitchenId { get; set; } = String.Empty!;
-        [Required]
-        public string AddressId { get; set; } = string.Empty;
         public ICollection<OrderItemPayload> Items { get; set; } = new List<OrderItemPayload>();
     }
     public class OrderItemPayload
@@ -28,6 +26,8 @@ namespace CKMS.Contracts.DTOs.Order.Request
     {
         [Required]
         public String OrderId { get; set; } = String.Empty!;
+        [Required]
+        public string AddressId { get; set; } = string.Empty;
         [Required]
         public int PaymentMethod { get; set; }
     }

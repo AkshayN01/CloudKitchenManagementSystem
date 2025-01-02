@@ -68,11 +68,12 @@ builder.Services.AddAuthentication(x =>
         ValidateAudience = false
     };
 });
+var allowedDomains = builder.Configuration.GetSection("Application:AllowedDomains").Get<string[]>();
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy(name: "CorsPolicy", builder =>
     {
-        builder.WithOrigins(configuration["Application:AllowedDomain"])
+        builder.WithOrigins(allowedDomains)
         .AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials();

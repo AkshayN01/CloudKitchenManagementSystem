@@ -203,7 +203,7 @@ namespace CKMS.OrderService.Blanket
                 Discount? discount = await _OrderUnitOfWork.IDicountRepository.GetDiscountByCouponCodeAsync(payload.CouponCode);
 
                 if (discount == null)
-                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid CouponCode");
+                    return APIResponse.ConstructExceptionResponse(-100, "Invalid CouponCode");
 
                 //check if it's a valid user
                 if (String.IsNullOrEmpty(customerId))
@@ -227,7 +227,7 @@ namespace CKMS.OrderService.Blanket
                 DiscountUsage? discountUsageByOrder = await _OrderUnitOfWork.IDiscountUsageRepository
                     .GetDiscountUsageByOrderIdAsync(OrderId);
                 if (discountUsageByOrder != null && discountUsageByOrder.DiscountId != discount.DiscountId)
-                    return APIResponse.ConstructExceptionResponse(retVal, "Other disocunt has already been applied : " + discount.CouponCode);
+                    return APIResponse.ConstructExceptionResponse(-110, "Other disocunt has already been applied : " + discount.CouponCode);
 
                 IEnumerable<DiscountUsage> discounts = await _OrderUnitOfWork.IDiscountUsageRepository
                     .GetUsageByUserIdAndDiscountId(userId, discount.DiscountId);
@@ -240,17 +240,8 @@ namespace CKMS.OrderService.Blanket
                         return APIResponse.ConstructExceptionResponse(retVal, "Discount coupon has already been used");
 
                     DiscountUsage? orderSpecificUsage = discountUsages.FirstOrDefault(x => x.OrderId == OrderId);
-                    if (orderSpecificUsage != null && (orderSpecificUsage.IsApplied == 1 || orderSpecificUsage.IsApplied == payload.IsApplied))
+                    if (orderSpecificUsage != null)
                         return APIResponse.ConstructExceptionResponse(retVal, "Discount has already been applied for the order");
-                    else if (orderSpecificUsage != null)
-                    {
-                        orderSpecificUsage.IsApplied = payload.IsApplied;
-                        orderSpecificUsage.UpdatedAt = DateTime.UtcNow;
-                        _OrderUnitOfWork.IDiscountUsageRepository.Update(orderSpecificUsage);
-                        createNewRecord = false;
-                    }
-                    else if (orderSpecificUsage == null)
-                        createNewRecord = true;
                 }
                 if (createNewRecord)
                 {

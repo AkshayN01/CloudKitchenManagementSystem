@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace CKMS.Library.Generic
 {
@@ -87,6 +88,25 @@ namespace CKMS.Library.Generic
 
             return data;
         }
+
+        public static DateTime ConvertDateToString(String date)
+        {
+            string format = "dd/MM/yyyy HH:mm:ss";
+            return DateTime.ParseExact(date, format, null).ToUniversalTime();
+        }
+        public static String GetMenuName(HashEntry[] data, Int64 itemId)
+        {
+            String name = "";
+            var menuItem = data.FirstOrDefault(x => x.Name.Equals("menu:" + Convert.ToString(itemId)));
+            if (menuItem.Name != RedisValue.Null)
+            {
+                String val = menuItem.Value;
+                String[] values = val.Split(":");
+                name = values[0];
+            }
+
+            return name;
+        } 
         public static async Task<bool> WriteToFile<T>(String fileName, T data, String filePath = "")
         {
             bool success = false;

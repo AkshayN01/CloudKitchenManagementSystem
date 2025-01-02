@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
 using CKMS.Contracts.DBModels;
 using CKMS.Contracts.DBModels.AdminUserService;
+using CKMS.Contracts.DBModels.CustomerService;
+using CKMS.Contracts.DBModels.NotificationService;
 using CKMS.Contracts.DBModels.OrderService;
 using CKMS.Contracts.DTOs;
 using CKMS.Contracts.DTOs.Analytics.Request;
+using CKMS.Contracts.DTOs.Notification.Request;
 using CKMS.Contracts.DTOs.Order.Request;
 using CKMS.Contracts.DTOs.Order.Response;
+using CKMS.Interfaces.HttpClientServices;
 using CKMS.Interfaces.Repository;
 using CKMS.Interfaces.Storage;
 using CKMS.Library.Generic;
+using CKMS.Library.Services;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -24,11 +29,13 @@ namespace CKMS.OrderService.Blanket
         private readonly Interfaces.Storage.IRedis _Redis;
         private readonly IMapper _Mapper;
         private readonly IOrderUnitOfWork _OrderUnitOfWork;
-        public OrderBlanket(IOrderUnitOfWork orderUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis)
+        private readonly INotificationHttpService _notificationHttpService;
+        public OrderBlanket(IOrderUnitOfWork orderUnitOfWork, IMapper mapper, Interfaces.Storage.IRedis redis, INotificationHttpService notificationHttpService)
         {
             _Redis = redis;
             _Mapper = mapper;
             _OrderUnitOfWork = orderUnitOfWork;
+            _notificationHttpService = notificationHttpService;
         }
         #region " Customer "
         //API to add order to cart
@@ -46,6 +53,12 @@ namespace CKMS.OrderService.Blanket
                 if (payload.Items == null || payload.Items.Count == 0)
                     return APIResponse.ConstructExceptionResponse(retVal, "Empty cart");
 
+                //check if already an order from different kitchen is present or not
+                IQueryable<Order> _orders = _OrderUnitOfWork.OrderRepository.GetOrdersByCustomerIdAsync(new Guid(customerId));
+                Order? _order = _orders.FirstOrDefault(x => x.Status == (int)OrderStatus.cart);
+                if (_order != null && _order.KitchenId.ToString() != payload.KitchenId)
+                    return APIResponse.ConstructExceptionResponse(-100, "A different order is already present in the cart");
+
                 //order is already present in the 
                 if (!String.IsNullOrEmpty(payload.OrderId))
                 {
@@ -60,7 +73,7 @@ namespace CKMS.OrderService.Blanket
                     if (_Order.KitchenId.ToString() != payload.KitchenId)
                         return APIResponse.ConstructExceptionResponse(retVal, "Kitchen Id doesn't match");
 
-                    (bool success1, Double TotalAmount1, List<AnalyticsOrderItemPayload>? auditItemPayload1, message) = await AddItemsToOrder(payload, _OrderId, _Order.KitchenId.ToString());
+                    (bool success1, Double TotalAmount1, List<OrderItem> orderItem, message) = await AddItemsToOrder(payload, _OrderId, _Order.KitchenId.ToString());
                     if (success1)
                     {
                         _Order.GrossAmount = TotalAmount1;
@@ -87,7 +100,7 @@ namespace CKMS.OrderService.Blanket
                         await _OrderUnitOfWork.CompleteAsync();
 
 
-                        data = true;
+                        data = _Order.OrderId;
                         retVal = 1;
                         return APIResponse.ConstructHTTPResponse(data, retVal, message);
                     }
@@ -102,14 +115,6 @@ namespace CKMS.OrderService.Blanket
                 if (userData == null)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {userId}");
 
-                HashEntry username = userData.FirstOrDefault(x => x.Name.StartsWith("Name"));
-
-                //check if valid Address
-                Guid AddressId = new Guid(payload.AddressId);
-                HashEntry? address = userData.FirstOrDefault(x => x.Name.StartsWith("Address:" + payload.AddressId));
-                if(address == null || !address.HasValue)
-                    return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user address id found: {AddressId}");
-
                 //verify kitchen id is valid
                 Guid kitchenId = new Guid(payload.KitchenId);
                 bool isKitchenIdExists = await _Redis.Has($"{_Redis.KitchenKey}:{payload.KitchenId}");
@@ -120,7 +125,6 @@ namespace CKMS.OrderService.Blanket
 
                 Contracts.DBModels.OrderService.Order order = new Contracts.DBModels.OrderService.Order()
                 {
-                    Address = AddressId,
                     CreatedAt = DateTime.UtcNow,
                     CustomerId = userId,
                     KitchenId = kitchenId,
@@ -130,7 +134,7 @@ namespace CKMS.OrderService.Blanket
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                (bool success, Double TotalAmount, List<AnalyticsOrderItemPayload>? auditItemPayload, message) = await AddItemsToOrder(payload, OrderId, kitchenId.ToString());
+                (bool success, Double TotalAmount, List<OrderItem> orderItems, message) = await AddItemsToOrder(payload, OrderId, kitchenId.ToString());
                 if(!success)
                     return APIResponse.ConstructExceptionResponse(retVal, message);
 
@@ -138,11 +142,16 @@ namespace CKMS.OrderService.Blanket
                 order.NetAmount = TotalAmount;
                 await _OrderUnitOfWork.OrderRepository.AddAsync(order);
 
+                foreach(OrderItem item in orderItems)
+                {
+                    item.OrderId = order.OrderId;
+                    await _OrderUnitOfWork.OrderItemRepository.AddAsync(item);
+                }
                 //audit
                 //await AddDataToAuditTable(order, username.Value, address.Value.ToString(), auditItemPayload);
 
                 await _OrderUnitOfWork.CompleteAsync();
-                data = true;
+                data = order.OrderId;
                 retVal = 1;
 
             }
@@ -154,12 +163,12 @@ namespace CKMS.OrderService.Blanket
 
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
-        private async Task<(bool success, Double TotalAmount, List<AnalyticsOrderItemPayload>? auditItemPayload, String errorMessage)> AddItemsToOrder(OrderPayload payload, Guid OrderId, String kitchenId)
+        private async Task<(bool success, Double TotalAmount, List<OrderItem> items, String errorMessage)> AddItemsToOrder(OrderPayload payload, Guid OrderId, String kitchenId)
         {
             bool success = false;
             Double TotalAmount = 0;
             String message = String.Empty;
-            List<AnalyticsOrderItemPayload> auditItemPayload = new List<AnalyticsOrderItemPayload>();
+            List<OrderItem> items = new List<OrderItem>();
             try
             {
                 //verify menu items are correct
@@ -172,7 +181,7 @@ namespace CKMS.OrderService.Blanket
                 foreach (OrderItemPayload orderItemPayload in payload.Items)
                 {
                     OrderItem? orderItem = default(OrderItem);
-                    var menuItem = menu.FirstOrDefault(x => x.Name.StartsWith("menu:" + Convert.ToString(orderItemPayload.MenuItemId)));
+                    var menuItem = menu.FirstOrDefault(x => x.Name.Equals($"menu:{Convert.ToString(orderItemPayload.MenuItemId)}"));
                     if (menuItem.Name == RedisValue.Null)
                         throw new Exception("Invalid Menu Item : " + orderItemPayload.MenuItemId);
 
@@ -197,16 +206,8 @@ namespace CKMS.OrderService.Blanket
                             OrderItemId = new Guid(),
                             Quantity = orderItemPayload.Quantity,
                         };
-                        await _OrderUnitOfWork.OrderItemRepository.AddAsync(item);
+                        items.Add(item);
                     }
-                    //AnalyticsOrderItemPayload analyticsOrderItemPayload = new AnalyticsOrderItemPayload()
-                    //{
-                    //    MenuItemId = orderItemPayload.MenuItemId,
-                    //    Quantity = orderItemPayload.Quantity,
-                    //    MenuItemName = values[0],
-                    //    IsDeleted = 0
-                    //};
-                    //auditItemPayload.Add(analyticsOrderItemPayload);
                 }
                 //delete items from the db if not present in the cart
                 if (orderItems != null && orderItems.Count > 0)
@@ -218,12 +219,6 @@ namespace CKMS.OrderService.Blanket
                         foreach(Int64 itemId in deletedOrderItems)
                         {
                             await _OrderUnitOfWork.OrderItemRepository.DeleteByMenuItemId(itemId);
-                            //AnalyticsOrderItemPayload analyticsOrderItemPayload = new AnalyticsOrderItemPayload()
-                            //{
-                            //    MenuItemId = itemId,
-                            //    IsDeleted = 1
-                            //};
-                            //auditItemPayload.Add(analyticsOrderItemPayload );
                         }
                     }
                 }
@@ -235,7 +230,7 @@ namespace CKMS.OrderService.Blanket
                 success = false;
             }
 
-            return (success, TotalAmount, auditItemPayload, message);
+            return (success, TotalAmount, items, message);
         }
         //API to confirm an order - to be called only when payment method is Cash on delivery
         public async Task<HTTPResponse> ConfirmOrder(String userId, ConfirmOrderPayload payload)
@@ -259,8 +254,20 @@ namespace CKMS.OrderService.Blanket
                 if (order.CustomerId.ToString() != userId)
                     return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
+                String RedisCustomerKey = $"{_Redis.CustomerKey}:{userId}";
+                //check user exists or not
+                var userData = await _Redis.HashGetAll(RedisCustomerKey);
+                if (userData == null)
+                    return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {userId}");
+                //check if valid Address
+                Guid AddressId = new Guid(payload.AddressId);
+                HashEntry? address = userData.FirstOrDefault(x => x.Name.StartsWith("Address:" + payload.AddressId));
+                if (address == null || !address.HasValue)
+                    return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user address id found: {AddressId}");
+
                 order.Status = (int)OrderStatus.placed;
                 order.UpdatedAt = DateTime.UtcNow;
+                order.Address = AddressId;
                 _OrderUnitOfWork.OrderRepository.Update(order);
 
                 //apply discount if present
@@ -287,6 +294,20 @@ namespace CKMS.OrderService.Blanket
                 //await AddDataToAuditTable(order, "", "", null);
 
                 await _OrderUnitOfWork.CompleteAsync();
+
+                //send notification
+                NotificationPayload notificationPayload = new NotificationPayload()
+                {
+                    UserId = order.KitchenId.ToString(),
+                    Recipient = order.KitchenId.ToString(),
+                    NotificationType = (int)NotificationType.Browser,
+                    Scenario = (int)NotificationScenario.AdminOrderPlaced,
+                    UserType = (int)NotificationUserType.Admin,
+                    Message = "New Order is placed",
+                    Title = "New Order",
+                };
+                List<NotificationPayload> payloads = new List<NotificationPayload>() { notificationPayload };
+                data = await _notificationHttpService.SendNotification(payloads);
                 data = true;
                 retVal = 1;
             }
@@ -361,6 +382,67 @@ namespace CKMS.OrderService.Blanket
             return APIResponse.ConstructHTTPResponse(data, retVal, message);
         }
 
+        //API to get Cart items
+        public async Task<HTTPResponse> GetCart(String userId)
+        {
+
+            int retVal = -40;
+            Object? data = default(Object?);
+            String message = String.Empty;
+            try
+            {
+                Guid CustomerId = new Guid(userId);
+                IQueryable<Order> orders = _OrderUnitOfWork.OrderRepository.GetOrdersByCustomerIdAsync(CustomerId);
+
+                Order? order = orders.FirstOrDefault(x => x.Status == (int)OrderStatus.cart);
+                if(order != null)
+                {
+                    //get menu Item name
+                    var details = await _Redis.HashGetAll($"{_Redis.KitchenKey}:{order.KitchenId}");
+                    if (details == null)
+                        return APIResponse.ConstructExceptionResponse(retVal, "Invalid Kitchen Id");
+
+                    OrderCartDTO orderDTO = new OrderCartDTO();
+                    _Mapper.Map(order, orderDTO);
+
+                    List<OrderItem> items = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(order.OrderId);
+
+                    orderDTO.Items = new List<OrderItemCartDTO>();
+                    if (items != null)
+                    {
+                        foreach (var item in items)
+                        {
+
+                            OrderItemCartDTO itemDTO = new OrderItemCartDTO()
+                            {
+                                MenuItemId = item.MenuItemId,
+                                Quantity = item.Quantity,
+                            };
+                            var menuItem = details.FirstOrDefault(x => x.Name.Equals("menu:" + Convert.ToString(item.MenuItemId)));
+                            if (menuItem.Name != RedisValue.Null)
+                            {
+                                String val = menuItem.Value;
+                                String[] values = val.Split(":");
+                                itemDTO.ItemName = values[0];
+                            }
+                            orderDTO.Items.Add(itemDTO);
+                        }
+                    }
+
+                    data = orderDTO;
+                }
+
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+                return APIResponse.ConstructExceptionResponse(-40, message);
+            }
+
+            return APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+
         //API to view an order
         public async Task<HTTPResponse> ViewOrder(String orderId, String userId)
         {
@@ -399,23 +481,20 @@ namespace CKMS.OrderService.Blanket
                 {
                     foreach (var item in items)
                     {
-                        foreach (var menuItem in details)
+                        OrderItemDTO itemDTO = new OrderItemDTO()
                         {
-                            if (menuItem.Name != RedisValue.Null && menuItem.Name.StartsWith("menu:" + Convert.ToString(item.MenuItemId)))
-                            {
-                                //extract menu id
-                                String val = menuItem.Name;
-                                String[] values = val.Split(":");
-                                OrderItemDTO itemDTO = new OrderItemDTO()
-                                {
-                                    ItemName = values[2],
-                                    MenuItemId = item.MenuItemId,
-                                    OrderId = item.OrderId,
-                                    Quantity = item.Quantity,
-                                };
-                                orderDTO.Items.Add(itemDTO);
-                            }
+                            MenuItemId = item.MenuItemId,
+                            Quantity = item.Quantity,
+                            OrderId = item.OrderId,
+                        };
+                        var menuItem = details.FirstOrDefault(x => x.Name.Equals("menu:" + Convert.ToString(item.MenuItemId)));
+                        if (menuItem.Name != RedisValue.Null)
+                        {
+                            String val = menuItem.Value;
+                            String[] values = val.Split(":");
+                            itemDTO.ItemName = values[0];
                         }
+                        orderDTO.Items.Add(itemDTO);
                     }
                 }
 
@@ -462,6 +541,7 @@ namespace CKMS.OrderService.Blanket
                         String kitchenName = await _Redis.HashGet($"{_Redis.KitchenKey}:{order.KitchenId}", "name");
                         OrderListDTO orderListDTO = new OrderListDTO()
                         {
+                            OrderId = order.OrderId.ToString(),
                             ItemCount = orderItemCount,
                             KitchenName = kitchenName,
                             NetAmount = order.NetAmount,

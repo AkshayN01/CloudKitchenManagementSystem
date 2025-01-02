@@ -23,7 +23,7 @@ namespace CKMS.OrderService.API.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _appSettings = appSettings.Value;
-            _orderBlanket = new OrderBlanket(unitOfWork, mapper, redis);
+            _orderBlanket = new OrderBlanket(unitOfWork, mapper, redis, notificationHttpService);
         }
 
         [HttpPost]
@@ -83,6 +83,27 @@ namespace CKMS.OrderService.API.Controllers
             try
             {
                 var httpResponse = await _orderBlanket.CancelOrder(userguid, orderId);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("/api/order/get-cart")]
+        public async Task<IActionResult> GetCart()
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
+
+            try
+            {
+                var httpResponse = await _orderBlanket.GetCart(userguid);
                 return Ok(httpResponse);
             }
             catch (Exception ex)

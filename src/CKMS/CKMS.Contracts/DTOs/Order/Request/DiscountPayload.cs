@@ -30,7 +30,6 @@ namespace CKMS.Contracts.DTOs.Order.Request
         public String CouponCode { get; set; } = String.Empty!;
         [Required]
         public String OrderId { get; set; } = String.Empty!;
-        public int IsApplied { get; set; } //set to 1 after the order is placed
         public DateTime AppliedDate { get; set; }
     }
 }

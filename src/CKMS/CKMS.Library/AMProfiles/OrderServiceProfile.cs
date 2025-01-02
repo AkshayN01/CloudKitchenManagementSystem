@@ -33,6 +33,13 @@ namespace CKMS.Library.AMProfiles
                 .ForMember(dest => dest.NetAmount, src => src.MapFrom(x => x.NetAmount))
                 .ForMember(dest => dest.Status, src => src.MapFrom(x => 
                 Library.Generic.Utility.GetEnumStringValue<OrderStatus>(x.Status)));
+
+            CreateMap<Order, OrderCartDTO>()
+                .ForMember(dest => dest.OrderId, src => src.MapFrom(x => x.OrderId))
+                .ForMember(dest => dest.OrderDate, src => src.MapFrom(x => x.OrderDate))
+                .ForMember(dest => dest.CustomerId, src => src.MapFrom(x => x.CustomerId))
+                .ForMember(dest => dest.GrossAmount, src => src.MapFrom(x => x.GrossAmount))
+                .ForMember(dest => dest.NetAmount, src => src.MapFrom(x => x.NetAmount));
         }
     }
 }

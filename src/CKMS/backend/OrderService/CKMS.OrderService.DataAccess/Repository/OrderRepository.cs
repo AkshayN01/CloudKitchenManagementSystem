@@ -15,19 +15,27 @@ namespace CKMS.OrderService.DataAccess.Repository
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
         public OrderRepository(OrderServiceDbContext dbContext): base(dbContext) { }
-        public IQueryable<Order> GetOrdersByCustomerIdAsync(Guid customerId, bool tracking = false)
+        public IQueryable<Order> GetOrdersByCustomerIdAsync(Guid customerId, bool includeItems = false, bool includeDiscountUsage = false, bool tracking = false)
         {
             IQueryable<Order> query = _dbSet;
             if (!tracking)
-                query.AsNoTracking();
+                query = query.AsNoTracking();
+            if (includeItems)
+                query = query.Include(x => x.Items);
+            if (includeDiscountUsage)
+                query = query.Include(x => x.DiscountUsage);
             return query.Where(x => x.CustomerId == customerId).OrderByDescending(x => x.OrderDate);
         }
 
-        public IQueryable<Order> GetOrdersByKitchenIdAsync(Guid kitchenId, bool tracking = false)
+        public IQueryable<Order> GetOrdersByKitchenIdAsync(Guid kitchenId, bool includeItems = false, bool includeDiscountUsage = false, bool tracking = false)
         {
             IQueryable<Order> query = _dbSet;
             if (!tracking)
-                query.AsNoTracking();
+                query = query.AsNoTracking();
+            if (includeItems)
+                query = query.Include(x => x.Items);
+            if (includeDiscountUsage)
+                query = query.Include(x => x.DiscountUsage);
             return query.Where(x => x.KitchenId == kitchenId).OrderByDescending(x => x.OrderDate);
         }
     }

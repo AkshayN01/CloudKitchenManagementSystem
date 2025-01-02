@@ -10,8 +10,8 @@ namespace CKMS.Interfaces.Repository
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        IQueryable<Order> GetOrdersByCustomerIdAsync(Guid customerId, bool tracking = false);
-        IQueryable<Order> GetOrdersByKitchenIdAsync(Guid kitchenId, bool tracking = false);
+        IQueryable<Order> GetOrdersByCustomerIdAsync(Guid customerId, bool includeItems = false, bool includeDiscountUsage = false, bool tracking = false);
+        IQueryable<Order> GetOrdersByKitchenIdAsync(Guid kitchenId, bool includeItems = false, bool includeDiscountUsage = false, bool tracking = false);
     }
     public interface IOrderItemRepository : IGenericRepository<OrderItem>
     {

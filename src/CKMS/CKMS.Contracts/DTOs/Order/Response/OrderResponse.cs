@@ -15,6 +15,7 @@ namespace CKMS.Contracts.DTOs.Order.Response
     }
     public class OrderListDTO
     {
+        public String OrderId { get; set; }
         public String KitchenName { get; set; }
         public Int64 ItemCount { get; set; }
         public Double NetAmount { get; set; }
@@ -31,7 +32,7 @@ namespace CKMS.Contracts.DTOs.Order.Response
         public double GrossAmount { get; set; }
         public String Status { get; set; } = String.Empty;
         public String Address { get; set; } = String.Empty;
-        public ICollection<OrderItemDTO> Items { get; set; } = new List<OrderItemDTO>();
+        public List<OrderItemDTO> Items { get; set; } = new List<OrderItemDTO>();
         public String PaymentStatus { get; set; }
     }
     public class OrderItemDTO
@@ -41,6 +42,23 @@ namespace CKMS.Contracts.DTOs.Order.Response
         public long MenuItemId { get; set; }
         public string ItemName { get; set; }
         
+        public int Quantity { get; set; }
+    }
+    public class OrderCartDTO
+    {
+        public Guid OrderId { get; set; }
+
+        public Guid CustomerId { get; set; }
+        public DateTime OrderDate { get; set; }
+        public double NetAmount { get; set; }
+        public double GrossAmount { get; set; }
+        public List<OrderItemCartDTO> Items { get; set; } = new List<OrderItemCartDTO>();
+    }
+    public class OrderItemCartDTO
+    {
+        public long MenuItemId { get; set; }
+        public string ItemName { get; set; }
+
         public int Quantity { get; set; }
     }
     public class OrderDetailDTO
