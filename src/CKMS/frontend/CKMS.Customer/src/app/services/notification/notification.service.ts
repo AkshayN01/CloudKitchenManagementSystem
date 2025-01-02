@@ -18,7 +18,11 @@ export class NotificationService {
   
   private notificationHubUrl = environment.notificationCustomerUrl;
 
-  constructor(private router: Router, private sessionService: SessionService, private utilityService: UtilityService) { }
+  constructor(private router: Router, private sessionService: SessionService, private utilityService: UtilityService) {
+    this.createConnection();
+    this.startConnection();
+    this.startNotificationSetup();
+  }
 
   private createConnection() {
     var token = this.sessionService.getToken() ?? '';
@@ -63,11 +67,18 @@ export class NotificationService {
   }
 
   private startNotificationSetup(){
-    this.hubConnection.on('ReceiveMessage', (user, title, message) => {
-      var notiBody: WebNoti= { body: message, title: title };
+    this.hubConnection.on('ReceiveNotification', (title, message) => {
+      var notiBody: WebNoti= { body: message, title: title, isViewed: false };
       const notifications = this.messagesSubject.value;
       notifications.push(notiBody);
       this.messagesSubject.next(notifications);
     });
+  }
+  public stopConnection() {
+    if (this.hubConnection.state !== signalR.HubConnectionState.Disconnected) {
+      this.hubConnection.stop()
+        .then(() => console.log('Connection stopped'))
+        .catch(err => console.log('Error while stopping connection: ' + err));
+    }
   }
 }

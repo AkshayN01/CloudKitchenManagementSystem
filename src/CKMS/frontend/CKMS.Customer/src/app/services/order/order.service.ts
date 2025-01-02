@@ -3,7 +3,7 @@ import { HttpService } from '../http/http.service';
 import { environment } from '../../../environments/environment';
 import { ConfirmOrderPayload, DiscountUsagePayload, OrderPayload } from '../../models/request/order';
 import { Observable } from 'rxjs';
-import { OrderDTO, OrderList } from '../../models/response/order';
+import { OrderCartDTO, OrderDTO, OrderList } from '../../models/response/order';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +14,14 @@ export class OrderService {
 
   constructor(private apiService: HttpService) { }
 
-  addToCart(payload: OrderPayload): Observable<boolean>{
+  addToCart(payload: OrderPayload): Observable<string | null>{
     var apiUrl = `${this.baseUrl}/api/order/add-to-cart`;
-    return this.apiService.postData<boolean, OrderPayload>(apiUrl, payload);
+    return this.apiService.postData<string, OrderPayload>(apiUrl, payload);
+  }
+
+  getCart(): Observable<OrderCartDTO>{
+    var apiUrl = `${this.baseUrl}/api/order/get-cart`;
+    return this.apiService.getData<OrderCartDTO>(apiUrl);
   }
 
   confirmOrder(payload: ConfirmOrderPayload): Observable<boolean>{

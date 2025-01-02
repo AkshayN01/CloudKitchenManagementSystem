@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment';
 import { HttpService } from '../http/http.service';
 import { Observable } from 'rxjs';
 import { AddressPayload, AddressUpdatePayload } from '../../models/request/customer';
+import { AddressDTO } from '../../models/response/customer';
 
 @Injectable({
   providedIn: 'root'
@@ -28,13 +29,13 @@ export class AddressService {
     return this.apiService.deleteData<boolean>(apiUrl);
   }
 
-  getAddress(addressId: string): Observable<boolean>{
+  getAddress(addressId: string): Observable<AddressDTO>{
     var apiUrl = `${this.baseUrl}/api/customer/get-address/${addressId}`
-    return this.apiService.getData<boolean>(apiUrl);
+    return this.apiService.getData<AddressDTO>(apiUrl);
   }
   
-  getAllAddress(): Observable<boolean>{
+  getAllAddress(): Observable<AddressDTO[]>{
     var apiUrl = `${this.baseUrl}/api/customer/get-all-address`
-    return this.apiService.getData<boolean>(apiUrl);
+    return this.apiService.getData<AddressDTO[]>(apiUrl);
   }
 }

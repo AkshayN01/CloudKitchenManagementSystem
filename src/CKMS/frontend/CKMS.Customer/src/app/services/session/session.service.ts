@@ -8,7 +8,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SessionService {
   authStorageName: string;
-  nameStorageName: string = 'AdminName';
+  nameStorageName: string = 'CustomerName';
   loginData!: LoginResponse;
 
   constructor(private jwtHelper: JwtHelperService) { 
@@ -42,9 +42,10 @@ export class SessionService {
   
   deleteDetails = () => {
     localStorage.removeItem(this.authStorageName);
+    localStorage.removeItem(this.nameStorageName);
   }
 
   logout = () => {
-    
+    this.deleteDetails();
   }
 }

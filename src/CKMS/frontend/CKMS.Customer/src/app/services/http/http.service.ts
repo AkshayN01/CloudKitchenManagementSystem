@@ -28,7 +28,7 @@ export class HttpService {
   postData<T, T1>(url: string, body: T1): Observable<T> {
     return this.http.post<HTTPResponse<T>>(url, body, this.getRequestOptions()).pipe(
       map((response: HTTPResponse<T>) => {
-        if (response.meta.retVal === 1) {
+        if (this.isValidRetVal(response.meta.retVal)) {
           return response.data;
         } else {
           this.openSnackBar(response.meta.message);
@@ -89,5 +89,10 @@ export class HttpService {
 
   private openSnackBar(message: string) {
     this.matSnackBar.open(message, 'Dismiss');
+  }
+
+  private isValidRetVal(retval: number):boolean{
+    var validRetVals = [1, -100, -70];
+    return validRetVals.includes(retval);
   }
 }
