@@ -1,0 +1,17 @@
+/* inventory-detail.component.css */
+.container {
+    padding: 16px;
+}
+  
+.full-width {
+    width: 100%;
+}
+  
+.movement-form {
+    margin: 16px 0;
+}
+  
+.mat-paginator {
+    margin-top: 16px;
+}
+  
