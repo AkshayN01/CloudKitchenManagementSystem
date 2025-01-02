@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 
 import { environment } from '../environments/environment';
 
@@ -34,6 +34,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
+
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
@@ -42,6 +44,14 @@ import { HeaderComponent } from './components/protected/header/header.component'
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { OrderDetailComponent } from './components/protected/order-detail/order-detail.component';
 import { AddInventoryComponent } from './components/protected/add-inventory/add-inventory.component';
+import { ViewInventoriesComponent } from './components/protected/view-inventories/view-inventories.component';
+import { InventoryDetailComponent } from './components/protected/inventory-detail/inventory-detail.component';
+import { SessionService } from './services/session/session.service';
+import { AuthInterceptor } from './services/http/auth';
+import { CustomerSummaryComponent } from './components/protected/customer-summary/customer-summary.component';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
+import { ReportComponent } from './components/protected/report/report.component';
+import { CustomersComponent } from './components/protected/customers/customers.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -57,7 +67,12 @@ export function tokenGetter() {
     HeaderComponent,
     ConfirmationDialogComponent,
     OrderDetailComponent,
-    AddInventoryComponent
+    AddInventoryComponent,
+    ViewInventoriesComponent,
+    InventoryDetailComponent,
+    CustomerSummaryComponent,
+    ReportComponent,
+    CustomersComponent
   ],
   imports: [
     BrowserModule,
@@ -86,6 +101,7 @@ export function tokenGetter() {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatListModule,
     JwtModule.forRoot({
       jwtOptionsProvider: {
         provide: JWT_OPTIONS,
@@ -108,7 +124,14 @@ export function tokenGetter() {
     })
   ],
   providers: [
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    SessionService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
+    provideCharts(withDefaultRegisterables())
   ],
   bootstrap: [AppComponent]
 })

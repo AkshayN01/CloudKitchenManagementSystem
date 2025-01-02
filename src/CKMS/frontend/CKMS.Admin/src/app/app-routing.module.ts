@@ -5,6 +5,11 @@ import { RegisterComponent } from './components/register/register.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 import { HeaderComponent } from './components/protected/header/header.component';
 import { OrdersComponent } from './components/protected/orders/orders.component';
+import { InventoryDetailComponent } from './components/protected/inventory-detail/inventory-detail.component';
+import { ViewInventoriesComponent } from './components/protected/view-inventories/view-inventories.component';
+import { CustomerSummaryComponent } from './components/protected/customer-summary/customer-summary.component';
+import { ReportComponent } from './components/protected/report/report.component';
+import { CustomersComponent } from './components/protected/customers/customers.component';
 
 const routes: Routes = [
   {path:'', pathMatch: 'full', redirectTo: '/login'},
@@ -13,8 +18,12 @@ const routes: Routes = [
   {path: 'verify-account', component: VerifyAccountComponent},
   {path: '', component: HeaderComponent,
   children:[
-
-    {path: 'orders', component: OrdersComponent}
+    {path: 'inventory-detail', component: InventoryDetailComponent},
+    {path: 'inventories', component: ViewInventoriesComponent},
+    {path: 'orders', component: OrdersComponent},
+    {path: 'customer-summary/:id', component: CustomerSummaryComponent},
+    {path: 'report', component: ReportComponent},
+    {path: 'customers', component: CustomersComponent}
   ],
 }
 ];
