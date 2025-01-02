@@ -41,7 +41,7 @@ export class OrderDetailComponent implements OnInit{
           this.orderDetail!.status = updatedStatus;
         }
         else{
-          console.error('Failed to update order status:', error);
+          console.error('Failed to update order status:');
           this.snackBar.open('Failed to update order status.', 'Close', { duration: 3000 });
         }
       })

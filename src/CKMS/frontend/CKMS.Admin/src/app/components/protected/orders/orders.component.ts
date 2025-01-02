@@ -22,10 +22,11 @@ const ORDERS: OrderListDTO[] = [
 export class OrdersComponent implements OnInit{
   displayedColumns: string[] = ['orderDate', 'orderStatus', 'netAmount', 'itemCount', 'actions'];
   dataSource = new MatTableDataSource<OrderListDTO>([]);
+  orders: OrderListDTO[] = [];
   totalRecords: number = 0;
-  pageSize = 5; // Default page size
+  pageSize = 10; // Default page size
   currentPage = 0; // Current page index
-  orderStatus!: string;
+  orderStatus: string = '';
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -34,12 +35,14 @@ export class OrdersComponent implements OnInit{
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.loadOrders();
   }
   
   loadOrders(){
-    this.orderService.viewAllOrders(this.paginator.pageIndex, this.paginator.pageSize, this.orderStatus).subscribe((res) => {
+    this.orderService.viewAllOrders(this.pageSize, 1, this.orderStatus).subscribe((res) => {
       this.dataSource.data = res.orders;
-      this.totalRecords = res.totalNumber;
+      this.totalRecords = res.totalCount;
+      console.log(res);
     })
   }
 

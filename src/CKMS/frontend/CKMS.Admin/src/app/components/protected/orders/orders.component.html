@@ -7,25 +7,25 @@
       <!-- Order Date Column -->
       <ng-container matColumnDef="orderDate">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Order Date </mat-header-cell>
-        <mat-cell *matCellDef="let order"> {{ order.OrderDate | date: 'shortDate' }} </mat-cell>
+        <mat-cell *matCellDef="let order"> {{ order.orderDate | date: 'shortDate' }} </mat-cell>
       </ng-container>
   
       <!-- Order Status Column -->
       <ng-container matColumnDef="orderStatus">
         <mat-header-cell *matHeaderCellDef mat-sort-header> Order Status </mat-header-cell>
-        <mat-cell *matCellDef="let order"> {{ order.OrderStatus }} </mat-cell>
+        <mat-cell *matCellDef="let order"> {{ order.orderStatus }} </mat-cell>
       </ng-container>
   
       <!-- Net Amount Column -->
       <ng-container matColumnDef="netAmount">
         <mat-header-cell *matHeaderCellDef> Net Amount </mat-header-cell>
-        <mat-cell *matCellDef="let order"> {{ order.NetAmount | currency }} </mat-cell>
+        <mat-cell *matCellDef="let order"> {{ order.netAmount | currency }} </mat-cell>
       </ng-container>
   
       <!-- Item Count Column -->
       <ng-container matColumnDef="itemCount">
         <mat-header-cell *matHeaderCellDef> Item Count </mat-header-cell>
-        <mat-cell *matCellDef="let order"> {{ order.ItemCount }} </mat-cell>
+        <mat-cell *matCellDef="let order"> {{ order.itemCount }} </mat-cell>
       </ng-container>
   
       <!-- Actions Column -->
@@ -44,6 +44,6 @@
     </mat-table>
   
     <!-- Pagination Controls -->
-  <mat-paginator [length]="totalRecords" [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons (page)="onPageChange($event)"></mat-paginator>
+  <mat-paginator [length]="totalRecords" [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons (page)="onPageChange($event)"></mat-paginator>
   </div>
   
