@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { LoginResponse } from '../../models/response/login/login';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../../environments/environment';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { environment } from '../../../environments/environment';
 export class SessionService {
   authStorageName: string;
   nameStorageName: string = 'AdminName';
+  kitchenStorageName: string = 'KitchenName';
   loginData!: LoginResponse;
 
   constructor(private jwtHelper: JwtHelperService) { 
@@ -18,6 +20,7 @@ export class SessionService {
   saveDetails = (details: LoginResponse) => {
     localStorage.setItem(this.nameStorageName, details.name);
     localStorage.setItem(this.authStorageName, details.token);
+    localStorage.setItem(this.kitchenStorageName, details.kitchenName);
   }
 
   getToken = (): string | null => {
@@ -26,6 +29,10 @@ export class SessionService {
 
   getUserName = (): string | null => {
     return localStorage.getItem(this.nameStorageName);
+  }
+
+  getKitchenName = (): string | null => {
+    return localStorage.getItem(this.kitchenStorageName);
   }
 
   isTokenExpired(): boolean {
@@ -42,9 +49,11 @@ export class SessionService {
   
   deleteDetails = () => {
     localStorage.removeItem(this.authStorageName);
+    localStorage.removeItem(this.nameStorageName);
+    localStorage.removeItem(this.kitchenStorageName);
   }
 
   logout = () => {
-    
+    this.deleteDetails();
   }
 }

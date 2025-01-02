@@ -1,15 +1,16 @@
 <mat-toolbar color="primary">
     <!-- Company Name -->
-    <span class="company-name">My Company</span>
+    <span class="company-name">{{ kitchenName }}</span>
   
     <!-- Spacer to push menu items to the right -->
     <span class="spacer"></span>
   
     <!-- Menu Items -->
     <nav>
-      <button mat-button>Menu 1</button>
-      <button mat-button>Menu 2</button>
-      <button mat-button>Menu 3</button>
+      <button mat-button [routerLink]="['./orders']">Orders</button>
+      <button mat-button [routerLink]="['./report']">Report</button>
+      <button mat-button [routerLink]="['./inventories']">Inventories</button>
+      <button mat-button [routerLink]="['./customers']">Customers</button>
     </nav>
   
     <!-- Notifications -->
@@ -23,7 +24,7 @@
       <mat-menu #notificationMenu="matMenu">
         <div *ngIf="notifications.length; else noNotifications">
           <button mat-menu-item *ngFor="let notification of notifications">
-            {{ notification }}
+            {{ notification.body }}
           </button>
         </div>
         <ng-template #noNotifications>
