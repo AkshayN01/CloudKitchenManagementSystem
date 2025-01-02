@@ -1,0 +1,41 @@
+<div class="checkout-container">
+    <h2>Order Summary</h2>
+    <div *ngIf="orderCart">
+      <p>Order ID: {{ orderCart.orderId }}</p>
+      <p>Net Amount: {{ orderCart.netAmount | currency }}</p>
+      <p>Gross Amount: {{ orderCart.grossAmount | currency }}</p>
+      <mat-list>
+        <mat-list-item *ngFor="let item of orderCart.items">
+          {{ item.itemName }} (Quantity: {{ item.quantity }})
+        </mat-list-item>
+      </mat-list>
+    </div>
+  
+    <h3>Apply Coupon</h3>
+    <mat-form-field appearance="fill">
+      <mat-label>Coupon Code</mat-label>
+      <input matInput [(ngModel)]="couponCode" [disabled]="isCouponApplied" />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="applyCoupon()" *ngIf="!isCouponApplied">
+      Apply
+    </button>
+    <button mat-raised-button color="warn" (click)="cancelCoupon()" *ngIf="isCouponApplied">
+      Cancel
+    </button>
+  
+    <h3>Select Address</h3>
+    <mat-radio-group [(ngModel)]="selectedAddressId">
+      <mat-radio-button *ngFor="let address of addresses" [value]="address.addressId">
+        {{ address.addressDetail }}, {{ address.city }}, {{ address.region }}, {{ address.postalCode }}, {{ address.country }}
+      </mat-radio-button>
+    </mat-radio-group>
+  
+    <h3>Payment Method</h3>
+    <mat-radio-group disabled>
+      <mat-radio-button value="1" checked>Cash on Delivery</mat-radio-button>
+    </mat-radio-group>
+  
+    <button mat-raised-button color="primary" (click)="confirmOrder()" [disabled]="!orderCart || !selectedAddressId">
+      Confirm Order
+    </button>
+  </div>
