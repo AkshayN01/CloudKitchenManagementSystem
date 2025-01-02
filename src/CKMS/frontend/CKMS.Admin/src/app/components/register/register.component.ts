@@ -20,7 +20,7 @@ export class RegisterComponent {
       region: ['', Validators.required],
       postalCode: ['', Validators.required],
       country: ['', Validators.required],
-      adminUser: this.fb.group({
+      adminUserPayload: this.fb.group({
         emailId: ['', [Validators.required, Validators.email]],
         fullName: ['', Validators.required],
         password: ['', Validators.required],
