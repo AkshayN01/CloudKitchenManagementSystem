@@ -32,6 +32,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
+import { MatListModule } from '@angular/material/list';
 
 import { environment } from '../environments/environment';
 import { SessionService } from './services/session/session.service';
@@ -39,6 +40,10 @@ import { AuthInterceptor } from './services/http/auth';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { HeaderComponent } from './components/protected/header/header.component';
+import { HomeComponent } from './components/protected/home/home.component';
+import { CartComponent } from './components/protected/cart/cart.component';
+import { OrdersComponent } from './components/protected/orders/orders.component';
+import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -49,7 +54,11 @@ export function tokenGetter() {
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    HeaderComponent
+    HeaderComponent,
+    HomeComponent,
+    CartComponent,
+    OrdersComponent,
+    VerifyAccountComponent
   ],
   imports: [
     BrowserModule,
@@ -78,6 +87,7 @@ export function tokenGetter() {
     MatNativeDateModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatListModule,
     JwtModule.forRoot({
       jwtOptionsProvider: {
         provide: JWT_OPTIONS,
