@@ -9,7 +9,7 @@ namespace CKMS.Contracts.DTOs.AdminUser.Response
     public class KitchenListDTO
     {
         public Int64 TotalCount { get; set; }
-        public List<KitchenDTO> KitchenList { get; set; }
+        public List<KitchenDTO> KitchenList { get; set; } = new List<KitchenDTO>();
     }
     public class KitchenDTO
     {

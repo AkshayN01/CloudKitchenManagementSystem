@@ -10,7 +10,7 @@ namespace CKMS.Contracts.DTOs.Inventory.Response
     public class MenuItemListDTO
     {
         public Int64 TotalCount { get; set; }
-        public List<MenuItemDTO> MenuItems { get; set; }
+        public List<MenuItemDTO> MenuItems { get; set; } = new List<MenuItemDTO>();
     }
     public class MenuItemDTO
     {

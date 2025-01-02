@@ -10,6 +10,7 @@ namespace CKMS.Contracts.DTOs.AdminUser.Response
 {
     public class AdminUserLoginDTO
     {
+        public String KitchenName { get; set; }
         public String Name { get; set; }
         public String token { get; set; }
     }
@@ -24,7 +25,7 @@ namespace CKMS.Contracts.DTOs.AdminUser.Response
     }
     public class AdminUserListDTO
     {
-        public List<AdminUserDTO> Users { get; set; }
+        public List<AdminUserDTO> Users { get; set; } = new List<AdminUserDTO>();
         public long TotalCount { get; set; }
     }
 }
