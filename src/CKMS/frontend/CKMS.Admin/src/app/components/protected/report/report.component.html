@@ -1,0 +1,58 @@
+<div class="container">
+    <!-- Date Range Picker -->
+    <div class="date-picker">
+      <label for="startDate">Start Date:</label>
+      <input id="startDate" type="date" [(ngModel)]="startDate" />
+      
+      <label for="endDate">End Date:</label>
+      <input id="endDate" type="date" [(ngModel)]="endDate" />
+      
+      <button (click)="fetchData()">Search</button>
+    </div>
+  
+    <!-- Order Summary Card -->
+     <div class="row">
+        <div class="col">
+            <div class="card">
+                <h3>Order Report Summary</h3>
+                <p>Total Orders: {{ orderSummary.totalOrders }}</p>
+                <p>Total Discounted Orders: {{ orderSummary.totalDiscountedOrders }}</p>
+                <p>Net Revenue: {{ orderSummary.netRevenue | currency }}</p>
+                <p>Gross Revenue: {{ orderSummary.grossRevenue | currency }}</p>
+                <p>Average Order Value: {{ orderSummary.avgOrderValue | currency }}</p>
+              </div>
+        </div>
+        <div class="col">
+            <div>
+                <h3>Customer Ordering Pattern</h3>
+                <canvas id="orderPatternChart"></canvas>
+              </div>
+        </div>
+     </div>
+    
+  
+    <!-- Best Selling Dishes Chart -->
+     <div class="row">
+        <div class="col">
+            <div>
+                <h3>Top 6 Selling Dishes</h3>
+                <canvas id="bestSellingDishesChart"></canvas>
+              </div>
+        </div>
+        <div class="col">
+            <div>
+                <h3>Last 6 Selling Dishes</h3>
+                <canvas id="leastSellingDishesChart"></canvas>
+              </div>
+        </div>
+     </div>
+    
+  
+    <!-- Top Customers Chart -->
+    <div>
+      <h3>Top Customers</h3>
+      <span><button mat-button color="primary" (click)="goToCustomersPage()">View-All</button></span>
+      <canvas id="topCustomersChart"></canvas>
+    </div>
+  </div>
+  
