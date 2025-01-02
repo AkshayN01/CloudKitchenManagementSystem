@@ -1,0 +1,22 @@
+<div class="menu-container">
+    <div *ngFor="let item of menuItems" class="menu-card" [class.unavailable]="!item.isAvailable">
+      <h3>{{ item.name }}</h3>
+      <p>{{ item.description }}</p>
+      <p>Price: {{ item.price | currency }}</p>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="addToCart(item)" 
+        [disabled]="item.isAvailable == 0">
+        Add to Cart
+      </button>
+      <div *ngIf="cart[item.menuItemId]">
+        <p>Quantity: {{ cart[item.menuItemId] }}</p>
+      </div>
+    </div>
+    <div class="checkout-button">
+      <button mat-raised-button color="accent" (click)="checkout()" [disabled]="!cart">
+        Checkout
+      </button>
+    </div>
+  </div>
