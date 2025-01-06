@@ -6,17 +6,16 @@ import { MatDialog, MatDialogActions, MatDialogClose, MatDialogContent } from '@
 import { ConfirmationDialogComponent } from '../../confirmation-dialog/confirmation-dialog.component';
 import { MatSort, Sort } from '@angular/material/sort';
 import { OrderService } from '../../../services/order/order.service';
-
-const ORDERS: OrderListDTO[] = [
-  { orderDate: '2023-12-01', orderStatus: 'Delivered', netAmount: 100.5, itemCount: 2, kitchenName: "Enzo's Takeaway" },
-  { orderDate: '2023-12-02', orderStatus: 'Pending', netAmount: 200.0, itemCount: 4, kitchenName: "Enzp's Takeaway" },
-  // Add more mock orders here
-];
+import { UtilityService } from '../../../services/utility/utility.service';
+import { NotificationService } from '../../../services/notification/notification.service';
+import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-orders',
   templateUrl: './orders.component.html',
-  styleUrl: './orders.component.css'
+  styleUrl: './orders.component.css',
+  providers: [DatePipe]
 })
 
 export class OrdersComponent implements OnInit{
@@ -25,25 +24,34 @@ export class OrdersComponent implements OnInit{
   orders: OrderListDTO[] = [];
   totalRecords: number = 0;
   pageSize = 10; // Default page size
-  currentPage = 0; // Current page index
+  currentPage = 1; // Current page index
   orderStatus: string = '';
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private dialog: MatDialog, private orderService: OrderService) {}
+  constructor(private dialog: MatDialog, private orderService: OrderService, private router: Router,
+    private utilityService: UtilityService, private notificationService: NotificationService, private datePipe: DatePipe) {}
 
   ngOnInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.loadOrders();
+    this.notificationService.messages$.subscribe(messages => {
+      this.currentPage = 1;
+      this.loadOrders();
+    });
   }
   
   loadOrders(){
-    this.orderService.viewAllOrders(this.pageSize, 1, this.orderStatus).subscribe((res) => {
+    this.orderService.viewAllOrders(this.pageSize, this.currentPage, this.orderStatus).subscribe((res) => {
       this.dataSource.data = res.orders;
       this.totalRecords = res.totalCount;
       console.log(res);
     })
+  }
+
+  formatDate(dateString: string): string {
+    return this.datePipe.transform(dateString, 'MMM d, y, h:mm a') || '';
   }
 
   onSortChange(event: any) {
@@ -56,7 +64,7 @@ export class OrdersComponent implements OnInit{
   // Handle page changes
   onPageChange(event: PageEvent) {
     this.pageSize = event.pageSize;
-    this.currentPage = event.pageIndex;
+    this.currentPage = event.pageIndex + 1;
     this.loadOrders(); // Reload data for new page
   }
   
@@ -73,10 +81,18 @@ export class OrdersComponent implements OnInit{
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         console.log(`${action} confirmed for order:`, order);
-        // Add logic to handle the action (e.g., API call)
+        
+        this.orderService.updateOrder(action, order.orderId).subscribe((res) => {
+          this.loadOrders();
+          this.utilityService.openSnackBar("order successfully " + action);
+        })
       } else {
         console.log(`${action} cancelled for order:`, order);
       }
     });
+  }
+
+  viewOrder(orderId:string){
+    this.router.navigate(['/order-detail', orderId]);
   }
 }

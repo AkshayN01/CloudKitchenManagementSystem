@@ -1,15 +1,15 @@
 <mat-toolbar color="primary">
     <!-- Company Name -->
-    <span class="company-name">My Company</span>
+    <span class="company-name">Cloud Kitchen</span>
   
     <!-- Spacer to push menu items to the right -->
     <span class="spacer"></span>
   
     <!-- Menu Items -->
     <nav>
-      <button mat-button>Menu 1</button>
-      <button mat-button>Menu 2</button>
-      <button mat-button>Menu 3</button>
+      <button mat-button [routerLink]="['./home']">Home</button>
+      <button mat-button [routerLink]="['./cart']">Cart</button>
+      <button mat-button [routerLink]="['./orders']">Orders</button>
     </nav>
   
     <!-- Notifications -->
@@ -19,8 +19,13 @@
         [matMenuTriggerFor]="notificationMenu" 
         aria-label="Notifications">
         <mat-icon>notifications</mat-icon>
+        <span 
+          class="notification-badge" 
+          *ngIf="hasNewNotifications">
+          {{ unreadCount }}
+        </span>
       </button>
-      <mat-menu #notificationMenu="matMenu">
+      <mat-menu #notificationMenu="matMenu" (closed)="markNotificationsAsRead()">
         <div *ngIf="notifications.length; else noNotifications">
           <button mat-menu-item *ngFor="let notification of notifications">
             {{ notification.body }}

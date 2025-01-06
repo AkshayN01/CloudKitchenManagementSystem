@@ -27,5 +27,6 @@ namespace CKMS.Contracts.DTOs.Notification.Request
         AdminVerification = 7,
         AdminOrderPlaced = 8,
         AdminOrderCancelled = 9,
+        UserOrderDelivered  =10
     }
 }

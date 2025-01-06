@@ -7,12 +7,27 @@
     flex: 1 1 auto;
 }
   
-.notification-section, .user-section {
+/* .notification-section, .user-section {
     display: flex;
     align-items: center;
 }
   
 .notification-section button {
     margin-right: 8px;
-}
+} */
+ 
+.notification-section {
+    position: relative;
+  }
   
+  .notification-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+  }

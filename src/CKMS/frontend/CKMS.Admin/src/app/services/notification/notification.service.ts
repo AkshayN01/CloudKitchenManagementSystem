@@ -25,6 +25,7 @@ export class NotificationService {
     this.createConnection();
     this.startConnection();
     this.startNotificationSetup();
+    // this.test();
   }
 
   private createConnection() {
@@ -76,6 +77,17 @@ export class NotificationService {
       notifications.push(notiBody);
       this.messagesSubject.next(notifications);
     });
+  }
+
+  private test(){
+    console.log("Start Test");
+    var count = 1;
+    setInterval(() => {
+      var notiBody: WebNoti= { body: "Test " + count++, title: "Test - " + count++ };
+      const notifications = this.messagesSubject.value;
+      notifications.push(notiBody);
+      this.messagesSubject.next(notifications);
+    }, 5000)
   }
   
   public stopConnection() {

@@ -18,6 +18,7 @@ export class CartComponent {
   selectedAddressId: string | null = null;
   couponCode: string = '';
   isCouponApplied: boolean = false;
+  orderPlaced: boolean = false;
 
   constructor(private orderService: OrderService, private addressService: AddressService, private utilityService: UtilityService) {}
 
@@ -98,6 +99,7 @@ export class CartComponent {
     };
 
     this.orderService.confirmOrder(payload).subscribe((res) => {
+      this.orderPlaced = res;
       if(res)
         this.utilityService.openSnackBar('Order confirmed successfully!');
       else

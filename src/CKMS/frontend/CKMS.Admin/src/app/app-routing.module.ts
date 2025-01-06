@@ -10,6 +10,7 @@ import { ViewInventoriesComponent } from './components/protected/view-inventorie
 import { CustomerSummaryComponent } from './components/protected/customer-summary/customer-summary.component';
 import { ReportComponent } from './components/protected/report/report.component';
 import { CustomersComponent } from './components/protected/customers/customers.component';
+import { OrderDetailComponent } from './components/protected/order-detail/order-detail.component';
 
 const routes: Routes = [
   {path:'', pathMatch: 'full', redirectTo: '/login'},
@@ -21,6 +22,7 @@ const routes: Routes = [
     {path: 'inventory-detail', component: InventoryDetailComponent},
     {path: 'inventories', component: ViewInventoriesComponent},
     {path: 'orders', component: OrdersComponent},
+    {path: 'order-detail/:id', component: OrderDetailComponent},
     {path: 'customer-summary/:id', component: CustomerSummaryComponent},
     {path: 'report', component: ReportComponent},
     {path: 'customers', component: CustomersComponent}

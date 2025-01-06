@@ -9,6 +9,7 @@ import { BestSellingDish, CustomerSummary, OrderReportSummary, TopCustomers } fr
 })
 export class ReportService {
   baseUrl: string = environment.orderServiceDomain;
+  inventoryBaseUrl: string = environment.inventoryServiceDomain;
 
   constructor(private apiService: HttpService) { }
 
@@ -35,5 +36,10 @@ export class ReportService {
   getCustomerSummary(customerId: string): Observable<CustomerSummary>{
     var apiUrl = `${this.baseUrl}/api/report/customer-summary?customerId=${customerId}`;
     return this.apiService.getData<CustomerSummary>(apiUrl);
+  }
+
+  getInventoryExpense(startDate: string, endDate: string): Observable<number>{
+    var apiUrl = `${this.inventoryBaseUrl}/api/inventory/get-expense?startDate=${startDate}&endDate=${endDate}`;
+    return this.apiService.getData<number>(apiUrl);
   }
 }

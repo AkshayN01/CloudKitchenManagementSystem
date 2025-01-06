@@ -35,7 +35,11 @@
       <mat-radio-button value="1" checked>Cash on Delivery</mat-radio-button>
     </mat-radio-group>
   
-    <button mat-raised-button color="primary" (click)="confirmOrder()" [disabled]="!orderCart || !selectedAddressId">
+    <button *ngIf="!orderPlaced" mat-raised-button color="primary" (click)="confirmOrder()" [disabled]="!orderCart || !selectedAddressId">
       Confirm Order
     </button>
+    <div *ngIf="orderPlaced" class="order-status">
+      <span class="tick-mark">✔</span>
+      <span class="status-text">Order Placed</span>
+    </div>
   </div>

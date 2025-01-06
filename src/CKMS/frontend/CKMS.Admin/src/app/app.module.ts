@@ -36,6 +36,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
 
+import { GoogleChartsModule } from 'angular-google-charts';
+
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
@@ -102,6 +104,7 @@ export function tokenGetter() {
     MatProgressSpinnerModule,
     MatTableModule,
     MatListModule,
+    GoogleChartsModule,
     JwtModule.forRoot({
       jwtOptionsProvider: {
         provide: JWT_OPTIONS,

@@ -1,32 +1,28 @@
-<div class="orders-container">
-    <h2>My Orders</h2>
-    <mat-grid-list cols="2" rowHeight="1:1.5" gutterSize="16px" *ngIf="orders.length > 0">
-      <mat-grid-tile *ngFor="let order of orders">
-        <mat-card class="order-card" (click)="viewOrderSummary(order.orderId)" style="cursor: pointer;">
-          <mat-card-header>
-            <mat-card-title>{{ order.kitchenName }}</mat-card-title>
-            <mat-card-subtitle>{{ order.orderDate | date: 'medium' }}</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-content>
-            <p><strong>Items:</strong> {{ order.itemCount }}</p>
-            <p><strong>Total:</strong> {{ order.netAmount | currency }}</p>
-            <p><strong>Status:</strong> {{ order.orderStatus }}</p>
-          </mat-card-content>
-        </mat-card>
-      </mat-grid-tile>
-    </mat-grid-list>
-  
-    <!-- Paginator -->
-    <mat-paginator
-      [length]="totalCount"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 20]"
-      (page)="onPageChange($event)"
-    ></mat-paginator>
-  
-    <!-- No orders message -->
-    <div *ngIf="orders.length === 0" class="no-orders">
-      <p>No orders found.</p>
-    </div>
-  </div>
-  
+<h2 style="margin: 1em;">Orders</h2>
+<div class="order-list-container">
+  <mat-card *ngFor="let order of orders" class="order-card" [ngClass]="getStatusClass(order.orderStatus)">
+    <mat-card-header>
+      <mat-card-title>Kitchen: {{ order.kitchenName }}</mat-card-title>
+      <mat-card-subtitle>Order ID: {{ order.orderId }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p><strong>Item Count:</strong> {{ order.itemCount }}</p>
+      <p><strong>Net Amount:</strong> ${{ order.netAmount }}</p>
+      <p><strong>Status:</strong> {{ order.orderStatus }}</p>
+      <p><strong>Order Date:</strong> {{ formatDate(order.orderDate) }}</p>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="viewOrderSummary(order.orderId)">
+        View
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <!-- Pagination Controls -->
+  <mat-paginator 
+    [length]="totalOrders"
+    [pageSize]="pageSize"
+    [pageSizeOptions]="[5, 10, 20]"
+    (page)="onPageChange($event)">
+  </mat-paginator>
+</div>

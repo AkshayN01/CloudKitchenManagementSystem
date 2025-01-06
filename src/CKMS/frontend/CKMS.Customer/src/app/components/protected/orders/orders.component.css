@@ -1,28 +1,43 @@
-.orders-container {
-    padding: 16px;
-  }
-  
-  .order-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-  }
-  
-  .no-orders {
-    text-align: center;
-    margin-top: 20px;
-    font-size: 1.2em;
-    color: #888;
-  }
-  
-  mat-grid-list {
-    width: 100%;
-  }
-  
-  mat-paginator {
-    margin-top: 16px;
-    display: flex;
-    justify-content: center;
-  }
-  
+/* Common styles for cards */
+.order-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  align-items: center;
+}
+
+.order-card {
+  width: 90%;
+  margin-bottom: 8px;
+  transition: transform 0.2s;
+}
+
+.order-card:hover {
+  transform: scale(1.02);
+}
+
+/* Status-specific background colors */
+.status-accepted {
+  background-color: #c8e6c9; /* Light Green */
+}
+
+.status-declined {
+  background-color: #ffcdd2; /* Light Red */
+}
+
+.status-cancelled {
+  background-color: #ffe0b2; /* Light Orange */
+}
+
+.status-outfordelivery {
+  background-color: #bbdefb; /* Light Blue */
+}
+
+.status-inprogress {
+  background-color: #fff9c4; /* Light Yellow */
+}
+
+.status-delivered {
+  background-color: #d1c4e9; /* Light Purple */
+}

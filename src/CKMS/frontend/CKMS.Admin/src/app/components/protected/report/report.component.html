@@ -19,6 +19,7 @@
                 <p>Total Discounted Orders: {{ orderSummary.totalDiscountedOrders }}</p>
                 <p>Net Revenue: {{ orderSummary.netRevenue | currency }}</p>
                 <p>Gross Revenue: {{ orderSummary.grossRevenue | currency }}</p>
+                <p>Total Expense: {{orderSummary.totalExpense | currency }}</p>
                 <p>Average Order Value: {{ orderSummary.avgOrderValue | currency }}</p>
               </div>
         </div>
@@ -41,7 +42,7 @@
         </div>
         <div class="col">
             <div>
-                <h3>Last 6 Selling Dishes</h3>
+                <h3>Least 6 Selling Dishes</h3>
                 <canvas id="leastSellingDishesChart"></canvas>
               </div>
         </div>

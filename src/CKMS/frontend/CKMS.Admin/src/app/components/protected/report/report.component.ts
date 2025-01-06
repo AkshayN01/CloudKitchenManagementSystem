@@ -44,6 +44,9 @@ export class ReportComponent {
     var eDate = this.utilityService.convertDate(this.endDate);
     this.reportsService.getOrderReportSummary(sDate, eDate).subscribe(summary => {
       this.orderSummary = summary;
+      this.reportsService.getInventoryExpense(sDate, eDate).subscribe(expense => {
+        this.orderSummary.totalExpense = expense;
+      })
       this.createOrderingPatternChart();
     });
 

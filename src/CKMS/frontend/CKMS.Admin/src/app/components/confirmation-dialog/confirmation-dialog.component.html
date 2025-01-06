@@ -1,8 +1,11 @@
-<h1 mat-dialog-title>{{ data.title }}</h1>
-<div mat-dialog-content>
-    {{ data.message }}
+<div style="height: 35vh;width: auto;padding: 1em;">
+    <h1 mat-dialog-title>{{ data.title }}</h1>
+    <div mat-dialog-content>
+        {{ data.message }}
+    </div>
+    <div mat-dialog-actions>
+        <button mat-button (click)="onSelect(false)">Cancel</button>
+        <button mat-button color="primary" (click)="onSelect(true)">Confirm</button>
+    </div>
 </div>
-<div mat-dialog-actions>
-    <button mat-button (click)="onSelect(false)">Cancel</button>
-    <button mat-button color="primary" (click)="onSelect(true)">Confirm</button>
-</div>
+

@@ -4,6 +4,7 @@ export interface OrderList{
 }
 
 export interface OrderListDTO{
+    orderId: string,
     kitchenName: string,
     orderDate: string,
     orderStatus: string,
@@ -21,6 +22,9 @@ export interface OrderDetail{
     status: string,
     paymentStatus: string,
     orderDate: string,
+    inProgressDate: string,
+    outForDeliveryDate: string,
+    deliveredDate: string,
     items: OrderItem[]
 }
 

@@ -4,6 +4,7 @@ export interface OrderReportSummary{
     netRevenue: number,
     grossRevenue: number,
     avgOrderValue: number,
+    totalExpense: number,
     orderingPatterns: CustomerOrderingPattern[]
 }
 

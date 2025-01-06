@@ -14,12 +14,13 @@ export class OrderService {
   constructor(private apiService: HttpService) { }
 
   updateOrder(status: string, orderId: string): Observable<boolean>{
+    var jsonBody = { status: status };
     var apiUrl = this.baseUrl + "/api/order/kitchen/update-order/" + orderId
-    return this.apiService.putData<boolean, string>(apiUrl, status);
+    return this.apiService.putData<boolean, string>(apiUrl, JSON.stringify(status));
   }
 
   viewOrder(orderId:string): Observable<OrderDetail>{
-    var apiUrl = this.baseUrl + "/api/order/kitchen/view-order?orderId=" + orderId
+    var apiUrl = this.baseUrl + "/api/order/kitchen/view-order/" + orderId
     return this.apiService.getData<OrderDetail>(apiUrl);
   }
 

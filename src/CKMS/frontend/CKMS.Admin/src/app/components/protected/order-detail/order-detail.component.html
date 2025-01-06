@@ -1,11 +1,14 @@
 <div class="order-detail-container">
-    <h1>Order Details</h1>
-  
+  <h1>Order Details</h1>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        
     <!-- Order Information -->
-    <mat-card class="order-info">
-      <mat-card-title>Order ID: {{ orderDetail?.orderId }}</mat-card-title>
+    <mat-card class="order-info" style="padding: 1em;">
+      <mat-card-title style="margin-bottom: 1em;">Customer Name: {{ orderDetail?.customerName }}</mat-card-title>
       <mat-card-content>
-        <p><strong>Customer Name:</strong> {{ orderDetail?.customerName }}</p>
+        <p><strong>Order Id:</strong> {{ orderDetail?.orderId }}</p>
         <p><strong>Address:</strong> {{ orderDetail?.address }}</p>
         <p><strong>Discount Code:</strong> {{ orderDetail?.discountCouponCode || 'N/A' }}</p>
         <p><strong>Gross Amount:</strong> {{ orderDetail?.grossAmount | currency }}</p>
@@ -17,15 +20,35 @@
         <!-- Update Status Dropdown -->
         <mat-form-field appearance="fill">
           <mat-label>Update Status</mat-label>
-          <mat-select [(value)]="selectedStatus" (selectionChange)="updateOrderStatus()">
-            <mat-option value="In Progress">In Progress</mat-option>
-            <mat-option value="Out for Delivery">Out for Delivery</mat-option>
-            <mat-option value="Delivered">Delivered</mat-option>
-            <mat-option value="Cancelled">Cancelled</mat-option>
+          <mat-select [(value)]="selectedStatus" [disabled]="selectedStatus == 'delivered'" (selectionChange)="updateOrderStatus()">
+            <mat-option *ngFor="let option of statusOptionVal" [value]="option.value">{{option.name}}</mat-option>
+            <!-- <mat-option value="inprogress">In Progress</mat-option>
+            <mat-option value="outfordelivery">Out for Delivery</mat-option>
+            <mat-option value="delivered">Delivered</mat-option>
+            <mat-option value="accepted">Accepted</mat-option>
+            <mat-option value="declined">Declined</mat-option> -->
           </mat-select>
         </mat-form-field>
       </mat-card-content>
     </mat-card>
+      </div>
+      <div class="col" *ngIf="chartData.length > 0">
+        <h3>Order Processing Time</h3>
+        <div class="gantt-container">
+          <google-chart 
+            #ganttChart 
+            [type]="chartType" 
+            [data]="chartData" 
+            [columns]="chartColumns" 
+            [options]="chartOptions">
+          </google-chart>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+    
   
     <!-- Order Items Table -->
     <h2>Order Items</h2>

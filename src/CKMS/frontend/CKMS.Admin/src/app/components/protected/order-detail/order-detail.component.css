@@ -1,0 +1,20 @@
+.gantt-container {
+    width: 100%;
+    height: 400px;
+    margin-top: 20px;
+  }
+
+  .row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .col {
+    flex: 1;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
