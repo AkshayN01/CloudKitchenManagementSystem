@@ -11,6 +11,9 @@ namespace CKMS.Contracts.DBModels.OrderService
         public Guid KitchenId { get; set; }
         [Required]
         public DateTime OrderDate { get; set; }
+        public DateTime? InProgressTime { get; set; }
+        public DateTime? OutForDeliveryTime { get; set; }
+        public DateTime? DeliveryTime { get; set; }
         [Required]
         public double NetAmount { get; set; }
         public double GrossAmount { get; set; }
@@ -47,6 +50,7 @@ namespace CKMS.Contracts.DBModels.OrderService
         outfordelivery = 5,
         delivered = 6,
         cancelled = 7,
-        failed = 8
+        failed = 8,
+        declined = 9
     }
 }

@@ -26,7 +26,7 @@ namespace CKMS.Library.SeedData.OrderService
         {
             if(Orders == null)
             {
-                Orders = await Utility.ReadFromFile<List<Order>>(DiscountUsageFileName);
+                Orders = await Utility.ReadFromFile<List<Order>>(OrdersFileName);
                 if(Orders != null && Orders.Count > 0)
                     return Orders;
 
@@ -72,9 +72,13 @@ namespace CKMS.Library.SeedData.OrderService
                                 GrossAmount = grossAmount,
                                 NetAmount = grossAmount,
                                 OrderDate = orderDate,
+                                InProgressTime = orderDate.AddMinutes(random.Next(1, 3)),
                                 OrderId = Guid.NewGuid(),
-                                Status = (int)OrderStatus.placed
+                                Status = (int)OrderStatus.delivered
                             };
+                            order.OutForDeliveryTime = order.InProgressTime.Value.AddMinutes(random.Next(20, 30));
+                            order.DeliveryTime = order.OutForDeliveryTime.Value.AddMinutes(random.Next(15, 30));
+                            order.UpdatedAt = order.DeliveryTime.Value;
                             Orders.Add(order);
 
                             foreach (MenuItem menuItem in menu)
@@ -110,7 +114,7 @@ namespace CKMS.Library.SeedData.OrderService
                                 PaymentDate = orderDate,
                                 PaymentId = Guid.NewGuid(),
                                 PaymentMethod = (int)PaymentMethod.CashOnDelivery,
-                                PaymentStatus = (int)PaymentStatus.pending,
+                                PaymentStatus = (int)PaymentStatus.paid,
                             };
                             Payment.Add(payment);
                         }

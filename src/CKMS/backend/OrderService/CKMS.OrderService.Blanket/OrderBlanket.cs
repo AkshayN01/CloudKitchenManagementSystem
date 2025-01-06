@@ -483,17 +483,11 @@ namespace CKMS.OrderService.Blanket
                     {
                         OrderItemDTO itemDTO = new OrderItemDTO()
                         {
+                            ItemName = Utility.GetMenuName(details, item.MenuItemId),
                             MenuItemId = item.MenuItemId,
                             Quantity = item.Quantity,
                             OrderId = item.OrderId,
                         };
-                        var menuItem = details.FirstOrDefault(x => x.Name.Equals("menu:" + Convert.ToString(item.MenuItemId)));
-                        if (menuItem.Name != RedisValue.Null)
-                        {
-                            String val = menuItem.Value;
-                            String[] values = val.Split(":");
-                            itemDTO.ItemName = values[0];
-                        }
                         orderDTO.Items.Add(itemDTO);
                     }
                 }
@@ -588,11 +582,86 @@ namespace CKMS.OrderService.Blanket
                 if (order.KitchenId.ToString() != kitchenId)
                     return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions");
 
+
+                if (order.Status == (int)OrderStatus.cancelled || order.Status == (int)OrderStatus.delivered)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Order status cannot be changed");
+
+                int notiScenario = 0;
+                string notiMessage = "";
+
                 if (Enum.TryParse(typeof(OrderStatus), status, out var result) && Enum.IsDefined(typeof(OrderStatus), result))
                 {
-                    order.Status = (int)(OrderStatus)result;
+                    int statusVal = (int)(OrderStatus)result;
+
+                    if (statusVal == order.Status)
+                        return APIResponse.ConstructExceptionResponse(retVal, "Order status is same");
+                    else if (order.Status == (int)OrderStatus.declined && (statusVal == (int)OrderStatus.delivered || statusVal == (int)OrderStatus.inprogress || statusVal == (int)OrderStatus.outfordelivery))
+                        return APIResponse.ConstructExceptionResponse(retVal, "Accept the order first");
+                    else if (order.Status == (int)OrderStatus.accepted && (statusVal != (int)OrderStatus.declined && statusVal != (int)OrderStatus.inprogress))
+                        return APIResponse.ConstructExceptionResponse(retVal, "Can only decline or change to In Progress");
+                    else if (order.Status == (int)OrderStatus.placed && (statusVal != (int)OrderStatus.accepted && statusVal != (int)OrderStatus.declined))
+                        return APIResponse.ConstructExceptionResponse(retVal, "Can only accept or decline");
+                    else if (order.Status == (int)OrderStatus.inprogress && (statusVal != (int)OrderStatus.outfordelivery && statusVal != (int)OrderStatus.declined))
+                        return APIResponse.ConstructExceptionResponse(retVal, "Can only Out for delivery or decline");
+                    else if (order.Status == (int)OrderStatus.outfordelivery && (statusVal != (int)OrderStatus.delivered && statusVal != (int)OrderStatus.declined))
+                        return APIResponse.ConstructExceptionResponse(retVal, "Can only be delivered or decline");
+
+                    if (statusVal == (int)OrderStatus.delivered)
+                    {
+                        notiScenario = (int)NotificationScenario.UserOrderDelivered;
+                        notiMessage = "Your order has been delivered";
+                        Payment? payment = await _OrderUnitOfWork.PaymentRepository.GetPaymentByOrderIdAsync(order.OrderId);
+                        if (payment != null)
+                        {
+                            if (payment.PaymentMethod == (int)PaymentMethod.CashOnDelivery)
+                            {
+                                payment.PaymentStatus = (int)PaymentStatus.paid;
+                                _OrderUnitOfWork.PaymentRepository.Update(payment);
+                            }
+                        }
+                        order.DeliveryTime = DateTime.UtcNow;
+                    }
+                    else if (statusVal == (int)OrderStatus.inprogress)
+                    {
+                        order.InProgressTime = DateTime.UtcNow;
+                        notiScenario = (int)NotificationScenario.UserOrderInProgress;
+                        notiMessage = "Your order is in progress";
+                    }
+                    else if (statusVal == (int)OrderStatus.outfordelivery)
+                    {
+                        notiScenario = (int)NotificationScenario.UserOrderOutForDelivery;
+                        notiMessage = "Your order is out for delivery";
+                        order.OutForDeliveryTime = DateTime.UtcNow;
+                    }
+                    else if(statusVal == (int)OrderStatus.accepted)
+                    {
+                        notiScenario = (int)NotificationScenario.UserOrderAccepted;
+                        notiMessage = "Your order has been accepted";
+                    }
+                    else if (statusVal == (int)OrderStatus.declined)
+                    {
+                        notiScenario = (int)NotificationScenario.UserOrderDeclined;
+                        notiMessage = "Your order has been declined";
+                    }
+
+                    order.Status = statusVal;
                     _OrderUnitOfWork.OrderRepository.Update(order);
                     await _OrderUnitOfWork.CompleteAsync();
+
+                    //send notification
+                    NotificationPayload notificationPayload = new NotificationPayload()
+                    {
+                        UserId = order.CustomerId.ToString(),
+                        Recipient = order.CustomerId.ToString(),
+                        NotificationType = (int)NotificationType.Browser,
+                        Scenario = notiScenario,
+                        UserType = (int)NotificationUserType.Customer,
+                        Message = notiMessage,
+                        Title = "Order Update",
+                    };
+                    List<NotificationPayload> payloads = new List<NotificationPayload>() { notificationPayload };
+                    data = await _notificationHttpService.SendNotification(payloads);
+
                     data = true;
                     retVal = 1;
                 }
@@ -627,14 +696,19 @@ namespace CKMS.OrderService.Blanket
                 if (order.KitchenId.ToString() != kitchenId)
                     return APIResponse.ConstructExceptionResponse(retVal, "Not enough permissions to view this order");
 
-                _Mapper.Map(orderDetailDTO, order);
+                _Mapper.Map(order, orderDetailDTO);
 
                 String RedisCustomerKey = $"{_Redis.CustomerKey}:{order.CustomerId}";
                 //get user data
                 var userData = await _Redis.HashGetAll(RedisCustomerKey);
                 if (userData == null)
                     return APIResponse.ConstructExceptionResponse(retVal, $"Invalid user id found: {order.CustomerId}");
-                orderDetailDTO.CustomerName = userData.FirstOrDefault(x => x.Name.StartsWith("Name")).ToString();
+                var val = userData.FirstOrDefault(x => x.Name.StartsWith("name")).ToString();
+                var values = val.Split(':');
+                orderDetailDTO.CustomerName = values[1].Trim();
+                var addrVal = userData.FirstOrDefault(x => x.Name.Equals("address:" + order.Address)).ToString();
+                var addrValues = addrVal.Split(":");
+                orderDetailDTO.Address = addrValues[2].Trim();
 
                 List<OrderItem> orderItems = await _OrderUnitOfWork.OrderItemRepository.GetOrdersByOrderIdAsync(order.OrderId);
                 
@@ -665,29 +739,20 @@ namespace CKMS.OrderService.Blanket
                 {
                     foreach (var item in items)
                     {
-                        foreach (var menuItem in details)
+                        OrderItemDTO itemDTO = new OrderItemDTO()
                         {
-                            if (menuItem.Name != RedisValue.Null && menuItem.Name.StartsWith("menu:" + Convert.ToString(item.MenuItemId)))
-                            {
-                                //extract menu id
-                                String val = menuItem.Name;
-                                String[] values = val.Split(":");
-                                OrderItemDTO itemDTO = new OrderItemDTO()
-                                {
-                                    ItemName = values[2],
-                                    MenuItemId = item.MenuItemId,
-                                    OrderId = item.OrderId,
-                                    Quantity = item.Quantity,
-                                };
-                                orderDetailDTO.Items.Add(itemDTO);
-                            }
-                        }
+                            ItemName = Utility.GetMenuName(details, item.MenuItemId),
+                            MenuItemId = item.MenuItemId,
+                            OrderId = item.OrderId,
+                            Quantity = item.Quantity,
+                        };
+                        orderDetailDTO.Items.Add(itemDTO);
                     }
                 }
 
                 Payment? payment = await _OrderUnitOfWork.PaymentRepository.GetPaymentByOrderIdAsync(OrderId);
                 if (payment != null)
-                    orderDetailDTO.PaymentStatus = payment.PaymentStatus.ToString();
+                    orderDetailDTO.PaymentStatus = Utility.GetEnumStringValue<PaymentStatus>(payment.PaymentStatus);
 
                 data = orderDetailDTO;
                 retVal = 1;
@@ -747,6 +812,7 @@ namespace CKMS.OrderService.Blanket
                         String kitchenName = await _Redis.HashGet($"{_Redis.KitchenKey}:{order.KitchenId}", "name");
                         OrderListDTO orderListDTO = new OrderListDTO()
                         {
+                            OrderId = order.OrderId.ToString(),
                             ItemCount = orderItemCount,
                             KitchenName = kitchenName,
                             NetAmount = order.NetAmount,

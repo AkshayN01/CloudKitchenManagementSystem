@@ -35,7 +35,8 @@ namespace CKMS.Library.SeedData.AdminUserService
                     KitchenName = "Enzo's Takeaway",
                     LastUpdatedAt = DateTime.UtcNow,
                     PostalCode = "D01 AK16",
-                    Region = "Dublin 01"
+                    Region = "Dublin 01",
+                    IsActive = 1
                 };
                 kitchens.Add(kitchen);
                 KitchenAudit kitchenAudit = new KitchenAudit()

@@ -22,6 +22,42 @@ namespace CKMS.OrderService.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CKMS.Contracts.DBModels.AuditTable", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EntityId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("EntityType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("HTTPStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IsSent")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("LastUpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Audit");
+                });
+
             modelBuilder.Entity("CKMS.Contracts.DBModels.OrderService.Discount", b =>
                 {
                     b.Property<Guid>("DiscountId")
@@ -98,6 +134,9 @@ namespace CKMS.OrderService.DataAccess.Migrations
 
                     b.HasIndex("DiscountId");
 
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
                     b.ToTable("DiscountUsages");
                 });
 
@@ -116,8 +155,14 @@ namespace CKMS.OrderService.DataAccess.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTime?>("DeliveryTime")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<double>("GrossAmount")
                         .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("InProgressTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("KitchenId")
                         .HasColumnType("uuid");
@@ -126,6 +171,9 @@ namespace CKMS.OrderService.DataAccess.Migrations
                         .HasColumnType("double precision");
 
                     b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("OutForDeliveryTime")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
@@ -220,7 +268,15 @@ namespace CKMS.OrderService.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("CKMS.Contracts.DBModels.OrderService.Order", "Order")
+                        .WithOne("DiscountUsage")
+                        .HasForeignKey("CKMS.Contracts.DBModels.OrderService.DiscountUsage", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Discount");
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("CKMS.Contracts.DBModels.OrderService.OrderItem", b =>
@@ -265,6 +321,8 @@ namespace CKMS.OrderService.DataAccess.Migrations
 
             modelBuilder.Entity("CKMS.Contracts.DBModels.OrderService.Order", b =>
                 {
+                    b.Navigation("DiscountUsage");
+
                     b.Navigation("Items");
 
                     b.Navigation("Payment");

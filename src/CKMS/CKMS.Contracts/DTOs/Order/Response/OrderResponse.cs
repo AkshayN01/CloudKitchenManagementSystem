@@ -72,6 +72,9 @@ namespace CKMS.Contracts.DTOs.Order.Response
         public String Status { get; set; }
         public Double NetAmount { get; set; }
         public DateTime OrderDate { get; set; }
+        public DateTime? InProgressDate { get; set; }
+        public DateTime? OutForDeliveryDate { get; set; }
+        public DateTime? DeliveredDate { get; set; }
         public String PaymentStatus { get; set; }
     }
 
