@@ -14,6 +14,7 @@ namespace CKMS.Library.SeedData.InventoryService
     {
         public String Name { get; set; } = String.Empty!;
         public float Quantity { get; set; }
+        public double Price { get; set; }
         public int Unit { get; set; }
         public float RestockThreshold { get; set; }
         public float MaxStockLevel { get; set; }
@@ -98,6 +99,7 @@ namespace CKMS.Library.SeedData.InventoryService
                                 KitchenId = inventory.KitchenId,
                                 MovementDate = TimeZoneInfo.ConvertTimeToUtc(dateTime),
                                 Quantity = data.Quantity,
+                                Price = data.Price,
                             };
                             Movements.Add(movement);
                             dateTime = data.MovementFrequency switch
@@ -122,43 +124,43 @@ namespace CKMS.Library.SeedData.InventoryService
             {
                 InventoryData = new List<InventoryData>()
                 {
-                    new InventoryData() { Name = "Pizza Dough", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "All Purpose Flour", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 80, RestockThreshold = 10, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Tomato", Quantity = 8, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Tomato Sauce", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Pizza Sauce", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Basil", Quantity = 3, Unit = (int)Unit.kilograms, MaxStockLevel = 5, RestockThreshold = 1, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Olives", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 10, RestockThreshold = 1, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Margherita cheese", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Shredded Cheese", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Bell Peppers", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 10, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Pepporini", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Onion", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Chicken", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Eggs", Quantity = 5, Unit = (int)Unit.dozen, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Beef", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Meatballs", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Pork", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Jalapeno", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Sausage", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Bun", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Slice Cheese", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Patty", Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Lettuce", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Pickles", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Pita Bread", Quantity = 8, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Potato", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Tortilla", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Vegetable Oil", Quantity = 20, Unit = (int)Unit.litres, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Olive Oil", Quantity = 20, Unit = (int)Unit.litres, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Butter", Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Black Pepper Grounded", Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Cajun powder", Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Onion Powder", Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
-                    new InventoryData() { Name = "Garlic", Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Garlic Powder", Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Salt", Quantity = 2, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
-                    new InventoryData() { Name = "Tissues", Quantity = 30, Unit = (int)Unit.count, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Pizza Dough", Price=144, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "All Purpose Flour", Price=10, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 80, RestockThreshold = 10, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Tomato", Quantity = 8, Price=25.44, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Tomato Sauce", Price=128.4, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Pizza Sauce", Price=105, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Basil", Price=117, Quantity = 3, Unit = (int)Unit.kilograms, MaxStockLevel = 5, RestockThreshold = 1, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Olives", Price=24.55, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 10, RestockThreshold = 1, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Mozarella cheese", Price=291.6, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Shredded Cheese", Price=95.4, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Bell Peppers", Price=23.9, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 10, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Pepporini", Price=116.7, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Onion", Price=12.9, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 30, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Chicken", Price=548.4, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Eggs", Price=49.08, Quantity = 5, Unit = (int)Unit.dozen, MaxStockLevel = 20, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Beef", Price=146.1, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Meatballs", Price=71.6, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Pork", Price=94.3, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Jalapeno", Price=74.1, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Sausage", Price=64.9, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Bun", Price=42.4, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Slice Cheese", Price=90, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Patty", Price=204.11, Quantity = 15, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Lettuce", Price=135, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Pickles", Price=64.7, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Pita Bread", Price=148.72, Quantity = 8, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Potato", Price=13.9, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Tortilla", Price=27.91, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Vegetable Oil", Price=40.1, Quantity = 20, Unit = (int)Unit.litres, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Olive Oil", Price=110, Quantity = 20, Unit = (int)Unit.litres, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Butter", Price=79.1, Quantity = 10, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Black Pepper Grounded", Price=20.1, Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Cajun powder", Price=72, Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Onion Powder", Price=19.21, Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
+                    new InventoryData() { Name = "Garlic", Price=100, Quantity = 5, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Weekly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Garlic Powder", Price=17.71, Quantity = 1, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Salt", Price=6.1, Quantity = 2, Unit = (int)Unit.kilograms, MaxStockLevel = 50, RestockThreshold = 5, MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1 },
+                    new InventoryData() { Name = "Tissues", Price=60.5, Quantity = 30, Unit = (int)Unit.count, MaxStockLevel = 50, RestockThreshold = 5 , MovementFrequency = (int)InventoryMovementFrequency.Monthly, MovementFrequencyValue = 1},
                 };
             }
 

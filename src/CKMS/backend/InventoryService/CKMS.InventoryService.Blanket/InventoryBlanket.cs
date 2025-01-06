@@ -7,6 +7,7 @@ using CKMS.Contracts.DTOs.Inventory.Response;
 using CKMS.Interfaces.Repository;
 using CKMS.Interfaces.Storage;
 using CKMS.Library.Generic;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -306,6 +307,37 @@ namespace CKMS.InventoryService.Blanket
                     data = inventoryListDTO;
                     retVal = 1;
                 }
+            }
+            catch (Exception ex)
+            {
+                return APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+        public async Task<HTTPResponse> GetInventoryExpense(String _kitchenId, String _startDate, String _endDate)
+        {
+            int retVal = -40;
+            Object? data = default(Object?);
+            String message = String.Empty;
+            try
+            {
+
+                Guid kitchenId = new Guid(_kitchenId);
+
+                DateTime startDate = Utility.ConvertDateToString(_startDate);
+                DateTime endDate = Utility.ConvertDateToString(_endDate);
+
+                if (startDate > endDate)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Date");
+
+                IQueryable<InventoryMovement> inventoryMovementsQuery = _InventoryUnitOfWork.InventoryMovementRepository.GetAllByKitchenId(kitchenId);
+                inventoryMovementsQuery = inventoryMovementsQuery.Where(x => x.MovementDate >= startDate && x.MovementDate <= endDate);
+
+                Double totalPrice = await inventoryMovementsQuery.SumAsync(x => x.Price);
+
+                data = totalPrice;
+                retVal = 1;
             }
             catch (Exception ex)
             {

@@ -35,6 +35,7 @@ namespace CKMS.Contracts.DBModels.InventoryService
         [Required]
         public Int64 InventoryId { get; set; } //Foreign Key
         public Guid KitchenId { get; set; } = Guid.Empty!; //Required
+        public Double Price {  get; set; }
         public float Quantity { get; set; }
         public DateTime MovementDate { get; set; }
         public Inventory Inventory { get; set; } = null!; //Required

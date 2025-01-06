@@ -46,6 +46,14 @@ namespace CKMS.InventoryService.DataAccess.Repository
                 query = query.AsNoTracking();
             return query.Where(x => x.InventoryId == InventoryId);
         }
+
+        public IQueryable<InventoryMovement> GetAllByKitchenId(Guid KitchenId, bool tracking = false)
+        {
+            IQueryable<InventoryMovement> query = _dbSet;
+            if (!tracking)
+                query = query.AsNoTracking();
+            return query.Where(x => x.KitchenId == KitchenId);
+        }
     }
     public class MenuItemAuditRepository : GenericRepository<MenuItemAudit>, IMenuItemAuditRepository
     {

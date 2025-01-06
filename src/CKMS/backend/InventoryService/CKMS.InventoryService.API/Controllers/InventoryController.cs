@@ -273,6 +273,31 @@ namespace CKMS.InventoryService.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [Route("/api/inventory/get-expense")]
+        public async Task<IActionResult> GetInventoryExpense([FromQuery] String startDate, [FromQuery] String endDate)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
+
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+            if (kitchenId == null)
+                return Unauthorized();
+
+            try
+            {
+                var httpResponse = await _inventoryBlanket.GetInventoryExpense(kitchenId, startDate, endDate);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         #endregion
     }
 }
