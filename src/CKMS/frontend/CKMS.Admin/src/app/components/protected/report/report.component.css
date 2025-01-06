@@ -3,6 +3,24 @@
     flex-direction: column;
     gap: 20px;
   }
+
+
+.summary-container {
+  display: grid;
+  grid-template-columns: 1fr auto; /* Two columns: labels and values */
+  gap: 10px 20px; /* Row and column spacing */
+  margin-top: 20px;
+  width: 60%;
+}
+
+.label {
+  font-weight: bold;
+  color: #555;
+}
+
+.value {
+  text-align: right;
+}
   
   .row {
     display: flex;

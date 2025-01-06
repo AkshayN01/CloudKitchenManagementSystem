@@ -74,4 +74,14 @@ namespace CKMS.Contracts.DTOs.Order.Response
         public String MenuItemName { get; set; }
         public Int64 TotalQuantity { get; set; }
     }
+    public class DiscountEffectivenessDto
+    {
+        public Int64 TotalOrders { get; set; }
+        public Int64 DiscountedOrders { get; set; }
+        public double RevenueFromDiscountedOrders { get; set; }
+        public double RevenueFromNonDiscountedOrders { get; set; }
+        public double AverageOrderValueWithDiscount { get; set; }
+        public double AverageOrderValueWithoutDiscount { get; set; }
+        public double DiscountUsagePercentage { get; set; }
+    }
 }

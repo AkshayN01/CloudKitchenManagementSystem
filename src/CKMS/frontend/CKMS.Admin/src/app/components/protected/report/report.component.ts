@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ReportService } from '../../../services/report/report.service';
-import { BestSellingDish, OrderReportSummary, TopCustomers } from '../../../models/response/orders/report';
+import { BestSellingDish, DiscountEffectiveness, OrderReportSummary, TopCustomers } from '../../../models/response/orders/report';
 import { Chart, registerables, DoughnutController, ArcElement, Tooltip, Legend } from 'chart.js';
 import { UtilityService } from '../../../services/utility/utility.service';
 import { Router } from '@angular/router';
@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
   styleUrl: './report.component.css'
 })
 export class ReportComponent {
+  discountEffectiveness!: DiscountEffectiveness;
   orderSummary!: OrderReportSummary;
   bestSellingDishes: BestSellingDish[] = [];
   leastSellingDishes: BestSellingDish[] = [];
@@ -65,6 +66,10 @@ export class ReportComponent {
       this.topCustomers = customers;
       this.createTopCustomersChart();
     });
+
+    this.reportsService.getDiscountEffectiveness(sDate, eDate).subscribe((data) => {
+      this.discountEffectiveness = data;
+    })
   }
 
   createOrderingPatternChart(): void {

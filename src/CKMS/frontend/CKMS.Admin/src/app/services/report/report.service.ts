@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpService } from '../http/http.service';
 import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
-import { BestSellingDish, CustomerSummary, OrderReportSummary, TopCustomers } from '../../models/response/orders/report';
+import { BestSellingDish, CustomerSummary, DiscountEffectiveness, OrderReportSummary, TopCustomers } from '../../models/response/orders/report';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,11 @@ export class ReportService {
   getOrderReportSummary(startDate:string, endDate:string):Observable<OrderReportSummary>{
     var apiUrl = `${this.baseUrl}/api/report/get-summary?startDate=${startDate}&endDate=${endDate}`;
     return this.apiService.getData<OrderReportSummary>(apiUrl);
+  }
+
+  getDiscountEffectiveness(startDate:string, endDate:string):Observable<DiscountEffectiveness>{
+    var apiUrl = `${this.baseUrl}/api/report/get-discount-effectiveness?startDate=${startDate}&endDate=${endDate}`;
+    return this.apiService.getData<DiscountEffectiveness>(apiUrl);
   }
 
   getBestSellingDishes(startDate:string, endDate:string, top: number, desc: boolean): Observable<BestSellingDish[]>{

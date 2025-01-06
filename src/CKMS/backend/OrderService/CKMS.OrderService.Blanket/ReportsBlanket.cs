@@ -7,6 +7,7 @@ using CKMS.Contracts.DTOs.Order.Response;
 using CKMS.Interfaces.Repository;
 using CKMS.Library.Generic;
 using CKMS.OrderService.DataAccess.Repository;
+using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -284,6 +285,69 @@ namespace CKMS.OrderService.Blanket
                     .ToList();
 
                 data = customerSummary;
+                retVal = 1;
+            }
+            catch (Exception ex)
+            {
+                return APIResponse.ConstructExceptionResponse(-40, ex.Message);
+            }
+
+            return APIResponse.ConstructHTTPResponse(data, retVal, message);
+        }
+
+        public async Task<HTTPResponse> GetDiscountEffectiveness(String _kitchenId, String _startDate, String _endDate)
+        {
+            int retVal = -40;
+            Object? data = default(Object?);
+            String message = String.Empty;
+            try
+            {
+                //if startDate and endDate are null then return all the customers based on pagination
+                Guid kitchenId = new Guid(_kitchenId);
+                DateTime startDate = Utility.ConvertDateToString(_startDate);
+                DateTime endDate = Utility.ConvertDateToString(_endDate);
+
+                if (startDate > endDate)
+                    return APIResponse.ConstructExceptionResponse(retVal, "Invalid Date");
+
+                IQueryable<Contracts.DBModels.OrderService.Order> orderQuery = _OrderUnitOfWork.OrderRepository.GetOrdersByKitchenIdAsync(kitchenId, false, true);
+
+                orderQuery = orderQuery.Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate);
+
+                List<Contracts.DBModels.OrderService.Order> orders = await orderQuery.ToListAsync();
+
+                int totalOrders = orders.Count;
+                var discountedOrders = orders.Where(o => o.DiscountUsage != null && o.DiscountUsage.IsApplied == 1).ToList();
+                int totalDiscountedOrders = discountedOrders.Count;
+                int totalNonDiscountedOrders = totalOrders - totalDiscountedOrders;
+
+                double revenueFromDiscountedOrders = discountedOrders.Sum(o => o.NetAmount);
+                double revenueFromNonDiscountedOrders = orders.Where(o => o.DiscountUsage == null || o.DiscountUsage.IsApplied == 0).Sum(o => o.NetAmount);
+
+                double avgOrderValueWithDiscount = totalDiscountedOrders > 0
+                    ? Math.Round(revenueFromDiscountedOrders / totalDiscountedOrders, 2)
+                    : 0;
+
+                double avgOrderValueWithoutDiscount = totalNonDiscountedOrders > 0
+                    ? Math.Round(revenueFromNonDiscountedOrders / totalNonDiscountedOrders,2)
+                    : 0;
+
+                double discountUsagePercentage = totalOrders > 0
+                    ? Math.Round((double)totalDiscountedOrders / totalOrders * 100, 2)
+                    : 0;
+
+                var effectivenessData = new DiscountEffectivenessDto
+                {
+                    TotalOrders = totalOrders,
+                    DiscountedOrders = totalDiscountedOrders,
+                    RevenueFromDiscountedOrders = revenueFromDiscountedOrders,
+                    RevenueFromNonDiscountedOrders = revenueFromNonDiscountedOrders,
+                    AverageOrderValueWithDiscount = avgOrderValueWithDiscount,
+                    AverageOrderValueWithoutDiscount = avgOrderValueWithoutDiscount,
+                    DiscountUsagePercentage = discountUsagePercentage
+                };
+
+                data = effectivenessData;
                 retVal = 1;
             }
             catch (Exception ex)

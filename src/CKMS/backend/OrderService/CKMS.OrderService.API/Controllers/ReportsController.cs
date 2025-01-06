@@ -40,6 +40,30 @@ namespace CKMS.OrderService.API.Controllers
         }
 
         [HttpGet]
+        [Route("/api/report/get-discount-effectiveness")]
+        public async Task<IActionResult> GetDiscountEffectiveness([FromQuery] String startDate, [FromQuery] String endDate)
+        {
+            if (!ModelState.IsValid) { return BadRequest(ModelState); };
+            var claims = User.Claims;
+            var userguid = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+            if (userguid == null) { return Unauthorized(); }
+
+            var kitchenId = claims.FirstOrDefault(c => c.Type == "kitchenId")?.Value;
+            if (kitchenId == null)
+                return Unauthorized();
+
+            try
+            {
+                var httpResponse = await _reportBlanket.GetDiscountEffectiveness(kitchenId, startDate, endDate);
+                return Ok(httpResponse);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("/api/report/best-selling-dish")]
         public async Task<IActionResult> GetBestSellingDish([FromQuery] String startDate, [FromQuery] String endDate, [FromQuery] int top, [FromQuery] bool desc)
         {

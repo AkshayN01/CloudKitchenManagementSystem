@@ -8,6 +8,16 @@ export interface OrderReportSummary{
     orderingPatterns: CustomerOrderingPattern[]
 }
 
+export interface DiscountEffectiveness{
+    totalOrders: number,
+    discountedOrders: number,
+    revenueFromDiscountedOrders: number,
+    revenueFromNonDiscountedOrders: number,
+    averageOrderValueWithDiscount: number,
+    averageOrderValueWithoutDiscount: number,
+    discountUsagePercentage: number
+}
+
 export interface BestSellingDish{
     menuItemName: string,
     menuItemId: number,

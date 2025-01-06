@@ -13,15 +13,28 @@
     <!-- Order Summary Card -->
      <div class="row">
         <div class="col">
-            <div class="card">
-                <h3>Order Report Summary</h3>
-                <p>Total Orders: {{ orderSummary.totalOrders }}</p>
-                <p>Total Discounted Orders: {{ orderSummary.totalDiscountedOrders }}</p>
-                <p>Net Revenue: {{ orderSummary.netRevenue | currency }}</p>
-                <p>Gross Revenue: {{ orderSummary.grossRevenue | currency }}</p>
-                <p>Total Expense: {{orderSummary.totalExpense | currency }}</p>
-                <p>Average Order Value: {{ orderSummary.avgOrderValue | currency }}</p>
-              </div>
+          <div class="card">
+            <h3>Order Report Summary</h3>
+            <div class="summary-container">
+              <div class="label">Total Orders:</div>
+              <div class="value">{{ orderSummary.totalOrders }}</div>
+          
+              <div class="label">Total Discounted Orders:</div>
+              <div class="value">{{ orderSummary.totalDiscountedOrders }}</div>
+          
+              <div class="label">Net Revenue:</div>
+              <div class="value">{{ orderSummary.netRevenue | currency }}</div>
+          
+              <div class="label">Gross Revenue:</div>
+              <div class="value">{{ orderSummary.grossRevenue | currency }}</div>
+          
+              <div class="label">Total Expense:</div>
+              <div class="value">{{ orderSummary.totalExpense | currency }}</div>
+          
+              <div class="label">Average Order Value:</div>
+              <div class="value">{{ orderSummary.avgOrderValue | currency }}</div>
+            </div>
+          </div>          
         </div>
         <div class="col">
             <div>
@@ -50,10 +63,42 @@
     
   
     <!-- Top Customers Chart -->
-    <div>
-      <h3>Top Customers</h3>
-      <span><button mat-button color="primary" (click)="goToCustomersPage()">View-All</button></span>
-      <canvas id="topCustomersChart"></canvas>
-    </div>
+     <div class="row">
+      <div class="col">
+        <div>
+          <h3>Top Customers</h3>
+          <span><button mat-button color="primary" (click)="goToCustomersPage()">View-All</button></span>
+          <canvas id="topCustomersChart"></canvas>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card">
+          <h3>Discount Effectiveness Summary</h3>
+          <div class="summary-container">
+            <div class="label">Total Orders:</div>
+            <div class="value"><strong>{{ discountEffectiveness.totalOrders }}</strong></div>
+        
+            <div class="label">Total Discounted Orders:</div>
+            <div class="value"><strong>{{ discountEffectiveness.discountedOrders }}</strong></div>
+        
+            <div class="label">Net Revenue from Discounted Orders:</div>
+            <div class="value"><strong>{{ discountEffectiveness.revenueFromDiscountedOrders | currency }}</strong></div>
+        
+            <div class="label">Net Revenue from Non Discounted Orders:</div>
+            <div class="value"><strong>{{ discountEffectiveness.revenueFromNonDiscountedOrders | currency }}</strong></div>
+        
+            <div class="label">Average Order Value with Discount:</div>
+            <div class="value"><strong>{{ discountEffectiveness.averageOrderValueWithDiscount | currency }}</strong></div>
+        
+            <div class="label">Average Order Value without Discount:</div>
+            <div class="value"><strong>{{ discountEffectiveness.averageOrderValueWithoutDiscount | currency }}</strong></div>
+        
+            <div class="label">Discount Usage Percentage:</div>
+            <div class="value"><strong>{{ discountEffectiveness.discountUsagePercentage }}%</strong></div>
+          </div>
+        </div>
+        
+     </div>
+    
   </div>
   
