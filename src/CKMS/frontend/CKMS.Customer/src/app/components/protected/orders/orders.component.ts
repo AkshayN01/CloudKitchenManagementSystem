@@ -47,7 +47,7 @@ export class OrdersComponent implements OnInit{
   viewOrderSummary(orderId: string): void {
     // Navigate to the order-summary page
     // Replace '/order-summary' with the actual route
-    this.router.navigate(['/order-summary', orderId]);
+    this.router.navigate(['/order-detail', orderId]);
   }
   formatDate(dateString: string): string {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: '2-digit' };

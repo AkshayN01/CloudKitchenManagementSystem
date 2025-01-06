@@ -452,7 +452,7 @@ namespace CKMS.OrderService.Blanket
             String message = String.Empty;
             try
             {
-                if (!String.IsNullOrEmpty(orderId))
+                if (String.IsNullOrEmpty(orderId))
                     return APIResponse.ConstructExceptionResponse(retVal, "Order Id is empty");
 
                 Guid OrderId = new Guid(orderId);

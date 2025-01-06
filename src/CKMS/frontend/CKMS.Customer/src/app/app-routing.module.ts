@@ -7,6 +7,7 @@ import { HeaderComponent } from './components/protected/header/header.component'
 import { CartComponent } from './components/protected/cart/cart.component';
 import { HomeComponent } from './components/protected/home/home.component';
 import { OrdersComponent } from './components/protected/orders/orders.component';
+import { OrderDetailsComponent } from './components/protected/order-details/order-details.component';
 
 const routes: Routes = [
   {path:'', pathMatch: 'full', redirectTo: '/login'},
@@ -17,7 +18,8 @@ const routes: Routes = [
     children:[
       {path: 'cart', component: CartComponent},
       {path: 'home', component: HomeComponent},
-      {path: 'orders', component: OrdersComponent}
+      {path: 'orders', component: OrdersComponent},
+      {path: 'order-detail/:id', component: OrderDetailsComponent},
     ],
   }
 ];

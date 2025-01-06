@@ -1,0 +1,32 @@
+.order-details {
+    padding: 16px;
+  }
+  
+  h2, h3 {
+    margin-top: 16px;
+  }
+  
+  table {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+  
+  .progress-status {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+  
+  .progress-status div {
+    text-align: center;
+  }
+  
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-color: #4caf50;
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+  

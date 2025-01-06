@@ -33,6 +33,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTableModule } from '@angular/material/table';
 import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { environment } from '../environments/environment';
 import { SessionService } from './services/session/session.service';
@@ -44,6 +45,7 @@ import { HomeComponent } from './components/protected/home/home.component';
 import { CartComponent } from './components/protected/cart/cart.component';
 import { OrdersComponent } from './components/protected/orders/orders.component';
 import { VerifyAccountComponent } from './components/verify-account/verify-account.component';
+import { OrderDetailsComponent } from './components/protected/order-details/order-details.component';
 
 export function tokenGetter() {
   return localStorage.getItem(environment.authStorageName);
@@ -58,7 +60,8 @@ export function tokenGetter() {
     HomeComponent,
     CartComponent,
     OrdersComponent,
-    VerifyAccountComponent
+    VerifyAccountComponent,
+    OrderDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -88,6 +91,7 @@ export function tokenGetter() {
     MatProgressSpinnerModule,
     MatTableModule,
     MatListModule,
+    MatProgressBarModule,
     JwtModule.forRoot({
       jwtOptionsProvider: {
         provide: JWT_OPTIONS,
